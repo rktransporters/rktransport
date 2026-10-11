@@ -7,7 +7,18 @@ import ThemeToggle from "../Components/theme-toggle";
 
 const groups = [
   { title: "Dashboard", links: [["Enquiries", "/admin/dashboard/inquiries"], ["Notifications", "/admin/dashboard/notifications"]] },
-  { title: "Website pages", links: [["Homepage banners", "/admin/dashboard/content/banners"], ["Services", "/admin/dashboard/content/services"], ["About page", "/admin/dashboard/content/about"], ["FAQs", "/admin/dashboard/content/faqs"], ["Testimonials", "/admin/dashboard/content/testimonials"]] },
+  { 
+    title: "Website pages", 
+    links: [
+      ["Homepage banners", "/admin/dashboard/content/banners"],
+      ["Cars page", "/admin/dashboard/content/cars"],
+      ["Locations", "/admin/dashboard/content/locations"],
+      ["Services", "/admin/dashboard/content/services"],
+      ["About page", "/admin/dashboard/content/about"],
+      ["FAQs", "/admin/dashboard/content/faqs"],
+      ["Testimonials", "/admin/dashboard/content/testimonials"]
+    ] 
+  },
   { title: "Settings", links: [["Business settings", "/admin/dashboard/settings"], ["My account", "/admin/dashboard/account"]] },
 ];
 
