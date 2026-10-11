@@ -1,16 +1,19 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, ArrowUpRight, Check, Clock, MessageCircle } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Check, Clock, MessageCircle, Phone, Route } from "lucide-react";
 import { BreadcrumbStructuredData, StructuredData } from "../Components/structured-data";
 import { apiImageUrl, isImageOptimizable, publicApi, type Faq, type Service } from "../../lib/transport-api";
 import { faqJsonLd, generatePageMetadata } from "../../lib/seo";
+
 export const revalidate = 60;
+
 export function generateMetadata() {
   return generatePageMetadata("/services", {
     title: "Car Transport Services Dubai to Abu Dhabi | RK Transport",
     description: "Safe, reliable car transport between Dubai and Abu Dhabi, available 24/7. Explore RK Transport services and request a quote.",
   });
 }
+
 export default async function ServicesPage() {
   const [serviceResult, copyResult, settingsResult, faqResult] = await Promise.allSettled([
     publicApi.services(),
@@ -23,21 +26,25 @@ export default async function ServicesPage() {
   const settings = settingsResult.status === "fulfilled" ? settingsResult.value : null;
   const faqs: Faq[] = faqResult.status === "fulfilled" ? faqResult.value.filter((faq) => !faq.page_key || faq.page_key === "services") : [];
   const text = (key: string, fallback: string) => copy.find((item: { key: string }) => item.key === key)?.value || fallback;
+
   const [featured, ...others] = services;
   const hours = settings?.available_24_7 ? settings.hours_label : "";
   const whatsappDigits = settings?.whatsapp?.replace(/\D/g, "");
+
   // Priority: 1. Admin page banner -> 2. Featured service banner -> 3. Any service banner
   const bannerUrl =
     copy.find((item: { key: string }) => item.key === "services_banner_url")?.value ||
     ((featured as Record<string, unknown>)?.banner_image_url as string | undefined) ||
     ((services.find((s: unknown) => (s as Record<string, unknown>)?.banner_image_url) as Record<string, unknown>)?.banner_image_url as string | undefined);
+
   return (
     <>
       <BreadcrumbStructuredData items={[{ name: "Home", path: "/" }, { name: "Services", path: "/services" }]} />
       {faqs.length > 0 && <StructuredData data={faqJsonLd(faqs.map(({ question, answer }) => ({ question, answer })))} />}
+
       <main>
         {/* Sticky Still Image Hero Banner */}
-        <section className="sticky top-0 z-0 isolate flex h-[480px] sm:h-[560px] items-end overflow-hidden bg-slate-950 text-white">
+        <section className="sticky top-0 z-0 flex min-h-[480px] sm:min-h-[560px] items-end overflow-hidden bg-slate-950 text-white">
           {bannerUrl ? (
             <Image
               src={apiImageUrl(bannerUrl) || bannerUrl}
@@ -46,14 +53,15 @@ export default async function ServicesPage() {
               priority
               unoptimized={!isImageOptimizable(bannerUrl)}
               sizes="100vw"
-              className="z-0 object-cover"
+              className="-z-20 object-cover"
             />
           ) : (
-            <div aria-hidden="true" className="absolute inset-0 z-0 bg-[radial-gradient(ellipse_at_top_right,rgba(148,163,184,0.28),transparent_55%),linear-gradient(135deg,#0f172a,#020617)]" />
+            <div aria-hidden="true" className="absolute inset-0 -z-20 bg-[radial-gradient(ellipse_at_top_right,rgba(148,163,184,0.28),transparent_55%),linear-gradient(135deg,#0f172a,#020617)]" />
           )}
-          <div aria-hidden="true" className="absolute inset-0 z-10 bg-gradient-to-t from-black/90 via-black/40 to-black/30" />
-          <div aria-hidden="true" className="absolute inset-x-0 top-0 z-10 h-40 bg-gradient-to-b from-black/70 to-transparent" />
-          <div className="relative z-20 mx-auto w-full max-w-7xl px-4 pb-16 pt-32 sm:px-6 sm:pb-20">
+          <div aria-hidden="true" className="absolute inset-0 -z-10 bg-gradient-to-t from-black/90 via-black/40 to-black/30" />
+          <div aria-hidden="true" className="absolute inset-x-0 top-0 -z-10 h-40 bg-gradient-to-b from-black/70 to-transparent" />
+
+          <div className="mx-auto w-full max-w-7xl px-4 pb-16 pt-32 sm:px-6 sm:pb-20">
             <p className="text-sm font-bold uppercase tracking-[.2em] text-amber-400">Services</p>
             <h1 className="mt-3 text-balance text-4xl font-bold leading-[1.05] tracking-tight sm:text-6xl">
               {text("services.heading", "Car transport, done right")}
@@ -81,13 +89,15 @@ export default async function ServicesPage() {
             </div>
           </div>
         </section>
+
         {/* Content Container that scrolls over the sticky banner */}
-        <div className="relative z-10 -mt-8 rounded-t-[2.5rem] bg-stone-50 shadow-[0_-20px_40px_rgba(0,0,0,0.2)] dark:bg-slate-950">
+        <div className="relative z-10 bg-stone-50 dark:bg-slate-950 rounded-t-[2.5rem] shadow-[0_-20px_40px_rgba(0,0,0,0.2)]">
           {/* Services */}
           <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-24">
             {services.length === 0 && (
               <p className="rounded-2xl bg-stone-100 p-6 dark:bg-slate-900">{text("empty.services", "Service information is currently unavailable.")}</p>
             )}
+
             {/* Featured service */}
             {featured && (
               <Link
@@ -133,6 +143,7 @@ export default async function ServicesPage() {
                 </div>
               </Link>
             )}
+
             {/* Other services */}
             {others.length > 0 && (
               <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -173,6 +184,7 @@ export default async function ServicesPage() {
               </div>
             )}
           </section>
+
           {/* FAQs */}
           {faqs.length > 0 && (
             <section className="mx-auto max-w-4xl px-4 py-16 sm:px-6 lg:py-24">
