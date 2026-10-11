@@ -2,7 +2,7 @@ import { MapPin, MessageCircle, Phone, Route } from "lucide-react";
 import { BreadcrumbStructuredData } from "../Components/structured-data";
 import PageHero from "../Components/page-hero";
 import { generatePageMetadata } from "../../lib/seo";
-import { apiImageUrl, publicApi, type Location, type PageCopy } from "../../lib/transport-api";
+import { publicApi, type Location, type PageCopy } from "../../lib/transport-api";
 
 export const revalidate = 60;
 
@@ -59,12 +59,9 @@ export default async function RoutesPage() {
   const phone = settings?.phone_primary || PHONE_NUMBER;
   const whatsappDigits = settings?.whatsapp?.replace(/\D/g, "") || WHATSAPP_NUMBER;
   const routeLabel = settings?.core_route_label || "Dubai ⇄ Abu Dhabi";
-  
-  const rawBannerUrl =
+  const bannerUrl =
     copy.find((item) => item.key === "locations_banner_url")?.value ||
     locations.find((location) => location.banner_image_url)?.banner_image_url;
-  const bannerUrl = rawBannerUrl ? apiImageUrl(rawBannerUrl) || rawBannerUrl : undefined;
-
   const hours = settings?.available_24_7 ? settings.hours_label : "";
 
   return (
@@ -102,7 +99,7 @@ export default async function RoutesPage() {
         <div className="mt-12 rounded-3xl bg-slate-950 p-8 text-white shadow-2xl sm:p-12">
           <div className="grid gap-8 lg:grid-cols-2 lg:items-center">
             <div>
-              <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-semibold backdrop-blur">
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/2ng bg-white/10 px-4 py-1.5 text-xs font-semibold backdrop-blur">
                 <Route className="size-4 text-amber-400" /> Primary Service Corridor
               </div>
               <h2 className="mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl">{routeLabel}</h2>
@@ -139,7 +136,7 @@ export default async function RoutesPage() {
           </div>
         </div>
 
-        {/* Pickup & Drop Points Grid */}
+        {/* Pickup & Drop Points Grid (Matching the theme reference) */}
         <div className="mt-16 grid gap-8 lg:grid-cols-2">
           {/* Dubai Pickup Points */}
           <div className="rounded-3xl border border-slate-200 bg-white p-7 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-8">
