@@ -8,13 +8,24 @@ import { apiImageUrl, isImageOptimizable, type HeroBanner } from "../../lib/tran
 
 const SLIDE_MS = 6000;
 
-export default function HeroSlideshow({ slides }: { slides: HeroBanner[] }) {
+export default function HeroSlideshow({
+  slides,
+  phone,
+  whatsapp,
+}: {
+  slides: HeroBanner[];
+  phone?: string | null;
+  whatsapp?: string | null;
+}) {
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
   const [cycle, setCycle] = useState(0);
   const touchStart = useRef<number | null>(null);
   const slide = slides[active];
   const count = slides.length;
+
+  const whatsappHref = `https://wa.me/${(whatsapp || "971561379697").replace(/\D/g, "")}`;
+  const phoneHref = `tel:${phone || "+971561379697"}`;
 
   const next = useCallback(() => setActive((index) => (index + 1) % count), [count]);
   const previous = useCallback(() => setActive((index) => (index - 1 + count) % count), [count]);
@@ -31,7 +42,7 @@ export default function HeroSlideshow({ slides }: { slides: HeroBanner[] }) {
     <section
       aria-roledescription="carousel"
       aria-label="RK Transport"
-      className="relative isolate flex h-[100dvh] min-h-[100dvh] flex-col justify-between overflow-hidden bg-slate-950 text-white"
+      className="relative isolate flex h-[100dvh] min-h-[100dvh] flex-col justify-between overflow-hidden bg-slate-950 text-white [clip-path:inset(0)]"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={resume}
       onFocus={() => setPaused(true)}
@@ -49,23 +60,21 @@ export default function HeroSlideshow({ slides }: { slides: HeroBanner[] }) {
       }}
     >
       <style>{`
-        @keyframes hero-zoom { from { transform: scale(1); } to { transform: scale(1.08); } }
         @keyframes hero-progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
         @keyframes hero-rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes hero-bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(6px); } }
-        .hero-zoom { animation: hero-zoom 9s ease-out forwards; }
         .hero-rise > * { opacity: 0; animation: hero-rise .7s ease-out forwards; }
         .hero-rise > *:nth-child(2) { animation-delay: .08s; }
         .hero-rise > *:nth-child(3) { animation-delay: .16s; }
         .hero-rise > *:nth-child(4) { animation-delay: .24s; }
         .hero-rise > *:nth-child(5) { animation-delay: .32s; }
         @media (prefers-reduced-motion: reduce) {
-          .hero-zoom, .hero-rise > *, .hero-bounce { animation: none !important; opacity: 1 !important; }
+          .hero-rise > *, .hero-bounce { animation: none !important; opacity: 1 !important; }
           .hero-bar { animation: none !important; transform: scaleX(1) !important; }
         }
       `}</style>
 
-      {/* Background images */}
+      {/* Still background images (fixed to the screen, clipped to the hero) */}
       {slides.map((banner, index) => {
         const landscapeImage = banner.image_url || banner.portrait_image_url;
         const portraitImage = banner.portrait_image_url || landscapeImage;
@@ -76,7 +85,8 @@ export default function HeroSlideshow({ slides }: { slides: HeroBanner[] }) {
         return (
           <picture
             key={banner.id}
-            className={`absolute inset-0 -z-30 transition-opacity duration-1000 ${isActive ? "opacity-100" : "opacity-0"}`}
+            aria-hidden="true"
+            className={`fixed inset-0 -z-30 transition-opacity duration-1000 ${isActive ? "opacity-100" : "opacity-0"}`}
           >
             {banner.portrait_image_url && portraitSrc && <source media="(max-width: 1023px)" srcSet={portraitSrc} />}
             <Image
@@ -86,7 +96,7 @@ export default function HeroSlideshow({ slides }: { slides: HeroBanner[] }) {
               priority={index === 0}
               unoptimized={!isImageOptimizable(landscapeImage)}
               sizes="100vw"
-              className={`object-cover ${isActive ? "hero-zoom" : ""}`}
+              className="object-cover object-center"
             />
           </picture>
         );
@@ -128,7 +138,7 @@ export default function HeroSlideshow({ slides }: { slides: HeroBanner[] }) {
                 </Link>
               )}
               <a
-                href="https://wa.me/971561379697"
+                href={whatsappHref}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex min-h-11 items-center gap-2 rounded-full border border-white/30 bg-white/10 px-5 text-sm font-semibold text-white backdrop-blur-md transition hover:bg-green-600 sm:min-h-12 sm:px-6 sm:text-base"
@@ -137,7 +147,7 @@ export default function HeroSlideshow({ slides }: { slides: HeroBanner[] }) {
                 WhatsApp us
               </a>
               <a
-                href="tel:+971561379697"
+                href={phoneHref}
                 className="inline-flex min-h-11 items-center gap-2 rounded-full border border-white/30 bg-white/10 px-5 text-sm font-semibold text-white backdrop-blur-md transition hover:bg-white/20 sm:min-h-12 sm:px-6 sm:text-base"
               >
                 <Phone aria-hidden="true" className="size-4 sm:size-5" />
@@ -205,7 +215,7 @@ export default function HeroSlideshow({ slides }: { slides: HeroBanner[] }) {
         </div>
       )}
 
-      {/* Scroll cue */}
+      {/* Scroll cue (desktop) */}
       <a
         href="#services"
         aria-label="Scroll down"

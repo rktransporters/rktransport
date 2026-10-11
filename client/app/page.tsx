@@ -2,10 +2,11 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowUpRight, Car, Check, Clock3, Luggage, Mail, MapPin, MessageCircle, Navigation,
-  Phone, Plus, ShieldCheck, Snowflake, Sparkles, UserCheck, Wallet,
+  Phone, Plus, ShieldCheck, Snowflake, Sparkles, UserCheck, Users, Wallet,
 } from "lucide-react";
 import ReviewForm from "./Components/review-form";
 import HeroSlideshow from "./Components/hero-slideshow";
+import PolaroidStack, { type PolaroidItem } from "./Components/polaroid-stack";
 import SectionPager from "./Components/section-pager";
 import SimpleRichText from "./Components/simple-rich-text";
 import {
@@ -31,9 +32,9 @@ export const revalidate = 60;
    STATIC CONTENT
 ========================================================= */
 const PACKAGES = [
-  { name: "Single Passenger Seat", price: "AED 50", period: "one way", desc: "Ideal for daily commuters", popular: false, feats: ["Door-to-door pickup", "AC comfort", "Professional driver"] },
-  { name: "Full Private Car", price: "AED 250", period: "one way", desc: "Exclusive ride for families and VIPs", popular: true, feats: ["100% private vehicle", "Custom timing", "Nonstop direct route"] },
-  { name: "Monthly Commuter Pass", price: "AED 1,200", period: "per month", desc: "Best value for regular travel", popular: false, feats: ["Guaranteed seat", "Flexible slots", "Dedicated support"] },
+  { name: "Single Passenger Seat", price: "AED 50", period: "one way", desc: "Ideal for daily commuters", popular: false, icon: Users, feats: ["Door-to-door pickup", "AC comfort", "Professional driver"] },
+  { name: "Full Private Car", price: "AED 250", period: "one way", desc: "Exclusive ride for families and VIPs", popular: true, icon: Car, feats: ["100% private vehicle", "Custom timing", "Nonstop direct route"] },
+  { name: "Monthly Commuter Pass", price: "AED 1,200", period: "per month", desc: "Best value for regular travel", popular: false, icon: Clock3, feats: ["Guaranteed seat", "Flexible slots", "Dedicated support"] },
 ];
 
 const CAR_FEATURES = [
@@ -151,6 +152,15 @@ export default async function HomePage() {
     answer: faq.answer,
   }));
 
+  const polaroids: PolaroidItem[] = services.map((service: Service) => ({
+    id: service.id,
+    slug: service.slug,
+    title: service.title,
+    image: service.image_url ? apiImageUrl(service.image_url) || service.image_url : null,
+    alt: service.image_alt || service.title,
+    unoptimized: service.image_url ? !isImageOptimizable(service.image_url) : false,
+  }));
+
   const bannerUrl =
     copy.find((item: PageCopy) => item.key === "testimonials_banner_url")?.value ||
     (
@@ -177,112 +187,49 @@ export default async function HomePage() {
       <SectionPager />
       <main>
         {/* =========================================================
-            1. HERO
+            1. HERO (still image)
         ========================================================= */}
         <div data-snap-section data-label="Home" className="snap-hero">
-          <HeroSlideshow slides={slides} />
+          <HeroSlideshow slides={slides} phone={settings?.phone_primary} whatsapp={settings?.whatsapp} />
         </div>
 
         {/* =========================================================
-            2. SERVICES
+            2. SERVICES (polaroids: stacked on mobile, side by side on desktop)
         ========================================================= */}
         <section
           id="services"
           data-snap-section
           data-label="Services"
-          className="snap-section mx-auto w-full max-w-7xl px-4 sm:px-6"
+          className="snap-section relative overflow-hidden bg-stone-100 px-4 dark:bg-slate-900/60 sm:px-6"
         >
-          <div className="mb-10 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-            <div>
-              <p className="text-sm font-bold uppercase tracking-[.2em] text-slate-500 dark:text-slate-400">
-                {text("home.services.eyebrow", "How we help")}
-              </p>
-              <h2 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
-                {text("home.services.heading", "Car transport, when you need it")}
-              </h2>
+          <div aria-hidden="true" className="pointer-events-none absolute inset-0 opacity-60 [background-image:radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:22px_22px] dark:opacity-20" />
+          <div className="relative mx-auto w-full max-w-7xl">
+            <div className="mb-8 flex flex-col items-center gap-3 text-center sm:mb-10 md:flex-row md:items-end md:justify-between md:text-left">
+              <div>
+                <p className="text-sm font-bold uppercase tracking-[.2em] text-slate-500 dark:text-slate-400">
+                  {text("home.services.eyebrow", "How we help")}
+                </p>
+                <h2 className="mt-2 text-balance text-3xl font-bold tracking-tight sm:text-4xl">
+                  {text("home.services.heading", "Car transport, when you need it")}
+                </h2>
+              </div>
+              <Link
+                href="/services"
+                className="hidden min-h-11 items-center gap-2 font-semibold underline-offset-4 hover:underline md:inline-flex"
+              >
+                {text("home.services.link", "Explore services")}
+                <ArrowUpRight aria-hidden="true" className="size-4" />
+              </Link>
             </div>
-            <Link
-              href="/services"
-              className="inline-flex min-h-11 items-center gap-2 font-semibold underline-offset-4 hover:underline"
-            >
-              {text("home.services.link", "Explore services")}
-              <ArrowUpRight aria-hidden="true" className="size-4" />
-            </Link>
+            <PolaroidStack
+              items={polaroids}
+              empty={text("empty.services", "Service information is currently unavailable.")}
+            />
           </div>
-          {services.length ? (
-            <div
-              className={
-                services.length === 1
-                  ? "grid gap-6"
-                  : services.length === 2
-                    ? "grid gap-6 md:grid-cols-2"
-                    : "grid gap-6 md:grid-cols-2 lg:grid-cols-3"
-              }
-            >
-              {services.map((service: Service, index: number) => (
-                <Link
-                  key={service.id}
-                  href={`/services/${service.slug}`}
-                  className={`group relative flex flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white transition duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-slate-900/15 dark:border-slate-800 dark:bg-slate-900 ${
-                    services.length === 1 ? "md:grid md:grid-cols-2" : ""
-                  }`}
-                >
-                  <div
-                    className={`relative overflow-hidden bg-slate-200 dark:bg-slate-800 ${
-                      services.length === 1 ? "h-72 md:h-full md:min-h-[24rem]" : "h-64 sm:h-72"
-                    }`}
-                  >
-                    {service.image_url ? (
-                      <Image
-                        src={apiImageUrl(service.image_url) || service.image_url}
-                        alt={service.image_alt || ""}
-                        fill
-                        unoptimized={!isImageOptimizable(service.image_url)}
-                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                        className="object-cover transition-transform duration-700 group-hover:scale-110"
-                      />
-                    ) : (
-                      <div
-                        aria-hidden="true"
-                        className="absolute inset-0 bg-gradient-to-br from-slate-700 to-slate-950"
-                      />
-                    )}
-                    <div
-                      aria-hidden="true"
-                      className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/10"
-                    />
-                    <span className="absolute left-4 top-4 grid size-11 place-items-center rounded-full bg-white/90 text-sm font-bold text-slate-900 backdrop-blur">
-                      {String(index + 1).padStart(2, "0")}
-                    </span>
-                    <span className="absolute right-4 top-4 grid size-11 place-items-center rounded-full bg-white/90 text-slate-900 backdrop-blur transition group-hover:bg-slate-950 group-hover:text-white">
-                      <ArrowUpRight aria-hidden="true" className="size-5" />
-                    </span>
-                  </div>
-                  <div className="flex flex-1 flex-col justify-center p-6 sm:p-7">
-                    <h3 className="text-2xl font-bold tracking-tight">{service.title}</h3>
-                    <p className="mt-3 leading-7 text-slate-600 dark:text-slate-300">
-                      {service.short_description}
-                    </p>
-                    {service.starting_price_note && (
-                      <p className="mt-3 font-semibold">{service.starting_price_note}</p>
-                    )}
-                    <span className="mt-5 inline-flex min-h-11 items-center gap-2 font-semibold transition-all group-hover:gap-3">
-                      {text("home.services.details", "Service details")}
-                      <ArrowUpRight aria-hidden="true" className="size-4" />
-                    </span>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          ) : (
-            <p className="rounded-2xl bg-stone-100 p-6 text-slate-700 dark:bg-slate-900 dark:text-slate-200">
-              {text("empty.services", "Service information is currently unavailable.")}
-            </p>
-          )}
         </section>
 
         {/* =========================================================
-            3. PACKAGES (Fixed Parallax Image Background)
+            3. PACKAGES (fixed image background)
         ========================================================= */}
         <section
           id="packages"
@@ -303,14 +250,14 @@ export default async function HomePage() {
             </div>
           )}
           <div aria-hidden="true" className="absolute inset-0 -z-10 bg-slate-950/85" />
-          <div aria-hidden="true" className="pointer-events-none absolute -right-24 -top-24 size-96 rounded-full bg-amber-400/10 blur-3xl" />
+          <div aria-hidden="true" className="pointer-events-none absolute -right-24 -top-24 -z-10 size-96 rounded-full bg-amber-400/10 blur-3xl" />
           <div className="mx-auto w-full max-w-6xl">
             <div className="mx-auto max-w-2xl text-center">
               <p className="inline-flex min-h-9 items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 text-xs font-bold uppercase tracking-[.2em] text-white/80 backdrop-blur">
                 <span aria-hidden="true" className="size-2 rounded-full bg-amber-400" />
                 {text("home.packages.eyebrow", "Transparent pricing")}
               </p>
-              <h2 className="mt-4 text-balance text-3xl font-bold tracking-tight sm:text-5xl text-white">
+              <h2 className="mt-4 text-balance text-3xl font-bold tracking-tight text-white sm:text-5xl">
                 {text("home.packages.heading", "Choose your travel package")}
               </h2>
               <p className="mt-4 leading-7 text-slate-300">
@@ -319,55 +266,62 @@ export default async function HomePage() {
             </div>
 
             <div className="mt-12 grid gap-6 md:grid-cols-3 md:items-center">
-              {PACKAGES.map((pkg) => (
-                <div
-                  key={pkg.name}
-                  className={`relative flex flex-col rounded-3xl p-8 transition duration-300 hover:-translate-y-1 ${
-                    pkg.popular
-                      ? "bg-white text-slate-950 shadow-2xl shadow-slate-900/30 md:scale-105 md:py-12"
-                      : "border border-white/10 bg-white/5 shadow-xl backdrop-blur"
-                  }`}
-                >
-                  {pkg.popular && (
-                    <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 rounded-full bg-amber-400 px-4 py-1 text-xs font-bold uppercase tracking-wider text-slate-950">
-                      Most popular
-                    </span>
-                  )}
-                  <h3 className="text-lg font-bold">{pkg.name}</h3>
-                  <p className={`mt-1 text-sm ${pkg.popular ? "text-slate-600" : "text-slate-300"}`}>{pkg.desc}</p>
-                  <div className="mt-6 flex items-baseline gap-2">
-                    <span className="text-5xl font-extrabold tabular-nums tracking-tight">{pkg.price}</span>
-                    <span className={`text-sm ${pkg.popular ? "text-slate-500" : "text-slate-400"}`}>{pkg.period}</span>
-                  </div>
-                  <ul className={`mt-7 space-y-3 border-t pt-6 ${pkg.popular ? "border-slate-200" : "border-white/10"}`}>
-                    {pkg.feats.map((feat) => (
-                      <li key={feat} className="flex items-center gap-3 text-sm">
-                        <span className={`grid size-5 shrink-0 place-items-center rounded-full ${pkg.popular ? "bg-slate-950 text-white" : "bg-amber-400 text-slate-950"}`}>
-                          <Check aria-hidden="true" className="size-3" />
-                        </span>
-                        {feat}
-                      </li>
-                    ))}
-                  </ul>
-                  <Link
-                    href="/contact"
-                    className={`group mt-8 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full font-semibold transition ${
+              {PACKAGES.map((pkg) => {
+                const Icon = pkg.icon;
+                return (
+                  <div
+                    key={pkg.name}
+                    className={`relative flex flex-col rounded-3xl p-8 transition duration-300 hover:-translate-y-1 ${
                       pkg.popular
-                        ? "bg-slate-950 text-white hover:bg-slate-800"
-                        : "bg-white text-slate-950 hover:bg-slate-200"
+                        ? "bg-white text-slate-950 shadow-2xl shadow-black/40 md:scale-105 md:py-12"
+                        : "border border-white/10 bg-white/5 shadow-xl backdrop-blur"
                     }`}
                   >
-                    Book package
-                    <ArrowUpRight aria-hidden="true" className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-                  </Link>
-                </div>
-              ))}
+                    {pkg.popular && (
+                      <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 rounded-full bg-amber-400 px-4 py-1 text-xs font-bold uppercase tracking-wider text-slate-950">
+                        Most popular
+                      </span>
+                    )}
+                    <span className={`grid size-12 place-items-center rounded-2xl ${pkg.popular ? "bg-slate-950 text-white" : "bg-white/10 text-white"}`}>
+                      <Icon aria-hidden="true" className="size-6" />
+                    </span>
+                    <h3 className="mt-5 text-lg font-bold">{pkg.name}</h3>
+                    <p className={`mt-1 text-sm ${pkg.popular ? "text-slate-600" : "text-slate-300"}`}>{pkg.desc}</p>
+                    <div className="mt-6 flex items-baseline gap-2">
+                      <span className="text-5xl font-extrabold tabular-nums tracking-tight">{pkg.price}</span>
+                      <span className={`text-sm ${pkg.popular ? "text-slate-500" : "text-slate-400"}`}>{pkg.period}</span>
+                    </div>
+                    <ul className={`mt-7 space-y-3 border-t pt-6 ${pkg.popular ? "border-slate-200" : "border-white/10"}`}>
+                      {pkg.feats.map((feat) => (
+                        <li key={feat} className="flex items-center gap-3 text-sm">
+                          <span className={`grid size-5 shrink-0 place-items-center rounded-full ${pkg.popular ? "bg-slate-950 text-white" : "bg-amber-400 text-slate-950"}`}>
+                            <Check aria-hidden="true" className="size-3" />
+                          </span>
+                          {feat}
+                        </li>
+                      ))}
+                    </ul>
+                    <Link
+                      href="/contact"
+                      className={`group mt-8 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full font-semibold transition ${
+                        pkg.popular
+                          ? "bg-slate-950 text-white hover:bg-slate-800"
+                          : "bg-white text-slate-950 hover:bg-slate-200"
+                      }`}
+                    >
+                      Book package
+                      <ArrowUpRight aria-hidden="true" className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                    </Link>
+                  </div>
+                );
+              })}
             </div>
+            <p className="mt-8 text-center text-sm text-slate-400">Fixed prices in AED. No hidden charges.</p>
           </div>
         </section>
 
         {/* =========================================================
-            4. CARS / VEHICLES (Supports Uploaded Images + Title)
+            4. CARS (image-first cards; swipeable row on mobile)
         ========================================================= */}
         <section
           id="cars"
@@ -391,56 +345,57 @@ export default async function HomePage() {
               </Link>
             </div>
 
-            <div className="mt-10 grid gap-6 md:grid-cols-3">
-              {cars.map((car: Vehicle, index: number) => (
-                <Link
-                  key={car.id}
-                  href="/cars"
-                  className="group relative flex flex-col overflow-hidden rounded-3xl border border-slate-200 bg-stone-50 transition duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-slate-900/10 dark:border-slate-800 dark:bg-slate-900"
-                >
-                  {/* Uploaded vehicle image or fallback styled icon header */}
-                  <div className="relative h-52 w-full overflow-hidden bg-slate-200 dark:bg-slate-800">
-                    {car.image_url ? (
-                      <Image
-                        src={apiImageUrl(car.image_url) || car.image_url}
-                        alt={car.title}
-                        fill
-                        unoptimized={!isImageOptimizable(car.image_url)}
-                        sizes="(max-width: 768px) 100vw, 33vw"
-                        className="object-cover transition-transform duration-700 group-hover:scale-110"
-                      />
-                    ) : (
-                      <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-slate-800 to-slate-950 text-white">
-                        <Car aria-hidden="true" className="size-16 opacity-30" />
-                      </div>
-                    )}
-                    <span className="absolute left-4 top-4 grid size-10 place-items-center rounded-full bg-white/90 text-xs font-bold text-slate-900 backdrop-blur">
-                      {String(index + 1).padStart(2, "0")}
-                    </span>
-                  </div>
-
-                  <div className="flex flex-1 flex-col p-7">
-                    <h3 className="text-2xl font-bold tracking-tight">{car.title}</h3>
-                    <p className="mt-2 flex-1 leading-7 text-slate-600 dark:text-slate-300">{car.description}</p>
-                    <ul className="mt-5 flex flex-wrap gap-2">
-                      {car.chips.map((chip) => (
-                        <li key={chip} className="rounded-full border border-slate-300 bg-white px-3 py-1 text-xs font-semibold text-slate-700 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200">
-                          {chip}
-                        </li>
-                      ))}
-                    </ul>
-                    <div className="mt-6 flex items-center justify-between border-t border-slate-200 pt-4 dark:border-slate-800">
-                      <span className="text-sm font-semibold text-slate-500">{car.seats}</span>
-                      <span className="inline-flex items-center gap-1 text-sm font-bold transition-all group-hover:gap-2">
+            {cars.length > 0 ? (
+              <div className="-mx-4 mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-4 [scrollbar-width:none] sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-6 sm:overflow-visible sm:px-0 lg:grid-cols-3 [&::-webkit-scrollbar]:hidden">
+                {cars.map((car: Vehicle, index: number) => (
+                  <Link
+                    key={car.id}
+                    href="/cars"
+                    className="group relative flex w-[80%] shrink-0 snap-center flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-slate-900/15 dark:border-slate-800 dark:bg-slate-900 sm:w-auto"
+                  >
+                    <div className="relative h-56 overflow-hidden bg-slate-200 dark:bg-slate-800">
+                      {car.image_url ? (
+                        <Image
+                          src={apiImageUrl(car.image_url) || car.image_url}
+                          alt={car.title}
+                          fill
+                          unoptimized={!isImageOptimizable(car.image_url)}
+                          sizes="(max-width: 640px) 80vw, (max-width: 1024px) 50vw, 33vw"
+                          className="object-cover transition-transform duration-700 group-hover:scale-110"
+                        />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-slate-800 to-slate-950 text-white">
+                          <Car aria-hidden="true" className="size-16 opacity-30" />
+                        </div>
+                      )}
+                      <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
+                      <span className="absolute left-4 top-4 grid size-10 place-items-center rounded-full bg-white/90 text-xs font-bold text-slate-900 backdrop-blur">
+                        {String(index + 1).padStart(2, "0")}
+                      </span>
+                      <span className="absolute right-4 top-4 inline-flex items-center gap-1.5 rounded-full bg-white/90 px-3 py-1.5 text-xs font-bold text-slate-900 backdrop-blur">
+                        <Users aria-hidden="true" className="size-3.5" />
+                        {car.seats}
+                      </span>
+                      <h3 className="absolute inset-x-5 bottom-4 text-2xl font-bold tracking-tight text-white">{car.title}</h3>
+                    </div>
+                    <div className="flex flex-1 flex-col p-6">
+                      <p className="line-clamp-2 flex-1 leading-7 text-slate-600 dark:text-slate-300">{car.description}</p>
+                      <ul className="mt-4 flex flex-wrap gap-2">
+                        {(car.chips ?? []).map((chip) => (
+                          <li key={chip} className="rounded-full border border-slate-300 bg-stone-50 px-3 py-1 text-xs font-semibold text-slate-700 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200">
+                            {chip}
+                          </li>
+                        ))}
+                      </ul>
+                      <span className="mt-5 inline-flex items-center gap-1 text-sm font-bold transition-all group-hover:gap-2">
                         Explore <ArrowUpRight aria-hidden="true" className="size-4" />
                       </span>
                     </div>
-                  </div>
-                  <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-1 origin-left scale-x-0 bg-amber-400 transition-transform duration-500 group-hover:scale-x-100" />
-                </Link>
-              ))}
-            </div>
-            {cars.length === 0 && (
+                    <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-1 origin-left scale-x-0 bg-amber-400 transition-transform duration-500 group-hover:scale-x-100" />
+                  </Link>
+                ))}
+              </div>
+            ) : (
               <p className="mt-10 rounded-2xl bg-stone-100 p-6 text-slate-700 dark:bg-slate-900 dark:text-slate-200">
                 {text("empty.cars", "Our fleet information is currently unavailable.")}
               </p>
@@ -449,7 +404,7 @@ export default async function HomePage() {
         </section>
 
         {/* =========================================================
-            5. CAR FEATURES (Fixed Parallax Image Background)
+            5. CAR FEATURES (fixed image background, bento tiles)
         ========================================================= */}
         <section
           id="cars-special"
@@ -494,9 +449,12 @@ export default async function HomePage() {
                 return (
                   <div
                     key={feat.title}
-                    className={`group relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-7 backdrop-blur transition duration-300 hover:border-white/30 hover:bg-white/10 ${index % 2 === 1 ? "sm:translate-y-6" : ""}`}
+                    className={`group relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur transition duration-300 hover:border-white/30 hover:bg-white/10 sm:p-7 ${index % 2 === 1 ? "sm:translate-y-6" : ""}`}
                   >
                     <div aria-hidden="true" className="absolute -right-10 -top-10 size-40 rounded-full bg-amber-400/20 opacity-0 blur-2xl transition-opacity duration-500 group-hover:opacity-100" />
+                    <span aria-hidden="true" className="absolute right-5 top-4 text-4xl font-black tabular-nums text-white/10">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
                     <span className="relative grid size-14 place-items-center rounded-2xl bg-amber-400 text-slate-950 transition duration-300 group-hover:-rotate-6 group-hover:scale-110">
                       <Icon aria-hidden="true" className="size-7" />
                     </span>
@@ -590,13 +548,13 @@ export default async function HomePage() {
         )}
 
         {/* =========================================================
-            7. WHY CHOOSE US (Fixed Parallax Image Background)
+            7. WHY CHOOSE US (fixed image background, numbered list)
         ========================================================= */}
         <section
           id="why-choose-us"
           data-snap-section
           data-label="Why choose us"
-          className="snap-section relative isolate overflow-hidden bg-slate-950 text-white px-4 sm:px-6 [clip-path:inset(0)]"
+          className="snap-section relative isolate overflow-hidden bg-slate-950 px-4 text-white sm:px-6 [clip-path:inset(0)]"
         >
           {typeof whyBannerUrl === "string" && whyBannerUrl && (
             <div aria-hidden="true" className="fixed inset-0 -z-20">
@@ -616,24 +574,28 @@ export default async function HomePage() {
               <p className="text-sm font-bold uppercase tracking-[.2em] text-white/60">
                 {text("home.why.eyebrow", "The RK advantage")}
               </p>
-              <h2 className="mt-2 text-balance text-3xl font-bold tracking-tight sm:text-5xl text-white">
+              <h2 className="mt-2 text-balance text-3xl font-bold tracking-tight text-white sm:text-5xl">
                 {text("home.why.heading", "Why choose us for your journey")}
               </h2>
               <p className="mt-5 max-w-md leading-7 text-slate-300">
                 {text("home.why.subheading", "We make traveling between Dubai and Abu Dhabi effortless and dependable.")}
               </p>
+              <Link href="/contact" className="group mt-8 inline-flex min-h-12 items-center gap-2 rounded-full bg-amber-400 px-6 font-semibold text-slate-950 transition hover:bg-amber-300">
+                Book your ride
+                <ArrowUpRight aria-hidden="true" className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+              </Link>
             </div>
 
             <ul className="divide-y divide-white/10 border-y border-white/10">
               {WHY_US.map((item, index) => {
                 const Icon = item.icon;
                 return (
-                  <li key={item.title} className="group flex items-start gap-5 py-8 sm:gap-8">
+                  <li key={item.title} className="group flex items-start gap-5 py-7 sm:gap-8 sm:py-8">
                     <span className="w-14 shrink-0 text-5xl font-black tabular-nums text-white/20 transition-colors duration-300 group-hover:text-amber-400 sm:w-20 sm:text-6xl">
                       {String(index + 1).padStart(2, "0")}
                     </span>
                     <div className="flex-1 transition-transform duration-300 group-hover:translate-x-2">
-                      <h3 className="text-xl font-bold tracking-tight sm:text-2xl text-white">{item.title}</h3>
+                      <h3 className="text-xl font-bold tracking-tight text-white sm:text-2xl">{item.title}</h3>
                       <p className="mt-2 max-w-lg leading-7 text-slate-300">{item.desc}</p>
                     </div>
                     <span className="hidden size-12 shrink-0 place-items-center rounded-full border border-white/20 transition duration-300 group-hover:bg-white group-hover:text-slate-950 sm:grid">
@@ -647,60 +609,72 @@ export default async function HomePage() {
         </section>
 
         {/* =========================================================
-            8. ROUTES WE COVER
+            8. ROUTES (route visual with a driving car + area cards)
         ========================================================= */}
         <section
           id="routes"
           data-snap-section
-          data-label="Location"
+          data-label="Routes"
           className="snap-section bg-stone-100 px-4 dark:bg-slate-900/70 sm:px-6"
         >
           <div className="mx-auto w-full max-w-7xl">
             <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
               <div>
-                <p className="text-sm font-bold uppercase tracking-[.2em] text-slate-500 dark:text-slate-400">Coverage areas</p>
-                <h2 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">Routes we cover</h2>
+                <p className="text-sm font-bold uppercase tracking-[.2em] text-slate-500 dark:text-slate-400">
+                  {text("home.routes.eyebrow", "Coverage areas")}
+                </p>
+                <h2 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
+                  {text("home.routes.heading", "Routes we cover")}
+                </h2>
               </div>
               <Link href="/routes" className="inline-flex min-h-11 items-center gap-2 font-semibold underline-offset-4 hover:underline">
-                View all pickup & drop points
+                View all pickup and drop points
                 <ArrowUpRight aria-hidden="true" className="size-4" />
               </Link>
             </div>
 
-            <div className="mt-10 grid gap-6 md:grid-cols-2">
-              <div className="flex flex-col justify-between rounded-3xl border border-slate-200 bg-white p-8 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-                <div>
-                  <p className="text-sm font-bold uppercase tracking-widest text-amber-500">Dubai</p>
-                  <h3 className="mt-2 text-2xl font-bold">Pickup Neighborhoods</h3>
-                  <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">We pick you up directly from your doorstep across Dubai.</p>
-                  <ul className="mt-6 flex flex-wrap gap-2">
-                    {DUBAI_AREAS.map((area) => (
-                      <li key={area} className="rounded-xl border border-slate-200 bg-stone-50 px-3.5 py-1.5 text-xs font-semibold text-slate-800 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-200">
-                        {area}
-                      </li>
-                    ))}
-                  </ul>
+            <div className="mt-8 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+              <div className="border-b border-slate-200 px-6 py-8 dark:border-slate-800 sm:px-12 sm:py-10">
+                <div className="flex items-center gap-4 sm:gap-8">
+                  <div className="text-center">
+                    <span className="mx-auto grid size-14 place-items-center rounded-full bg-slate-950 text-white dark:bg-white dark:text-slate-950">
+                      <MapPin aria-hidden="true" className="size-6" />
+                    </span>
+                    <p className="mt-2 font-bold">Dubai</p>
+                  </div>
+                  <div className="relative h-0 flex-1 border-t-2 border-dashed border-slate-300 dark:border-slate-600">
+                    <Car aria-hidden="true" className="route-car absolute -top-4 size-8 text-amber-500" />
+                  </div>
+                  <div className="text-center">
+                    <span className="mx-auto grid size-14 place-items-center rounded-full bg-amber-400 text-slate-950">
+                      <MapPin aria-hidden="true" className="size-6" />
+                    </span>
+                    <p className="mt-2 font-bold">Abu Dhabi</p>
+                  </div>
                 </div>
-                <div className="mt-8 pt-4 border-t border-slate-100 dark:border-slate-800">
-                  <Link href="/routes" className="text-sm font-bold hover:underline">See all 14+ Dubai pickup points →</Link>
-                </div>
+                <p className="mt-5 text-center text-sm text-slate-500 dark:text-slate-400">
+                  {text("home.routes.caption", "Daily corridors in both directions, 24/7")}
+                </p>
               </div>
 
-              <div className="flex flex-col justify-between rounded-3xl border border-slate-200 bg-white p-8 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-                <div>
-                  <p className="text-sm font-bold uppercase tracking-widest text-amber-500">Abu Dhabi</p>
-                  <h3 className="mt-2 text-2xl font-bold">Drop-off Zones</h3>
-                  <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">Reliable drop-offs across major Abu Dhabi districts.</p>
-                  <ul className="mt-6 flex flex-wrap gap-2">
-                    {ABU_DHABI_AREAS.map((area) => (
-                      <li key={area} className="rounded-xl border border-slate-200 bg-stone-50 px-3.5 py-1.5 text-xs font-semibold text-slate-800 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-200">
-                        {area}
-                      </li>
+              <div className="grid gap-px bg-slate-200 dark:bg-slate-800 md:grid-cols-2">
+                <div className="bg-white p-6 dark:bg-slate-900 sm:p-8">
+                  <p className="text-xs font-bold uppercase tracking-widest text-amber-500">Dubai pickups</p>
+                  <ul className="mt-4 flex flex-wrap gap-2">
+                    {DUBAI_AREAS.map((area) => (
+                      <li key={area} className="rounded-full border border-slate-300 px-4 py-1.5 text-sm font-medium dark:border-slate-700">{area}</li>
                     ))}
+                    <li className="rounded-full bg-slate-950 px-4 py-1.5 text-sm font-medium text-white dark:bg-white dark:text-slate-950">+ more</li>
                   </ul>
                 </div>
-                <div className="mt-8 pt-4 border-t border-slate-100 dark:border-slate-800">
-                  <Link href="/routes" className="text-sm font-bold hover:underline">See all 10+ Abu Dhabi drop points →</Link>
+                <div className="bg-white p-6 dark:bg-slate-900 sm:p-8">
+                  <p className="text-xs font-bold uppercase tracking-widest text-amber-500">Abu Dhabi drops</p>
+                  <ul className="mt-4 flex flex-wrap gap-2">
+                    {ABU_DHABI_AREAS.map((area) => (
+                      <li key={area} className="rounded-full border border-slate-300 px-4 py-1.5 text-sm font-medium dark:border-slate-700">{area}</li>
+                    ))}
+                    <li className="rounded-full bg-amber-400 px-4 py-1.5 text-sm font-medium text-slate-950">+ more</li>
+                  </ul>
                 </div>
               </div>
             </div>
@@ -708,13 +682,13 @@ export default async function HomePage() {
         </section>
 
         {/* =========================================================
-            9. TESTIMONIALS (Fixed Image Scroll)
+            9. TESTIMONIALS (fixed image scroll)
         ========================================================= */}
         {testimonials.length > 0 && (
           <section
             id="reviews-wall"
             data-snap-section
-            data-label="Reviews Wall"
+            data-label="Reviews"
             className="snap-section relative isolate overflow-hidden bg-slate-950 text-white [clip-path:inset(0)]"
           >
             {typeof bannerUrl === "string" && bannerUrl && (
@@ -800,7 +774,7 @@ export default async function HomePage() {
         )}
 
         {/* =========================================================
-            10. OUR DRIVERS
+            10. DRIVERS (profile cards with overlapping avatars)
         ========================================================= */}
         <section
           id="drivers"
@@ -808,20 +782,34 @@ export default async function HomePage() {
           data-label="Drivers"
           className="snap-section bg-white px-4 dark:bg-slate-950 sm:px-6"
         >
-          <div className="mx-auto w-full max-w-7xl">
+          <div className="mx-auto w-full max-w-6xl">
             <div className="mx-auto max-w-2xl text-center">
-              <p className="text-sm font-bold uppercase tracking-[.2em] text-slate-500 dark:text-slate-400">Professional team</p>
-              <h2 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">Meet our expert drivers</h2>
-              <p className="mt-3 text-slate-600 dark:text-slate-300">Licensed, experienced, and dedicated to your safe arrival.</p>
+              <p className="text-sm font-bold uppercase tracking-[.2em] text-slate-500 dark:text-slate-400">
+                {text("home.drivers.eyebrow", "Professional team")}
+              </p>
+              <h2 className="mt-2 text-balance text-3xl font-bold tracking-tight sm:text-5xl">
+                {text("home.drivers.heading", "Meet our expert drivers")}
+              </h2>
+              <p className="mt-4 leading-7 text-slate-600 dark:text-slate-300">
+                {text("home.drivers.subheading", "Licensed, experienced, and dedicated to your safe arrival.")}
+              </p>
             </div>
-            <div className="mt-12 grid gap-6 md:grid-cols-3">
-              {DRIVERS.map((d) => (
-                <div key={d.name} className="rounded-3xl border border-slate-200 bg-stone-50 p-8 shadow-sm dark:border-slate-800 dark:bg-slate-900 text-center">
-                  <div className="mx-auto grid size-12 place-items-center rounded-2xl bg-slate-950 text-white dark:bg-white dark:text-slate-950">
-                    <UserCheck className="size-6" />
-                  </div>
-                  <h3 className="mt-5 text-xl font-bold">{d.name}</h3>
-                  <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">{d.desc}</p>
+
+            <div className="mt-16 grid gap-x-6 gap-y-14 md:grid-cols-3">
+              {DRIVERS.map((driver) => (
+                <div
+                  key={driver.name}
+                  className="group relative rounded-3xl border border-slate-200 bg-stone-50 px-7 pb-8 pt-14 text-center transition duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-slate-900/10 dark:border-slate-800 dark:bg-slate-900"
+                >
+                  <span className="absolute -top-8 left-1/2 grid size-16 -translate-x-1/2 place-items-center rounded-full bg-slate-950 text-white ring-8 ring-white transition duration-300 group-hover:scale-110 group-hover:bg-amber-400 group-hover:text-slate-950 dark:bg-white dark:text-slate-950 dark:ring-slate-950">
+                    <UserCheck aria-hidden="true" className="size-7" />
+                  </span>
+                  <h3 className="text-xl font-bold tracking-tight">{driver.name}</h3>
+                  <p className="mt-3 text-sm leading-7 text-slate-600 dark:text-slate-300">{driver.desc}</p>
+                  <p className="mt-5 inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+                    <ShieldCheck aria-hidden="true" className="size-3.5" />
+                    Verified
+                  </p>
                 </div>
               ))}
             </div>
@@ -829,14 +817,14 @@ export default async function HomePage() {
         </section>
 
         {/* =========================================================
-            11. FAQ (Fixed Parallax Image Background)
+            11. FAQ (fixed image background)
         ========================================================= */}
         {visibleHomeFaqs.length > 0 && (
           <section
             id="faq"
             data-snap-section
             data-label="FAQ"
-            className="snap-section relative isolate overflow-hidden bg-slate-950 text-white px-4 sm:px-6 [clip-path:inset(0)]"
+            className="snap-section relative isolate overflow-hidden bg-slate-950 px-4 text-white sm:px-6 [clip-path:inset(0)]"
           >
             {typeof faqBannerUrl === "string" && faqBannerUrl && (
               <div aria-hidden="true" className="fixed inset-0 -z-20">
@@ -862,13 +850,13 @@ export default async function HomePage() {
                 <p className="text-sm font-bold uppercase tracking-[.2em] text-white/60">
                   {text("home.faqs.eyebrow", "Answers")}
                 </p>
-                <h2 className="mt-2 text-balance text-3xl font-bold tracking-tight sm:text-5xl text-white">
+                <h2 className="mt-2 text-balance text-3xl font-bold tracking-tight text-white sm:text-5xl">
                   {text("home.faqs.heading", "Frequently asked questions")}
                 </h2>
                 <p className="mt-4 leading-7 text-slate-300">
                   Quick answers about booking, pricing and your car&apos;s journey between Dubai and Abu Dhabi.
                 </p>
-                <div className="mt-8 rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur shadow-xl">
+                <div className="mt-8 rounded-3xl border border-white/10 bg-white/5 p-6 shadow-xl backdrop-blur">
                   <p className="text-lg font-bold text-white">Still have questions?</p>
                   <p className="mt-1 text-sm text-white/70">We reply fast, day or night.</p>
                   <div className="mt-5 flex flex-wrap gap-3">
@@ -903,7 +891,7 @@ export default async function HomePage() {
                       <span className="text-sm font-bold tabular-nums text-white/50 transition-colors group-open:text-white">
                         {String(index + 1).padStart(2, "0")}
                       </span>
-                      <span className="flex-1 text-base font-semibold sm:text-lg text-white">{faq.question}</span>
+                      <span className="flex-1 text-base font-semibold text-white sm:text-lg">{faq.question}</span>
                       <span
                         aria-hidden="true"
                         className="grid size-9 shrink-0 place-items-center rounded-full bg-white/10 text-white transition-all duration-300 group-open:rotate-45 group-open:bg-white group-open:text-slate-950"
@@ -995,21 +983,11 @@ export default async function HomePage() {
         </section>
       </main>
 
-      {/* SECTION SNAP STYLES & MOBILE SCROLL FIX */}
+      {/* SECTION LAYOUT (the swipe logic lives in section-pager.tsx) */}
       <style>{`
-        html {
-          scroll-snap-type: y mandatory;
-          scroll-behavior: smooth;
-          overscroll-behavior-y: contain;
-        }
-        .snap-hero {
-          scroll-snap-align: start;
-          scroll-snap-stop: always;
-          min-height: 100dvh;
-        }
+        html { overscroll-behavior-y: none; }
+        .snap-hero { min-height: 100dvh; }
         .snap-section {
-          scroll-snap-align: start;
-          scroll-snap-stop: always;
           min-height: 100dvh;
           display: flex;
           flex-direction: column;
@@ -1017,25 +995,22 @@ export default async function HomePage() {
           padding-top: 5.5rem !important;
           padding-bottom: 4rem !important;
         }
-        footer {
-          scroll-snap-align: start;
-          scroll-snap-stop: always;
-        }
         @media (max-width: 767px) {
-          html {
-            scroll-snap-type: none; /* Disable rigid snapping on mobile for smooth touch scrolling */
-          }
-          .snap-hero,
           .snap-section {
-            scroll-snap-align: none;
-            min-height: auto;
             padding-top: 5rem !important;
-            padding-bottom: 4rem !important;
+            padding-bottom: 3.5rem !important;
           }
         }
-        @media (prefers-reduced-motion: reduce) {
-          html { scroll-snap-type: none; }
+      `}</style>
+
+      {/* ROUTE ANIMATION */}
+      <style>{`
+        @keyframes route-drive {
+          from { left: 0; }
+          to { left: calc(100% - 32px); }
         }
+        .route-car { animation: route-drive 5s ease-in-out infinite alternate; }
+        @media (prefers-reduced-motion: reduce) { .route-car { animation: none; left: 50%; } }
       `}</style>
 
       {/* TESTIMONIAL STYLES */}
@@ -1096,6 +1071,9 @@ export default async function HomePage() {
           .tm-card { width: 320px; min-width: 320px; }
           .tm-left { animation-duration: 40s; }
           .tm-right { animation-duration: 45s; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .tm-left, .tm-right { animation: none; }
         }
       `}</style>
     </>
