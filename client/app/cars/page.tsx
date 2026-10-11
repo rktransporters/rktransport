@@ -1,9 +1,9 @@
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight, ArrowUpRight, Check, ShieldCheck, Users, Luggage, Fuel, Sparkles, MessageCircle, Phone, Route } from "lucide-react";
 import { BreadcrumbStructuredData } from "../Components/structured-data";
-import PageHero from "../Components/page-hero";
 import { generatePageMetadata } from "../../lib/seo";
-import { publicApi, type PageCopy, type Vehicle } from "../../lib/transport-api";
+import { apiImageUrl, isImageOptimizable, publicApi, type PageCopy, type Vehicle } from "../../lib/transport-api";
 
 export const revalidate = 60;
 
@@ -104,138 +104,165 @@ export default async function CarsPage() {
     <>
       <BreadcrumbStructuredData items={[{ name: "Home", path: "/" }, { name: "Our Fleet", path: "/cars" }]} />
 
-      <PageHero
-        crumb="Our Fleet"
-        title="Our Transport Fleet"
-        subtitle="From sleek luxury sedans for daily commute to spacious SUVs and high-capacity executive vans, we maintain a top-tier fleet for travel between Dubai and Abu Dhabi."
-        imageUrl={bannerUrl}
-        hours={hours}
-        highlights={[
-          { icon: <Route aria-hidden="true" className="size-5" />, label: "Route", value: settings?.core_route_label || "Dubai ⇄ Abu Dhabi" },
-          { icon: <Phone aria-hidden="true" className="size-5" />, label: "Call us", value: phone },
-          { icon: <MessageCircle aria-hidden="true" className="size-5" />, label: "Fleet enquiries", value: "WhatsApp available" },
-        ]}
-      >
-        <a
-          href={`https://wa.me/${whatsappDigits}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="group inline-flex min-h-12 items-center gap-2 rounded-full bg-white px-6 font-semibold text-slate-950 transition hover:bg-slate-200"
-        >
-          Ask about the fleet
-          <ArrowRight aria-hidden="true" className="size-4 transition-transform group-hover:translate-x-1" />
-        </a>
-        <Link href="/routes" className="inline-flex min-h-12 items-center gap-2 rounded-full border border-white/30 bg-white/10 px-6 font-semibold backdrop-blur-md transition hover:bg-white/20">
-          View our routes
-          <ArrowUpRight aria-hidden="true" className="size-4" />
-        </Link>
-      </PageHero>
-
-      <main className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-20">
-        {/* Fleet Grid */}
-        <div className="mt-12 grid gap-8 lg:grid-cols-3">
-          {FLEET.map((vehicle) => (
-            <div
-              key={vehicle.id}
-              className={`relative flex flex-col justify-between rounded-3xl border p-7 transition duration-300 hover:-translate-y-1 hover:shadow-2xl ${
-                vehicle.popular
-                  ? "border-amber-500/40 bg-slate-950 text-white shadow-xl dark:border-amber-400/50"
-                  : "border-slate-200 bg-white text-slate-900 shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:text-white"
-              }`}
-            >
-              {vehicle.popular && (
-                <span className="absolute -top-3.5 right-6 rounded-full bg-amber-400 px-4 py-1 text-xs font-bold uppercase tracking-wider text-slate-950">
-                  Most Requested
-                </span>
-              )}
-
-              <div>
-                <p className={`text-xs font-bold uppercase tracking-widest ${vehicle.popular ? "text-amber-400" : "text-slate-500 dark:text-slate-400"}`}>
-                  {vehicle.category}
-                </p>
-                <h2 className="mt-2 text-2xl font-bold">{vehicle.title}</h2>
-                <p className={`mt-2 text-sm leading-6 ${vehicle.popular ? "text-slate-300" : "text-slate-600 dark:text-slate-300"}`}>
-                  {vehicle.tagline}
-                </p>
-
-                {/* Specs */}
-                <div className="mt-6 flex flex-wrap gap-3">
-                  <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${vehicle.popular ? "bg-white/10 text-white" : "bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200"}`}>
-                    <Users className="size-3.5" /> {vehicle.passengers}
-                  </span>
-                  <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${vehicle.popular ? "bg-white/10 text-white" : "bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200"}`}>
-                    <Luggage className="size-3.5" /> {vehicle.luggage}
-                  </span>
-                </div>
-
-                {/* Features List */}
-                <ul className={`mt-8 space-y-3 border-t pt-6 ${vehicle.popular ? "border-white/10" : "border-slate-100 dark:border-slate-800"}`}>
-                  {vehicle.features.map((feat) => (
-                    <li key={feat} className="flex items-center gap-3 text-sm">
-                      <span className={`grid size-5 shrink-0 place-items-center rounded-full ${vehicle.popular ? "bg-emerald-500/20 text-emerald-400" : "bg-emerald-100 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400"}`}>
-                        <Check className="size-3.5" />
-                      </span>
-                      <span className={vehicle.popular ? "text-slate-200" : "text-slate-700 dark:text-slate-200"}>{feat}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* CTAs */}
-              <div className="mt-8 flex flex-col gap-2.5">
-                <a
-                  href={`https://wa.me/${whatsappDigits}?text=Hello%20RK%20Transport,%20I%20want%20to%20book%20the%20${encodeURIComponent(vehicle.title)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`inline-flex min-h-12 items-center justify-center gap-2 rounded-full font-semibold transition ${
-                    vehicle.popular
-                      ? "bg-amber-400 text-slate-950 hover:bg-amber-300"
-                      : "bg-slate-950 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-200"
-                  }`}
-                >
-                  <MessageCircle className="size-4" /> Book This Vehicle
-                </a>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* =========================================================
-            WHAT MAKES OUR CARS SPECIAL (Dark Navy Section)
-        ========================================================= */}
-        <section className="mt-20 rounded-3xl bg-slate-900 p-8 text-white shadow-2xl sm:p-12">
-          <div className="max-w-2xl">
-            <p className="text-sm font-bold uppercase tracking-[.2em] text-white/60">Fleet Standards</p>
-            <h2 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">What Makes Our Vehicles Special</h2>
-            <p className="mt-3 text-slate-300">
-              We focus strictly on comfort, cleanliness, and long-distance safety so your commute between Dubai and Abu Dhabi feels effortless.
-            </p>
+      <main className="relative bg-slate-950 text-white">
+        {/* Fixed Still Background Image Banner */}
+        {bannerUrl ? (
+          <div aria-hidden="true" className="fixed inset-0 -z-30 overflow-hidden">
+            <Image
+              src={apiImageUrl(bannerUrl) || bannerUrl}
+              alt="Cars fleet banner"
+              fill
+              priority
+              unoptimized={!isImageOptimizable(bannerUrl)}
+              sizes="100vw"
+              className="object-cover object-center"
+            />
           </div>
+        ) : (
+          <div aria-hidden="true" className="fixed inset-0 -z-30 bg-[radial-gradient(ellipse_at_top_right,rgba(148,163,184,0.28),transparent_55%),linear-gradient(135deg,#0f172a,#020617)]" />
+        )}
+        <div aria-hidden="true" className="fixed inset-0 -z-20 bg-gradient-to-t from-black/90 via-black/50 to-black/30" />
 
-          <div className="mt-10 grid gap-8 md:grid-cols-3">
-            {SPECIAL_FEATURES.map((item) => (
-              <div key={item.title} className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur">
-                <item.icon className="size-8 text-amber-400" />
-                <h3 className="mt-4 text-lg font-bold">{item.title}</h3>
-                <p className="mt-2 text-sm leading-6 text-slate-300">{item.description}</p>
-              </div>
-            ))}
+        {/* Hero Section Content (Scrolls over the fixed background) */}
+        <section className="relative z-10 flex min-h-[550px] items-end px-4 pb-20 pt-32 sm:px-6 sm:pb-24 lg:min-h-[650px]">
+          <div className="mx-auto w-full max-w-7xl">
+            <p className="text-sm font-bold uppercase tracking-[.2em] text-amber-400">Our Fleet</p>
+            <h1 className="mt-3 text-balance text-4xl font-bold leading-[1.05] tracking-tight sm:text-6xl">
+              Our Transport Fleet
+            </h1>
+            <p className="mt-4 max-w-2xl text-lg leading-8 text-white/85 sm:text-xl">
+              From sleek luxury sedans for daily commute to spacious SUVs and high-capacity executive vans, we maintain a top-tier fleet for travel between Dubai and Abu Dhabi.
+            </p>
+            {hours && (
+              <p className="mt-4 inline-flex min-h-9 items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 text-sm font-semibold backdrop-blur">
+                {hours}
+              </p>
+            )}
+            <div className="mt-8 flex flex-wrap items-center gap-4">
+              <a
+                href={`https://wa.me/${whatsappDigits}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group inline-flex min-h-12 items-center gap-2 rounded-full bg-white px-6 font-semibold text-slate-950 transition hover:bg-slate-200"
+              >
+                Ask about the fleet
+                <ArrowRight aria-hidden="true" className="size-4 transition-transform group-hover:translate-x-1" />
+              </a>
+              <Link href="/routes" className="inline-flex min-h-12 items-center gap-2 rounded-full border border-white/30 bg-white/10 px-6 font-semibold backdrop-blur-md transition hover:bg-white/20">
+                View our routes
+                <ArrowUpRight aria-hidden="true" className="size-4" />
+              </Link>
+            </div>
           </div>
         </section>
 
-        {/* Quick Contact Banner */}
-        <div className="mt-16 flex flex-col items-center justify-between gap-6 rounded-3xl border border-slate-200 bg-stone-100 p-8 dark:border-slate-800 dark:bg-slate-900/60 sm:flex-row">
-          <div>
-            <h3 className="text-xl font-bold">Need a custom vehicle or large fleet arrangement?</h3>
-            <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">Speak directly with our dispatch manager on phone or WhatsApp 24/7.</p>
-          </div>
-          <div className="flex flex-wrap gap-3">
-            <a
-              href={`tel:${phone}`}
-              className="inline-flex min-h-11 items-center gap-2 rounded-full border border-slate-300 bg-white px-5 text-sm font-semibold text-slate-900 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-            >
-              <Phone className="size-4" /> Call {phone}
-            </a>
+        {/* Main Content Container (Slides up and over the fixed hero background) */}
+        <div className="relative z-10 bg-white text-slate-900 rounded-t-[2.5rem] shadow-[0_-25px_50px_rgba(0,0,0,0.5)] dark:bg-slate-950 dark:text-white">
+          <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-20">
+            {/* Fleet Grid */}
+            <div className="grid gap-8 lg:grid-cols-3">
+              {FLEET.map((vehicle) => (
+                <div
+                  key={vehicle.id}
+                  className={`relative flex flex-col justify-between rounded-3xl border p-7 transition duration-300 hover:-translate-y-1 hover:shadow-2xl ${
+                    vehicle.popular
+                      ? "border-amber-500/40 bg-slate-950 text-white shadow-xl dark:border-amber-400/50"
+                      : "border-slate-200 bg-white text-slate-900 shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:text-white"
+                  }`}
+                >
+                  {vehicle.popular && (
+                    <span className="absolute -top-3.5 right-6 rounded-full bg-amber-400 px-4 py-1 text-xs font-bold uppercase tracking-wider text-slate-950">
+                      Most Requested
+                    </span>
+                  )}
+
+                  <div>
+                    <p className={`text-xs font-bold uppercase tracking-widest ${vehicle.popular ? "text-amber-400" : "text-slate-500 dark:text-slate-400"}`}>
+                      {vehicle.category}
+                    </p>
+                    <h2 className="mt-2 text-2xl font-bold">{vehicle.title}</h2>
+                    <p className={`mt-2 text-sm leading-6 ${vehicle.popular ? "text-slate-300" : "text-slate-600 dark:text-slate-300"}`}>
+                      {vehicle.tagline}
+                    </p>
+
+                    {/* Specs */}
+                    <div className="mt-6 flex flex-wrap gap-3">
+                      <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${vehicle.popular ? "bg-white/10 text-white" : "bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200"}`}>
+                        <Users className="size-3.5" /> {vehicle.passengers}
+                      </span>
+                      <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${vehicle.popular ? "bg-white/10 text-white" : "bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200"}`}>
+                        <Luggage className="size-3.5" /> {vehicle.luggage}
+                      </span>
+                    </div>
+
+                    {/* Features List */}
+                    <ul className={`mt-8 space-y-3 border-t pt-6 ${vehicle.popular ? "border-white/10" : "border-slate-100 dark:border-slate-800"}`}>
+                      {vehicle.features.map((feat) => (
+                        <li key={feat} className="flex items-center gap-3 text-sm">
+                          <span className={`grid size-5 shrink-0 place-items-center rounded-full ${vehicle.popular ? "bg-emerald-500/20 text-emerald-400" : "bg-emerald-100 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400"}`}>
+                            <Check className="size-3.5" />
+                          </span>
+                          <span className={vehicle.popular ? "text-slate-200" : "text-slate-700 dark:text-slate-200"}>{feat}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* CTAs */}
+                  <div className="mt-8 flex flex-col gap-2.5">
+                    <a
+                      href={`https://wa.me/${whatsappDigits}?text=Hello%20RK%20Transport,%20I%20want%20to%20book%20the%20${encodeURIComponent(vehicle.title)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`inline-flex min-h-12 items-center justify-center gap-2 rounded-full font-semibold transition ${
+                        vehicle.popular
+                          ? "bg-amber-400 text-slate-950 hover:bg-amber-300"
+                          : "bg-slate-950 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-200"
+                      }`}
+                    >
+                      <MessageCircle className="size-4" /> Book This Vehicle
+                    </a>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* WHAT MAKES OUR CARS SPECIAL */}
+            <section className="mt-20 rounded-3xl bg-slate-900 p-8 text-white shadow-2xl sm:p-12">
+              <div className="max-w-2xl">
+                <p className="text-sm font-bold uppercase tracking-[.2em] text-white/60">Fleet Standards</p>
+                <h2 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">What Makes Our Vehicles Special</h2>
+                <p className="mt-3 text-slate-300">
+                  We focus strictly on comfort, cleanliness, and long-distance safety so your commute between Dubai and Abu Dhabi feels effortless.
+                </p>
+              </div>
+
+              <div className="mt-10 grid gap-8 md:grid-cols-3">
+                {SPECIAL_FEATURES.map((item) => (
+                  <div key={item.title} className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur">
+                    <item.icon className="size-8 text-amber-400" />
+                    <h3 className="mt-4 text-lg font-bold">{item.title}</h3>
+                    <p className="mt-2 text-sm leading-6 text-slate-300">{item.description}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* Quick Contact Banner */}
+            <div className="mt-16 flex flex-col items-center justify-between gap-6 rounded-3xl border border-slate-200 bg-stone-100 p-8 dark:border-slate-800 dark:bg-slate-900/60 sm:flex-row">
+              <div>
+                <h3 className="text-xl font-bold">Need a custom vehicle or large fleet arrangement?</h3>
+                <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">Speak directly with our dispatch manager on phone or WhatsApp 24/7.</p>
+              </div>
+              <div className="flex flex-wrap gap-3">
+                <a
+                  href={`tel:${phone}`}
+                  className="inline-flex min-h-11 items-center gap-2 rounded-full border border-slate-300 bg-white px-5 text-sm font-semibold text-slate-900 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                >
+                  <Phone className="size-4" /> Call {phone}
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </main>

@@ -80,10 +80,10 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
       ]} />
       <StructuredData data={serviceSchema} />
 
-      <main>
-        {/* Sticky Still Image Hero Banner */}
-        <section className="sticky top-0 z-0 flex min-h-[460px] items-end overflow-hidden bg-slate-950 text-white sm:min-h-[560px]">
-          {service.image_url ? (
+      <main className="relative bg-slate-950 text-white">
+        {/* Fixed Still Background Image Banner */}
+        {service.image_url ? (
+          <div aria-hidden="true" className="fixed inset-0 -z-30 overflow-hidden">
             <Image
               src={apiImageUrl(service.image_url) || service.image_url}
               alt={service.image_alt || ""}
@@ -91,15 +91,17 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
               priority
               unoptimized={!isImageOptimizable(service.image_url)}
               sizes="100vw"
-              className="-z-20 object-cover"
+              className="object-cover object-center"
             />
-          ) : (
-            <div aria-hidden="true" className="absolute inset-0 -z-20 bg-[radial-gradient(ellipse_at_top_right,rgba(148,163,184,0.28),transparent_55%),linear-gradient(135deg,#0f172a,#020617)]" />
-          )}
-          <div aria-hidden="true" className="absolute inset-0 -z-10 bg-gradient-to-t from-black/90 via-black/40 to-black/30" />
-          <div aria-hidden="true" className="absolute inset-x-0 top-0 -z-10 h-40 bg-gradient-to-b from-black/70 to-transparent" />
+          </div>
+        ) : (
+          <div aria-hidden="true" className="fixed inset-0 -z-30 bg-[radial-gradient(ellipse_at_top_right,rgba(148,163,184,0.28),transparent_55%),linear-gradient(135deg,#0f172a,#020617)]" />
+        )}
+        <div aria-hidden="true" className="fixed inset-0 -z-20 bg-gradient-to-t from-black/90 via-black/50 to-black/30" />
 
-          <div className="mx-auto w-full max-w-7xl px-4 pb-12 pt-32 sm:px-6 sm:pb-16">
+        {/* Hero Section Content (Scrolls over the fixed background) */}
+        <section className="relative z-10 flex min-h-[480px] items-end px-4 pb-16 pt-32 sm:px-6 sm:pb-20 lg:min-h-[560px]">
+          <div className="mx-auto w-full max-w-7xl">
             <Link href="/services" className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-white/80 transition hover:text-white">
               <ArrowLeft aria-hidden="true" className="size-4" />
               All services
@@ -111,12 +113,12 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
               </p>
             )}
             <h1 className="mt-4 max-w-4xl text-balance text-4xl font-bold leading-[1.05] tracking-tight sm:text-6xl">{service.title}</h1>
-            {service.short_description && <p className="mt-5 max-w-2xl text-lg leading-8 text-white/80 sm:text-xl">{service.short_description}</p>}
+            {service.short_description && <p className="mt-5 max-w-2xl text-lg leading-8 text-white/85 sm:text-xl">{service.short_description}</p>}
           </div>
         </section>
 
-        {/* Content Container that scrolls over the sticky banner */}
-        <div className="relative z-10 bg-white dark:bg-slate-900 rounded-t-[2.5rem] shadow-[0_-20px_40px_rgba(0,0,0,0.2)]">
+        {/* Main Content Container (Slides up and over the fixed hero background) */}
+        <div className="relative z-10 bg-white text-slate-900 rounded-t-[2.5rem] shadow-[0_-25px_50px_rgba(0,0,0,0.5)] dark:bg-slate-900 dark:text-white">
           <section className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 lg:grid-cols-[1fr_380px] lg:py-20">
             <div>
               {service.detailed_description && (
