@@ -25,15 +25,18 @@ export function generateMetadata() {
 }
 
 export default async function AboutPage() {
-  const [aboutResult, settingsResult] = await Promise.allSettled([publicApi.about(), publicApi.settings()]);
+  const [aboutResult, settingsResult, copyResult] = await Promise.allSettled([publicApi.about(), publicApi.settings(), publicApi.pageCopy()]);
   const about = aboutResult.status === "fulfilled" ? aboutResult.value[0] ?? null : null;
   const settings = settingsResult.status === "fulfilled" ? settingsResult.value : null;
+  const copy = copyResult.status === "fulfilled" ? copyResult.value : [];
   const storyImage = about?.images?.find((image) => image.url);
   const hours = settings?.available_24_7 ? settings.hours_label : "";
   const whatsappDigits = settings?.whatsapp?.replace(/\D/g, "") || "971561379697";
   const whatsappUrl = `https://wa.me/${whatsappDigits}?text=${encodeURIComponent("Hello RK Transport, I would like a quote for car transport. Please contact me with details.")}`;
   const firstStat = about?.stats?.[0];
-  const bannerUrl = (about as Record<string, unknown>)?.banner_image_url as string | undefined;
+  
+  const rawBannerUrl = copy.find((item: { key: string }) => item.key === "about_banner_url")?.value || (about as Record<string, unknown>)?.banner_image_url as string | undefined;
+  const bannerUrl = rawBannerUrl ? apiImageUrl(rawBannerUrl) || rawBannerUrl : undefined;
 
   return (
     <>
@@ -52,7 +55,7 @@ export default async function AboutPage() {
         {bannerUrl ? (
           <div aria-hidden="true" className="fixed inset-0 -z-30 overflow-hidden">
             <Image
-              src={apiImageUrl(bannerUrl) || bannerUrl}
+              src={bannerUrl}
               alt="About page banner"
               fill
               priority

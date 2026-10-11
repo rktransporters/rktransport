@@ -10,33 +10,14 @@ const WHATSAPP_NUMBER = "971561379697";
 const PHONE_NUMBER = "+971561379697";
 
 const DUBAI_PICKUPS = [
-  "Bur Dubai",
-  "Deira",
-  "Al Quoz",
-  "Jebel Ali",
-  "Discovery Gardens",
-  "International City",
-  "Al Barsha",
-  "JLT",
-  "Dubai Marina",
-  "Karama",
-  "Satwa",
-  "Al Nahda",
-  "Silicon Oasis",
-  "Al Qusais",
+  "Bur Dubai", "Deira", "Al Quoz", "Jebel Ali", "Discovery Gardens",
+  "International City", "Al Barsha", "JLT", "Dubai Marina", "Karama",
+  "Satwa", "Al Nahda", "Silicon Oasis", "Al Qusais",
 ];
 
 const ABU_DHABI_DROPS = [
-  "Khalidiyah",
-  "Mussafah",
-  "City Center",
-  "Yas Island",
-  "Khalifa City",
-  "MBZ City",
-  "Al Reem Island",
-  "Electra Street",
-  "Hamdan Street",
-  "Tourist Club Area",
+  "Khalidiyah", "Mussafah", "City Center", "Yas Island", "Khalifa City",
+  "MBZ City", "Al Reem Island", "Electra Street", "Hamdan Street", "Tourist Club Area",
 ];
 
 export function generateMetadata() {
@@ -59,9 +40,12 @@ export default async function RoutesPage() {
   const phone = settings?.phone_primary || PHONE_NUMBER;
   const whatsappDigits = settings?.whatsapp?.replace(/\D/g, "") || WHATSAPP_NUMBER;
   const routeLabel = settings?.core_route_label || "Dubai ⇄ Abu Dhabi";
-  const bannerUrl =
+  
+  const rawBannerUrl =
     copy.find((item) => item.key === "locations_banner_url")?.value ||
     locations.find((location) => location.banner_image_url)?.banner_image_url;
+  const bannerUrl = rawBannerUrl ? apiImageUrl(rawBannerUrl) || rawBannerUrl : undefined;
+
   const hours = settings?.available_24_7 ? settings.hours_label : "";
 
   return (
@@ -76,7 +60,7 @@ export default async function RoutesPage() {
         {bannerUrl ? (
           <div aria-hidden="true" className="fixed inset-0 -z-30 overflow-hidden">
             <Image
-              src={apiImageUrl(bannerUrl) || bannerUrl}
+              src={bannerUrl}
               alt="Routes banner"
               fill
               priority
@@ -165,7 +149,6 @@ export default async function RoutesPage() {
 
             {/* Pickup & Drop Points Grid */}
             <div className="mt-16 grid gap-8 lg:grid-cols-2">
-              {/* Dubai Pickup Points */}
               <div className="rounded-3xl border border-slate-200 bg-white p-7 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-8">
                 <h2 className="flex items-center gap-2 text-2xl font-bold">
                   <span className="text-red-500">📍</span> Dubai Pickup Points
@@ -175,17 +158,13 @@ export default async function RoutesPage() {
                 </p>
                 <div className="mt-6 flex flex-wrap gap-2.5">
                   {DUBAI_PICKUPS.map((point) => (
-                    <span
-                      key={point}
-                      className="rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs font-semibold text-slate-800 dark:border-slate-800 dark:bg-slate-800/80 dark:text-slate-200"
-                    >
+                    <span key={point} className="rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs font-semibold text-slate-800 dark:border-slate-800 dark:bg-slate-800/80 dark:text-slate-200">
                       {point}
                     </span>
                   ))}
                 </div>
               </div>
 
-              {/* Abu Dhabi Drop Points */}
               <div className="rounded-3xl border border-slate-200 bg-white p-7 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:p-8">
                 <h2 className="flex items-center gap-2 text-2xl font-bold">
                   <span className="text-red-500">📍</span> Abu Dhabi Drop Points
@@ -195,10 +174,7 @@ export default async function RoutesPage() {
                 </p>
                 <div className="mt-6 flex flex-wrap gap-2.5">
                   {ABU_DHABI_DROPS.map((point) => (
-                    <span
-                      key={point}
-                      className="rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs font-semibold text-slate-800 dark:border-slate-800 dark:bg-slate-800/80 dark:text-slate-200"
-                    >
+                    <span key={point} className="rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs font-semibold text-slate-800 dark:border-slate-800 dark:bg-slate-800/80 dark:text-slate-200">
                       {point}
                     </span>
                   ))}

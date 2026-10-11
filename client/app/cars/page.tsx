@@ -25,12 +25,7 @@ const FLEET = [
     passengers: "1 - 4 Passengers",
     luggage: "2 Large Bags",
     tagline: "Sleek, quiet, and fuel-efficient for individual commuters and couples.",
-    features: [
-      "Dual-zone climate control AC",
-      "Leather seating comfort",
-      "USB fast charging ports",
-      "High-speed intercity capability",
-    ],
+    features: ["Dual-zone climate control AC", "Leather seating comfort", "USB fast charging ports", "High-speed intercity capability"],
     popular: false,
   },
   {
@@ -40,12 +35,7 @@ const FLEET = [
     passengers: "Up to 7 Passengers",
     luggage: "4 Large Bags",
     tagline: "Extra legroom, elevated road vision, and premium luxury for full family trips.",
-    features: [
-      "Plush spacious 3-row seating",
-      "Rear air conditioning vents",
-      "Tinted UV-protection windows",
-      "Smooth air-ride suspension",
-    ],
+    features: ["Plush spacious 3-row seating", "Rear air conditioning vents", "Tinted UV-protection windows", "Smooth air-ride suspension"],
     popular: true,
   },
   {
@@ -55,32 +45,15 @@ const FLEET = [
     passengers: "Up to 12 Passengers",
     luggage: "8+ Large Bags",
     tagline: "Spacious intercity minibus tailored for corporate teams and big group daily commutes.",
-    features: [
-      "High-roof standing headroom",
-      "Reclining passenger seats",
-      "Dedicated high-capacity luggage compartment",
-      "Individual overhead reading lights",
-    ],
+    features: ["High-roof standing headroom", "Reclining passenger seats", "Dedicated high-capacity luggage compartment", "Individual overhead reading lights"],
     popular: false,
   },
 ];
 
 const SPECIAL_FEATURES = [
-  {
-    icon: Sparkles,
-    title: "Sanitized Before Every Ride",
-    description: "Every car undergoes strict interior deep cleaning and anti-bacterial sanitization after every single route.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Full RTA Safety Compliance",
-    description: "All vehicles undergo regular mechanical safety inspections and are licensed specifically for intercity transport.",
-  },
-  {
-    icon: Fuel,
-    title: "All-Inclusive Pricing",
-    description: "Fuel, Salik tolls, and highway fees are 100% included in every quote with zero surprise surcharges.",
-  },
+  { icon: Sparkles, title: "Sanitized Before Every Ride", description: "Every car undergoes strict interior deep cleaning and anti-bacterial sanitization after every single route." },
+  { icon: ShieldCheck, title: "Full RTA Safety Compliance", description: "All vehicles undergo regular mechanical safety inspections and are licensed specifically for intercity transport." },
+  { icon: Fuel, title: "All-Inclusive Pricing", description: "Fuel, Salik tolls, and highway fees are 100% included in every quote with zero surprise surcharges." },
 ];
 
 export default async function CarsPage() {
@@ -92,9 +65,11 @@ export default async function CarsPage() {
   const settings = settingsResult.status === "fulfilled" ? settingsResult.value : null;
   const cars: Vehicle[] = carsResult.status === "fulfilled" ? carsResult.value : [];
   const copy: PageCopy[] = copyResult.status === "fulfilled" ? copyResult.value : [];
-  const bannerUrl =
+  
+  const rawBannerUrl =
     copy.find((item) => item.key === "cars_banner_url")?.value ||
     cars.find((car) => car.banner_image_url)?.banner_image_url;
+  const bannerUrl = rawBannerUrl ? apiImageUrl(rawBannerUrl) || rawBannerUrl : undefined;
 
   const phone = settings?.phone_primary || PHONE_NUMBER;
   const whatsappDigits = settings?.whatsapp?.replace(/\D/g, "") || WHATSAPP_NUMBER;
@@ -109,7 +84,7 @@ export default async function CarsPage() {
         {bannerUrl ? (
           <div aria-hidden="true" className="fixed inset-0 -z-30 overflow-hidden">
             <Image
-              src={apiImageUrl(bannerUrl) || bannerUrl}
+              src={bannerUrl}
               alt="Cars fleet banner"
               fill
               priority
@@ -185,7 +160,6 @@ export default async function CarsPage() {
                       {vehicle.tagline}
                     </p>
 
-                    {/* Specs */}
                     <div className="mt-6 flex flex-wrap gap-3">
                       <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${vehicle.popular ? "bg-white/10 text-white" : "bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200"}`}>
                         <Users className="size-3.5" /> {vehicle.passengers}
@@ -195,7 +169,6 @@ export default async function CarsPage() {
                       </span>
                     </div>
 
-                    {/* Features List */}
                     <ul className={`mt-8 space-y-3 border-t pt-6 ${vehicle.popular ? "border-white/10" : "border-slate-100 dark:border-slate-800"}`}>
                       {vehicle.features.map((feat) => (
                         <li key={feat} className="flex items-center gap-3 text-sm">
@@ -208,7 +181,6 @@ export default async function CarsPage() {
                     </ul>
                   </div>
 
-                  {/* CTAs */}
                   <div className="mt-8 flex flex-col gap-2.5">
                     <a
                       href={`https://wa.me/${whatsappDigits}?text=Hello%20RK%20Transport,%20I%20want%20to%20book%20the%20${encodeURIComponent(vehicle.title)}`}
@@ -227,7 +199,6 @@ export default async function CarsPage() {
               ))}
             </div>
 
-            {/* WHAT MAKES OUR CARS SPECIAL */}
             <section className="mt-20 rounded-3xl bg-slate-900 p-8 text-white shadow-2xl sm:p-12">
               <div className="max-w-2xl">
                 <p className="text-sm font-bold uppercase tracking-[.2em] text-white/60">Fleet Standards</p>
@@ -247,22 +218,6 @@ export default async function CarsPage() {
                 ))}
               </div>
             </section>
-
-            {/* Quick Contact Banner */}
-            <div className="mt-16 flex flex-col items-center justify-between gap-6 rounded-3xl border border-slate-200 bg-stone-100 p-8 dark:border-slate-800 dark:bg-slate-900/60 sm:flex-row">
-              <div>
-                <h3 className="text-xl font-bold">Need a custom vehicle or large fleet arrangement?</h3>
-                <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">Speak directly with our dispatch manager on phone or WhatsApp 24/7.</p>
-              </div>
-              <div className="flex flex-wrap gap-3">
-                <a
-                  href={`tel:${phone}`}
-                  className="inline-flex min-h-11 items-center gap-2 rounded-full border border-slate-300 bg-white px-5 text-sm font-semibold text-slate-900 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
-                >
-                  <Phone className="size-4" /> Call {phone}
-                </a>
-              </div>
-            </div>
           </div>
         </div>
       </main>

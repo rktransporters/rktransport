@@ -19,6 +19,7 @@ const VEHICLES_DATA: Record<string, {
   tagline: string;
   description: string;
   priceNote: string;
+  imageUrl?: string;
   features: string[];
   popular: boolean;
 }> = {
@@ -30,6 +31,7 @@ const VEHICLES_DATA: Record<string, {
     tagline: "Sleek, quiet, and fuel-efficient for individual commuters and couples.",
     description: "Our executive sedans offer a smooth and private ride between Dubai and Abu Dhabi. Perfect for professionals, daily commuters, or solo travelers looking for reliable door-to-door transit with climate control and maximum comfort.",
     priceNote: "Starting from competitive intercity rates",
+    imageUrl: "https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&q=80&w=1600",
     features: [
       "Dual-zone climate control AC",
       "Leather seating comfort",
@@ -47,6 +49,7 @@ const VEHICLES_DATA: Record<string, {
     tagline: "Extra legroom, elevated road vision, and premium luxury for full family trips.",
     description: "Travel with your family or group in absolute spaciousness. Our SUVs provide generous headroom, luggage capacity, and a smooth suspension that glides across Sheikh Zayed Road between Dubai and Abu Dhabi.",
     priceNote: "Best value for families and small groups",
+    imageUrl: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=1600",
     features: [
       "Plush spacious 3-row seating",
       "Rear air conditioning vents and climate control",
@@ -64,6 +67,7 @@ const VEHICLES_DATA: Record<string, {
     tagline: "Spacious intercity minibus tailored for corporate teams and big group daily commutes.",
     description: "Designed for corporate teams, work crews, or large family groups traveling together. Our executive vans combine high-capacity seating with extensive baggage room so everyone travels together seamlessly.",
     priceNote: "Economical per-passenger group rates",
+    imageUrl: "https://images.unsplash.com/photo-1563720223185-11003d516935?auto=format&fit=crop&q=80&w=1600",
     features: [
       "High-roof standing headroom cabin",
       "Ergonomic reclining passenger seats",
@@ -119,17 +123,27 @@ export default async function CarDetailPage({ params }: PageProps) {
 
       <main className="relative bg-slate-950 text-white">
         {/* Fixed Still Background Image Banner */}
-        <div aria-hidden="true" className="fixed inset-0 -z-30 bg-[radial-gradient(ellipse_at_top_right,rgba(148,163,184,0.28),transparent_55%),linear-gradient(135deg,#0f172a,#020617)]" />
+        {vehicle.imageUrl ? (
+          <div aria-hidden="true" className="fixed inset-0 -z-30 overflow-hidden">
+            <Image
+              src={vehicle.imageUrl}
+              alt={vehicle.title}
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover object-center"
+            />
+          </div>
+        ) : (
+          <div aria-hidden="true" className="fixed inset-0 -z-30 bg-[radial-gradient(ellipse_at_top_right,rgba(148,163,184,0.28),transparent_55%),linear-gradient(135deg,#0f172a,#020617)]" />
+        )}
         <div aria-hidden="true" className="fixed inset-0 -z-20 bg-gradient-to-t from-black/90 via-black/50 to-black/30" />
 
         {/* Hero Section Content (Scrolls over the fixed background) */}
         <section className="relative z-10 flex min-h-[480px] items-end px-4 pb-16 pt-32 sm:px-6 sm:pb-20 lg:min-h-[560px]">
           <div className="mx-auto w-full max-w-7xl">
             <div className="mb-6">
-              <Link
-                href="/cars"
-                className="inline-flex items-center gap-2 text-sm font-semibold text-white/80 transition hover:text-white"
-              >
+              <Link href="/cars" className="inline-flex items-center gap-2 text-sm font-semibold text-white/80 transition hover:text-white">
                 <ArrowLeft className="size-4" /> Back to Fleet
               </Link>
             </div>
@@ -144,7 +158,6 @@ export default async function CarDetailPage({ params }: PageProps) {
         {/* Main Content Container (Slides up and over the fixed hero background) */}
         <div className="relative z-10 bg-white text-slate-900 rounded-t-[2.5rem] shadow-[0_-25px_50px_rgba(0,0,0,0.5)] dark:bg-slate-950 dark:text-white">
           <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:grid lg:grid-cols-[1.2fr_0.8fr] lg:items-start lg:gap-12 lg:py-20">
-            {/* Left Column: Vehicle Details */}
             <div>
               <p className="text-lg leading-8 text-slate-600 dark:text-slate-300">{vehicle.description}</p>
 

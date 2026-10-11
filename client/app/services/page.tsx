@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, ArrowUpRight, Check, Clock, MessageCircle, Phone, Route } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Check, Clock, MessageCircle, Phone } from "lucide-react";
 import { BreadcrumbStructuredData, StructuredData } from "../Components/structured-data";
 import { apiImageUrl, isImageOptimizable, publicApi, type Faq, type Service } from "../../lib/transport-api";
 import { faqJsonLd, generatePageMetadata } from "../../lib/seo";
@@ -32,10 +32,12 @@ export default async function ServicesPage() {
   const whatsappDigits = settings?.whatsapp?.replace(/\D/g, "");
 
   // Priority: 1. Admin page banner -> 2. Featured service banner -> 3. Any service banner
-  const bannerUrl =
+  const rawBannerUrl =
     copy.find((item: { key: string }) => item.key === "services_banner_url")?.value ||
     ((featured as Record<string, unknown>)?.banner_image_url as string | undefined) ||
     ((services.find((s: unknown) => (s as Record<string, unknown>)?.banner_image_url) as Record<string, unknown>)?.banner_image_url as string | undefined);
+  
+  const bannerUrl = rawBannerUrl ? apiImageUrl(rawBannerUrl) || rawBannerUrl : undefined;
 
   return (
     <>
@@ -47,7 +49,7 @@ export default async function ServicesPage() {
         {bannerUrl ? (
           <div aria-hidden="true" className="fixed inset-0 -z-30 overflow-hidden">
             <Image
-              src={apiImageUrl(bannerUrl) || bannerUrl}
+              src={bannerUrl}
               alt="Services banner"
               fill
               priority
@@ -94,7 +96,6 @@ export default async function ServicesPage() {
 
         {/* Main Content Container (Slides up and over the fixed hero background) */}
         <div className="relative z-10 bg-stone-50 text-slate-900 rounded-t-[2.5rem] shadow-[0_-25px_50px_rgba(0,0,0,0.5)] dark:bg-slate-950 dark:text-white">
-          {/* Services */}
           <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-24">
             {services.length === 0 && (
               <p className="rounded-2xl bg-stone-100 p-6 dark:bg-slate-900">{text("empty.services", "Service information is currently unavailable.")}</p>
