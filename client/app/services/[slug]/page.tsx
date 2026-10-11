@@ -81,8 +81,8 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
       <StructuredData data={serviceSchema} />
 
       <main>
-        {/* Image hero */}
-        <section className="relative isolate flex min-h-[460px] items-end overflow-hidden bg-slate-950 text-white sm:min-h-[560px]">
+        {/* Sticky Still Image Hero Banner */}
+        <section className="sticky top-0 z-0 flex min-h-[460px] items-end overflow-hidden bg-slate-950 text-white sm:min-h-[560px]">
           {service.image_url ? (
             <Image
               src={apiImageUrl(service.image_url) || service.image_url}
@@ -115,87 +115,89 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
           </div>
         </section>
 
-        {/* Content */}
-        <section className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 lg:grid-cols-[1fr_380px] lg:py-20">
-          <div>
-            {service.detailed_description && (
-              <SimpleRichText value={service.detailed_description} className="max-w-3xl text-lg leading-8 text-slate-700 dark:text-slate-200" />
-            )}
+        {/* Content Container that scrolls over the sticky banner */}
+        <div className="relative z-10 bg-white dark:bg-slate-900 rounded-t-[2.5rem] shadow-[0_-20px_40px_rgba(0,0,0,0.2)]">
+          <section className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 lg:grid-cols-[1fr_380px] lg:py-20">
+            <div>
+              {service.detailed_description && (
+                <SimpleRichText value={service.detailed_description} className="max-w-3xl text-lg leading-8 text-slate-700 dark:text-slate-200" />
+              )}
 
-            {service.features?.length ? (
-              <div className="mt-10">
-                <h2 className="text-2xl font-bold tracking-tight">What is included</h2>
-                <ul className="mt-5 grid gap-3 sm:grid-cols-2">
-                  {service.features.map((feature) => (
-                    <li key={feature} className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
-                      <span className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-slate-950 text-white dark:bg-white dark:text-slate-950">
-                        <Check aria-hidden="true" className="size-3.5" />
-                      </span>
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ) : null}
+              {service.features?.length ? (
+                <div className="mt-10">
+                  <h2 className="text-2xl font-bold tracking-tight">What is included</h2>
+                  <ul className="mt-5 grid gap-3 sm:grid-cols-2">
+                    {service.features.map((feature) => (
+                      <li key={feature} className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-950">
+                        <span className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-slate-950 text-white dark:bg-white dark:text-slate-950">
+                          <Check aria-hidden="true" className="size-3.5" />
+                        </span>
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
 
-            {service.gallery.length > 0 && (
-              <div className="mt-12">
-                <h2 className="text-2xl font-bold tracking-tight">Gallery</h2>
-                <div className="mt-5 grid auto-rows-[200px] gap-3 sm:grid-cols-2 sm:auto-rows-[240px]">
-                  {service.gallery.map((image, index) => (
-                    <div key={`${image.url}-${index}`} className={`group relative overflow-hidden rounded-2xl bg-slate-200 dark:bg-slate-800 ${index % 5 === 0 ? "sm:row-span-2" : ""}`}>
-                      <Image
-                        src={apiImageUrl(image.url) || image.url}
-                        alt={image.alt || ""}
-                        fill
-                        unoptimized={!isImageOptimizable(image.url)}
-                        sizes="(max-width: 640px) 100vw, 50vw"
-                        className="object-cover transition-transform duration-700 group-hover:scale-105"
-                      />
-                    </div>
-                  ))}
+              {service.gallery.length > 0 && (
+                <div className="mt-12">
+                  <h2 className="text-2xl font-bold tracking-tight">Gallery</h2>
+                  <div className="mt-5 grid auto-rows-[200px] gap-3 sm:grid-cols-2 sm:auto-rows-[240px]">
+                    {service.gallery.map((image, index) => (
+                      <div key={`${image.url}-${index}`} className={`group relative overflow-hidden rounded-2xl bg-slate-200 dark:bg-slate-800 ${index % 5 === 0 ? "sm:row-span-2" : ""}`}>
+                        <Image
+                          src={apiImageUrl(image.url) || image.url}
+                          alt={image.alt || ""}
+                          fill
+                          unoptimized={!isImageOptimizable(image.url)}
+                          sizes="(max-width: 640px) 100vw, 50vw"
+                          className="object-cover transition-transform duration-700 group-hover:scale-105"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Sticky booking card */}
+            <aside className="lg:sticky lg:top-24 lg:self-start">
+              <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-xl shadow-slate-900/5 dark:border-slate-800 dark:bg-slate-950">
+                <p className="text-sm font-bold uppercase tracking-[.2em] text-slate-500 dark:text-slate-400">Book this service</p>
+                {service.starting_price_note ? (
+                  <p className="mt-3 text-3xl font-bold tracking-tight">{service.starting_price_note}</p>
+                ) : (
+                  <p className="mt-3 text-2xl font-bold tracking-tight">Get a free quote</p>
+                )}
+                <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">Tell us the pickup and drop-off and we will confirm the price and timing with you.</p>
+
+                <a
+                  href={requestWhatsappUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group mt-6 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-slate-950 px-6 font-semibold text-white transition hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-200"
+                >
+                  <MessageCircle aria-hidden="true" className="size-5" />
+                  {cta}
+                  <ArrowRight aria-hidden="true" className="size-4 transition-transform group-hover:translate-x-1" />
+                </a>
+
+                <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+                  <Link href="/quote" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-slate-300 px-4 font-semibold transition hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800">
+                    <ArrowRight aria-hidden="true" className="size-5" />
+                    Use form
+                  </Link>
+                  {settings?.phone_primary && (
+                    <a href={`tel:${settings.phone_primary}`} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-slate-300 px-4 font-semibold transition hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800">
+                      <Phone aria-hidden="true" className="size-5" />
+                      Call
+                    </a>
+                  )}
                 </div>
               </div>
-            )}
-          </div>
-
-          {/* Sticky booking card */}
-          <aside className="lg:sticky lg:top-24 lg:self-start">
-            <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-xl shadow-slate-900/5 dark:border-slate-800 dark:bg-slate-900">
-              <p className="text-sm font-bold uppercase tracking-[.2em] text-slate-500 dark:text-slate-400">Book this service</p>
-              {service.starting_price_note ? (
-                <p className="mt-3 text-3xl font-bold tracking-tight">{service.starting_price_note}</p>
-              ) : (
-                <p className="mt-3 text-2xl font-bold tracking-tight">Get a free quote</p>
-              )}
-              <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-300">Tell us the pickup and drop-off and we will confirm the price and timing with you.</p>
-
-              <a
-                href={requestWhatsappUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group mt-6 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-slate-950 px-6 font-semibold text-white transition hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-200"
-              >
-                <MessageCircle aria-hidden="true" className="size-5" />
-                {cta}
-                <ArrowRight aria-hidden="true" className="size-4 transition-transform group-hover:translate-x-1" />
-              </a>
-
-              <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
-                <Link href="/quote" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-slate-300 px-4 font-semibold transition hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800">
-                  <ArrowRight aria-hidden="true" className="size-5" />
-                  Use form
-                </Link>
-                {settings?.phone_primary && (
-                  <a href={`tel:${settings.phone_primary}`} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-slate-300 px-4 font-semibold transition hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800">
-                    <Phone aria-hidden="true" className="size-5" />
-                    Call
-                  </a>
-                )}
-              </div>
-            </div>
-          </aside>
-        </section>
+            </aside>
+          </section>
+        </div>
       </main>
     </>
   );
