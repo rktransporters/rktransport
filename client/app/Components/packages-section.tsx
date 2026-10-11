@@ -3,8 +3,8 @@ import { ArrowUpRight, Check } from "lucide-react";
 
 const PACKAGES = [
   {
-    name: "Single Passenger Seat",
-    price: "AED 50",
+    name: "Shared Ride",
+    price: "AED 100",
     period: "one way",
     desc: "Ideal for daily commuters between Dubai & Abu Dhabi",
     popular: false,
@@ -16,8 +16,8 @@ const PACKAGES = [
     ],
   },
   {
-    name: "Full Private Car",
-    price: "AED 250",
+    name: "Private Ride",
+    price: "AED 200",
     period: "one way",
     desc: "Exclusive luxury ride for families or business trips",
     popular: true,
@@ -30,10 +30,10 @@ const PACKAGES = [
     ],
   },
   {
-    name: "Monthly Commuter Pass",
-    price: "AED 1,200",
-    period: "per month",
-    desc: "Best value for regular daily travel between cities",
+    name: "Custom Ride",
+    price: "TBD",
+    period: "one way",
+    desc: "Contact us for a personalized travel plan tailored to your needs",
     popular: false,
     feats: [
       "Guaranteed seat reservation",
