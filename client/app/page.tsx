@@ -6,7 +6,7 @@ import {
 } from "lucide-react";
 import ReviewForm from "./Components/review-form";
 import HeroSlideshow from "./Components/hero-slideshow";
-import PolaroidStack, { type PolaroidItem } from "./Components/polaroid-stack";
+import ServiceShowcase, { type ShowcaseItem } from "./Components/service-showcase";
 import SectionPager from "./Components/section-pager";
 import SimpleRichText from "./Components/simple-rich-text";
 import {
@@ -152,7 +152,7 @@ export default async function HomePage() {
     answer: faq.answer,
   }));
 
-  const polaroids: PolaroidItem[] = services.map((service: Service) => ({
+  const showcaseItems: ShowcaseItem[] = services.map((service: Service) => ({
     id: service.id,
     slug: service.slug,
     title: service.title,
@@ -193,40 +193,43 @@ export default async function HomePage() {
           <HeroSlideshow slides={slides} phone={settings?.phone_primary} whatsapp={settings?.whatsapp} />
         </div>
 
-        {/* =========================================================
-            2. SERVICES (polaroids: stacked on mobile, side by side on desktop)
-        ========================================================= */}
-        <section
-          id="services"
-          data-snap-section
-          data-label="Services"
-          className="snap-section relative overflow-hidden bg-stone-100 px-4 dark:bg-slate-900/60 sm:px-6"
-        >
-          <div aria-hidden="true" className="pointer-events-none absolute inset-0 opacity-60 [background-image:radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:22px_22px] dark:opacity-20" />
-          <div className="relative mx-auto w-full max-w-7xl">
-            <div className="mb-8 flex flex-col items-center gap-3 text-center sm:mb-10 md:flex-row md:items-end md:justify-between md:text-left">
-              <div>
-                <p className="text-sm font-bold uppercase tracking-[.2em] text-slate-500 dark:text-slate-400">
-                  {text("home.services.eyebrow", "How we help")}
-                </p>
-                <h2 className="mt-2 text-balance text-3xl font-bold tracking-tight sm:text-4xl">
-                  {text("home.services.heading", "Car transport, when you need it")}
-                </h2>
-              </div>
-              <Link
-                href="/services"
-                className="hidden min-h-11 items-center gap-2 font-semibold underline-offset-4 hover:underline md:inline-flex"
-              >
-                {text("home.services.link", "Explore services")}
-                <ArrowUpRight aria-hidden="true" className="size-4" />
-              </Link>
-            </div>
-            <PolaroidStack
-              items={polaroids}
-              empty={text("empty.services", "Service information is currently unavailable.")}
-            />
-          </div>
-        </section>
+{/* =========================================================
+    2. SERVICES (expanding image panels)
+========================================================= */}
+<section
+  id="services"
+  data-snap-section
+  data-label="Services"
+  className="snap-section relative overflow-hidden bg-stone-100 px-4 dark:bg-slate-900/60 sm:px-6"
+>
+  <div aria-hidden="true" className="pointer-events-none absolute -right-24 -top-24 size-96 rounded-full bg-amber-200/40 blur-3xl dark:bg-amber-400/10" />
+  <div className="relative mx-auto w-full max-w-7xl">
+    <div className="mb-8 flex flex-col justify-between gap-4 sm:mb-10 sm:flex-row sm:items-end">
+      <div>
+        <p className="text-sm font-bold uppercase tracking-[.2em] text-slate-500 dark:text-slate-400">
+          {text("home.services.eyebrow", "How we help")}
+        </p>
+        <h2 className="mt-2 text-balance text-3xl font-bold tracking-tight sm:text-4xl">
+          {text("home.services.heading", "Car transport, when you need it")}
+        </h2>
+      </div>
+      <Link
+        href="/services"
+        className="inline-flex min-h-11 items-center gap-2 font-semibold underline-offset-4 hover:underline"
+      >
+        {text("home.services.link", "Explore services")}
+        <ArrowUpRight aria-hidden="true" className="size-4" />
+      </Link>
+    </div>
+    <ServiceShowcase
+      items={showcaseItems}
+      empty={text("empty.services", "Service information is currently unavailable.")}
+    />
+    <p className="mt-4 text-center text-xs text-slate-500 dark:text-slate-400 md:hidden">
+      Tap a service to open it, tap again to view
+    </p>
+  </div>
+</section>
 
         {/* =========================================================
             3. PACKAGES (fixed image background)
