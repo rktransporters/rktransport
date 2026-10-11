@@ -34,7 +34,9 @@ export default async function AboutPage() {
   const whatsappDigits = settings?.whatsapp?.replace(/\D/g, "") || "971561379697";
   const whatsappUrl = `https://wa.me/${whatsappDigits}?text=${encodeURIComponent("Hello RK Transport, I would like a quote for car transport. Please contact me with details.")}`;
   const firstStat = about?.stats?.[0];
-  const bannerUrl = (about as Record<string, unknown>)?.banner_image_url as string | undefined;
+  
+  const rawBannerUrl = (about as Record<string, unknown>)?.banner_image_url as string | undefined;
+  const bannerUrl = rawBannerUrl ? apiImageUrl(rawBannerUrl) || rawBannerUrl : undefined;
 
   return (
     <>

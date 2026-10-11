@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, ArrowUpRight, Check, Clock, MessageCircle, Phone, Route } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Check, Clock, MessageCircle, Phone } from "lucide-react";
 import { BreadcrumbStructuredData, StructuredData } from "../Components/structured-data";
 import { apiImageUrl, isImageOptimizable, publicApi, type Faq, type Service } from "../../lib/transport-api";
 import { faqJsonLd, generatePageMetadata } from "../../lib/seo";
@@ -32,41 +32,45 @@ export default async function ServicesPage() {
   const whatsappDigits = settings?.whatsapp?.replace(/\D/g, "");
 
   // Priority: 1. Admin page banner -> 2. Featured service banner -> 3. Any service banner
-  const bannerUrl =
+  const rawBannerUrl =
     copy.find((item: { key: string }) => item.key === "services_banner_url")?.value ||
     ((featured as Record<string, unknown>)?.banner_image_url as string | undefined) ||
     ((services.find((s: unknown) => (s as Record<string, unknown>)?.banner_image_url) as Record<string, unknown>)?.banner_image_url as string | undefined);
+  
+  const bannerUrl = rawBannerUrl ? apiImageUrl(rawBannerUrl) || rawBannerUrl : undefined;
 
   return (
     <>
       <BreadcrumbStructuredData items={[{ name: "Home", path: "/" }, { name: "Services", path: "/services" }]} />
       {faqs.length > 0 && <StructuredData data={faqJsonLd(faqs.map(({ question, answer }) => ({ question, answer })))} />}
 
-      <main>
-        {/* Sticky Still Image Hero Banner */}
-        <section className="sticky top-0 z-0 flex min-h-[480px] sm:min-h-[560px] items-end overflow-hidden bg-slate-950 text-white">
-          {bannerUrl ? (
+      <main className="relative bg-slate-950 text-white">
+        {/* Fixed Still Background Image Banner */}
+        {bannerUrl ? (
+          <div aria-hidden="true" className="fixed inset-0 -z-30 overflow-hidden">
             <Image
-              src={apiImageUrl(bannerUrl) || bannerUrl}
+              src={bannerUrl}
               alt="Services banner"
               fill
               priority
               unoptimized={!isImageOptimizable(bannerUrl)}
               sizes="100vw"
-              className="-z-20 object-cover"
+              className="object-cover object-center"
             />
-          ) : (
-            <div aria-hidden="true" className="absolute inset-0 -z-20 bg-[radial-gradient(ellipse_at_top_right,rgba(148,163,184,0.28),transparent_55%),linear-gradient(135deg,#0f172a,#020617)]" />
-          )}
-          <div aria-hidden="true" className="absolute inset-0 -z-10 bg-gradient-to-t from-black/90 via-black/40 to-black/30" />
-          <div aria-hidden="true" className="absolute inset-x-0 top-0 -z-10 h-40 bg-gradient-to-b from-black/70 to-transparent" />
+          </div>
+        ) : (
+          <div aria-hidden="true" className="fixed inset-0 -z-30 bg-[radial-gradient(ellipse_at_top_right,rgba(148,163,184,0.28),transparent_55%),linear-gradient(135deg,#0f172a,#020617)]" />
+        )}
+        <div aria-hidden="true" className="fixed inset-0 -z-20 bg-gradient-to-t from-black/90 via-black/50 to-black/30" />
 
-          <div className="mx-auto w-full max-w-7xl px-4 pb-16 pt-32 sm:px-6 sm:pb-20">
+        {/* Hero Section Content (Scrolls over the fixed background) */}
+        <section className="relative z-10 flex min-h-[550px] items-end px-4 pb-20 pt-32 sm:px-6 sm:pb-24 lg:min-h-[650px]">
+          <div className="mx-auto w-full max-w-7xl">
             <p className="text-sm font-bold uppercase tracking-[.2em] text-amber-400">Services</p>
             <h1 className="mt-3 text-balance text-4xl font-bold leading-[1.05] tracking-tight sm:text-6xl">
               {text("services.heading", "Car transport, done right")}
             </h1>
-            <p className="mt-4 max-w-2xl text-lg leading-8 text-white/80 sm:text-xl">
+            <p className="mt-4 max-w-2xl text-lg leading-8 text-white/85 sm:text-xl">
               {text("services.subheading", settings?.tagline || "Safe, reliable car transport between Dubai and Abu Dhabi.")}
             </p>
             {hours && (
@@ -90,9 +94,8 @@ export default async function ServicesPage() {
           </div>
         </section>
 
-        {/* Content Container that scrolls over the sticky banner */}
-        <div className="relative z-10 bg-stone-50 dark:bg-slate-950 rounded-t-[2.5rem] shadow-[0_-20px_40px_rgba(0,0,0,0.2)]">
-          {/* Services */}
+        {/* Main Content Container (Slides up and over the fixed hero background) */}
+        <div className="relative z-10 bg-white text-slate-900 rounded-t-[2.5rem] shadow-[0_-25px_50px_rgba(0,0,0,0.5)] dark:bg-slate-950 dark:text-white">
           <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-24">
             {services.length === 0 && (
               <p className="rounded-2xl bg-stone-100 p-6 dark:bg-slate-900">{text("empty.services", "Service information is currently unavailable.")}</p>
