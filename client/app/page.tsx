@@ -202,7 +202,6 @@ export default async function HomePage() {
   data-label="Services"
   className="snap-section relative overflow-hidden bg-stone-100 px-4 dark:bg-slate-900/60 sm:px-6"
 >
-  <div aria-hidden="true" className="pointer-events-none absolute -right-24 -top-24 size-96 rounded-full bg-amber-200/40 blur-3xl dark:bg-amber-400/10" />
   <div className="relative mx-auto w-full max-w-7xl">
     <div className="mb-8 flex flex-col justify-between gap-4 sm:mb-10 sm:flex-row sm:items-end">
       <div>
