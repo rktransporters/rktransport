@@ -126,7 +126,7 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
                 </div>
               ) : null}
 
-              {service.gallery?.length > 0 && (
+                {(service.gallery?.length ?? 0) > 0 && (
                 <div className="mt-12">
                   <h2 className="text-2xl font-bold tracking-tight">Gallery</h2>
                   <div className="mt-5 grid auto-rows-[200px] gap-3 sm:grid-cols-2 sm:auto-rows-[240px]">
