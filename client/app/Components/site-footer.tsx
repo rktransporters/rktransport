@@ -2,11 +2,23 @@
 
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowRight, ArrowUp, Clock, Mail, MapPin, MessageCircle, Phone, Route } from "lucide-react";
+import {
+  ArrowRight,
+  ArrowUp,
+  Clock,
+  Mail,
+  MapPin,
+  MessageCircle,
+  Phone,
+  Route,
+} from "lucide-react";
 import { apiRequest, type SiteSettings } from "../../lib/transport-api";
 
 const FALLBACK_WHATSAPP = "971561379697";
-const QUOTE_MESSAGE = "Hello RK Transport, I would like a quote for car transport between Dubai and Abu Dhabi. Please contact me with details.";
+const FACEBOOK_URL = "https://www.facebook.com/profile.php?id=61550895523073";
+const INSTAGRAM_URL = "https://www.instagram.com/liftuaecar";
+const QUOTE_MESSAGE =
+  "Hello RK Transport, I would like a quote for car transport between Dubai and Abu Dhabi. Please contact me with details.";
 
 const DUBAI_POINTS = [
   "Bur Dubai",
@@ -42,7 +54,7 @@ const quickLinks = [
   { label: "Home", href: "/" },
   { label: "Services", href: "/services" },
   { label: "About us", href: "/about" },
-  { label: "Reviews", href: "/reviews" }, 
+  { label: "Reviews", href: "/reviews" },
 ];
 
 export default function SiteFooter() {
@@ -55,35 +67,53 @@ export default function SiteFooter() {
   const phone = settings?.phone_primary;
   const whatsappDigits = settings?.whatsapp?.replace(/\D/g, "") || FALLBACK_WHATSAPP;
   const quoteUrl = `https://wa.me/${whatsappDigits}?text=${encodeURIComponent(QUOTE_MESSAGE)}`;
-  const hours = settings ? (settings.available_24_7 ? settings.hours_label : "") : "Available 24/7";
+  const hours = settings
+    ? settings.available_24_7
+      ? settings.hours_label || "Available 24/7"
+      : settings.hours_label
+    : "Available 24/7";
 
+  // The supplied business pages are used as fallbacks when social URLs are not configured in settings.
   const socials = [
-    { label: "Facebook", href: settings?.facebook_url, icon: <FacebookIcon /> },
-    { label: "Instagram", href: settings?.instagram_url, icon: <InstagramIcon /> },
-    { label: "TikTok", href: settings?.tiktok_url, icon: <TikTokIcon /> },
-  ].filter((item) => item.href);
+    { label: "Facebook", href: settings?.facebook_url || FACEBOOK_URL, icon: <FacebookIcon /> },
+    { label: "Instagram", href: settings?.instagram_url || INSTAGRAM_URL, icon: <InstagramIcon /> },
+    ...(settings?.tiktok_url
+      ? [{ label: "TikTok", href: settings.tiktok_url, icon: <TikTokIcon /> }]
+      : []),
+  ];
 
   return (
-    <footer data-snap-section data-label="Footer" className="relative flex min-h-[100dvh] flex-col justify-between overflow-hidden bg-slate-950 text-slate-300">
-      <div aria-hidden="true" className="pointer-events-none absolute -top-40 left-1/2 h-80 w-[60rem] -translate-x-1/2 rounded-full bg-white/5 blur-3xl" />
+    <footer
+      data-snap-section
+      data-label="Footer"
+      className="relative flex min-h-[100dvh] flex-col justify-between overflow-hidden bg-slate-950 text-slate-300"
+    >
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -top-40 left-1/2 h-80 w-[60rem] -translate-x-1/2 rounded-full bg-sky-400/[0.07] blur-3xl"
+      />
 
-      {/* Main Content Wrapper */}
-      <div className="flex flex-1 flex-col justify-center py-8">
-        {/* Call-to-action band */}
-        <div className="relative mx-auto w-full max-w-7xl px-4 pt-12 sm:px-6 sm:pt-16">
-          <div className="flex flex-col items-start justify-between gap-4 rounded-3xl border border-white/10 bg-gradient-to-br from-white/10 to-white/[0.03] p-6 backdrop-blur sm:p-8 lg:flex-row lg:items-center">
-            <div className="max-w-xl">
-              <h2 className="text-xl font-bold tracking-tight text-white sm:text-2xl">
+      <div className="relative flex flex-1 flex-col justify-center py-8 sm:py-10">
+        {/* Full-width CTA */}
+        <div className="w-full px-5 pt-8 sm:px-8 sm:pt-10 lg:px-12 2xl:px-16">
+          <div className="flex flex-col items-start justify-between gap-5 rounded-3xl border border-white/10 bg-gradient-to-br from-white/[0.09] to-white/[0.025] p-6 shadow-2xl shadow-black/10 backdrop-blur sm:p-8 lg:flex-row lg:items-center">
+            <div className="max-w-3xl">
+              <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.2em] text-sky-300">
+                Reliable intercity car transport
+              </p>
+              <h2 className="text-xl font-bold tracking-tight text-white sm:text-2xl lg:text-3xl">
                 Need your car moved between Dubai and Abu Dhabi?
               </h2>
-              <p className="mt-1 text-sm text-slate-300">Get a quick quote on WhatsApp. Available 24/7.</p>
+              <p className="mt-2 text-sm leading-6 text-slate-400 sm:text-base">
+                Get a quick quote on WhatsApp. Available 24/7.
+              </p>
             </div>
-            <div className="flex flex-wrap gap-2.5">
+            <div className="flex shrink-0 flex-wrap gap-3">
               <a
                 href={quoteUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group inline-flex min-h-11 items-center gap-2 rounded-full bg-white px-5 text-sm font-semibold text-slate-950 transition hover:bg-slate-200"
+                className="group inline-flex min-h-11 items-center gap-2 rounded-full bg-white px-5 text-sm font-semibold text-slate-950 transition hover:-translate-y-0.5 hover:bg-sky-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
               >
                 <MessageCircle aria-hidden="true" className="size-4" />
                 Get a quote
@@ -92,57 +122,67 @@ export default function SiteFooter() {
               {phone && (
                 <a
                   href={`tel:${phone}`}
-                  className="inline-flex min-h-11 items-center gap-2 rounded-full border border-white/25 px-5 text-sm font-semibold text-white transition hover:bg-white/10"
+                  className="inline-flex min-h-11 items-center gap-2 rounded-full border border-white/20 px-5 text-sm font-semibold text-white transition hover:border-white/40 hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
                 >
                   <Phone aria-hidden="true" className="size-4" />
-                  Call
+                  Call us
                 </a>
               )}
             </div>
           </div>
         </div>
 
-        {/* Main columns */}
-        <div className="relative mx-auto grid w-full max-w-7xl gap-8 px-4 py-8 sm:grid-cols-2 sm:px-6 sm:py-10 lg:grid-cols-[1.4fr_0.8fr_1.2fr_1fr]">
-          {/* Brand */}
+        {/* Main footer columns use the available viewport width */}
+        <div className="grid w-full grid-cols-1 gap-9 px-5 py-9 sm:grid-cols-2 sm:px-8 sm:py-11 lg:grid-cols-[1.5fr_0.75fr_1.2fr_1fr] lg:gap-10 lg:px-12 2xl:px-16">
           <div>
-            <p className="text-lg font-bold tracking-tight text-white">{brand}</p>
-            {settings?.footer_blurb && <p className="mt-2 max-w-sm text-xs leading-5 text-slate-400 sm:text-sm">{settings.footer_blurb}</p>}
+            <Link href="/" className="inline-flex text-xl font-bold tracking-tight text-white transition hover:text-sky-300">
+              {brand}
+            </Link>
+            <p className="mt-3 max-w-lg text-sm leading-6 text-slate-400">
+              {settings?.footer_blurb ||
+                "RK Transport moves cars between Dubai and Abu Dhabi, recovers vehicles around the clock, and stores them securely."}
+            </p>
             {hours && (
-              <p className="mt-4 inline-flex min-h-8 items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3.5 text-xs font-semibold text-white">
+              <p className="mt-4 inline-flex min-h-9 items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-400/[0.07] px-3.5 text-xs font-semibold text-emerald-200">
                 <span aria-hidden="true" className="relative flex size-2">
-                  <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-60" />
+                  <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-50" />
                   <span className="relative inline-flex size-2 rounded-full bg-emerald-400" />
                 </span>
                 {hours}
               </p>
             )}
-            {socials.length > 0 && (
-              <ul className="mt-4 flex gap-2.5">
+            <div className="mt-5">
+              <p className="mb-2.5 text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">
+                Follow RK Transport
+              </p>
+              <ul className="flex gap-2.5">
                 {socials.map((item) => (
                   <li key={item.label}>
                     <a
-                      href={item.href as string}
+                      href={item.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      aria-label={item.label}
-                      className="grid size-9 place-items-center rounded-full border border-white/15 bg-white/5 text-white transition hover:bg-white hover:text-slate-950"
+                      aria-label={`Visit RK Transport on ${item.label}`}
+                      title={item.label}
+                      className="grid size-10 place-items-center rounded-xl border border-white/10 bg-white/[0.04] text-slate-300 transition hover:-translate-y-0.5 hover:border-sky-300/40 hover:bg-sky-300/10 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
                     >
                       {item.icon}
                     </a>
                   </li>
                 ))}
               </ul>
-            )}
+            </div>
           </div>
 
-          {/* Quick links */}
           <nav aria-label="Footer navigation">
-            <h3 className="text-xs font-semibold uppercase tracking-[.18em] text-white">Quick links</h3>
-            <ul className="mt-3 space-y-0.5">
+            <h3 className="text-xs font-bold uppercase tracking-[0.18em] text-white">Quick links</h3>
+            <ul className="mt-4 space-y-1">
               {quickLinks.map((link) => (
                 <li key={link.href}>
-                  <Link href={link.href} className="inline-flex min-h-9 items-center text-xs text-slate-400 transition hover:translate-x-1 hover:text-white sm:text-sm">
+                  <Link
+                    href={link.href}
+                    className="inline-flex min-h-9 items-center text-sm text-slate-400 transition hover:translate-x-1 hover:text-sky-200"
+                  >
                     {link.label}
                   </Link>
                 </li>
@@ -150,112 +190,102 @@ export default function SiteFooter() {
             </ul>
           </nav>
 
-          {/* Contact */}
           <div>
-            <h3 className="text-xs font-semibold uppercase tracking-[.18em] text-white">Contact</h3>
-            <ul className="mt-3 space-y-2 text-xs sm:text-sm">
+            <h3 className="text-xs font-bold uppercase tracking-[0.18em] text-white">Contact</h3>
+            <ul className="mt-4 space-y-3 text-sm">
               {phone && (
                 <li>
-                  <a href={`tel:${phone}`} className="flex min-h-8 items-center gap-2.5 text-slate-400 transition hover:text-white">
-                    <Phone aria-hidden="true" className="size-4 shrink-0 text-white" />
-                    {phone}
+                  <a href={`tel:${phone}`} className="flex items-start gap-3 text-slate-400 transition hover:text-white">
+                    <Phone aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-sky-300" />
+                    <span>{phone}</span>
                   </a>
                 </li>
               )}
               {settings?.email && (
                 <li>
-                  <a href={`mailto:${settings.email}`} className="flex min-h-8 items-center gap-2.5 break-all text-slate-400 transition hover:text-white">
-                    <Mail aria-hidden="true" className="size-4 shrink-0 text-white" />
-                    {settings.email}
+                  <a href={`mailto:${settings.email}`} className="flex items-start gap-3 break-all text-slate-400 transition hover:text-white">
+                    <Mail aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-sky-300" />
+                    <span>{settings.email}</span>
                   </a>
                 </li>
               )}
               {settings?.address_line && (
-                <li className="flex items-start gap-2.5 text-slate-400">
-                  <MapPin aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-white" />
-                  <span>{settings.address_line}</span>
+                <li className="flex items-start gap-3 text-slate-400">
+                  <MapPin aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-sky-300" />
+                  <span className="leading-6">{settings.address_line}</span>
                 </li>
               )}
               {hours && (
-                <li className="flex items-center gap-2.5 text-slate-400">
-                  <Clock aria-hidden="true" className="size-4 shrink-0 text-white" />
+                <li className="flex items-start gap-3 text-slate-400">
+                  <Clock aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-sky-300" />
                   <span>{hours}</span>
                 </li>
               )}
             </ul>
           </div>
 
-          {/* Route card */}
           <div>
-            <h3 className="text-xs font-semibold uppercase tracking-[.18em] text-white">We cover</h3>
-            <div className="mt-3 rounded-2xl border border-white/10 bg-white/5 p-4">
-              <Route aria-hidden="true" className="size-5 text-white" />
-              <p className="mt-2 text-xs font-semibold text-white sm:text-sm">{settings?.core_route_label || "Dubai ⇄ Abu Dhabi"}</p>
-              <p className="mt-1 text-xs text-slate-400">Safe, reliable car transport between the two cities.</p>
+            <h3 className="text-xs font-bold uppercase tracking-[0.18em] text-white">We cover</h3>
+            <div className="mt-4 rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.07] to-white/[0.025] p-5 transition hover:border-sky-300/25">
+              <div className="grid size-10 place-items-center rounded-xl border border-sky-300/20 bg-sky-300/10 text-sky-200">
+                <Route aria-hidden="true" className="size-5" />
+              </div>
+              <p className="mt-3 font-semibold text-white">
+                {settings?.core_route_label || "Dubai ⇄ Abu Dhabi"}
+              </p>
+              <p className="mt-1.5 text-sm leading-5 text-slate-400">
+                Safe, reliable car transport between the two cities.
+              </p>
+              <a href={quoteUrl} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-sky-200 transition hover:text-white">
+                Request transport <ArrowRight aria-hidden="true" className="size-4" />
+              </a>
             </div>
           </div>
         </div>
 
-        {/* Coverage Areas Section (Pickup & Drop Tags) */}
-        <div className="relative mx-auto w-full max-w-7xl px-4 pb-6 sm:px-6">
-          <div className="rounded-3xl border border-white/10 bg-white/[0.02] p-5 backdrop-blur sm:p-6">
-            <h3 className="text-xs font-semibold uppercase tracking-[.18em] text-slate-200">
-              Popular Pickup & Drop-off Points
-            </h3>
-            
-            <div className="mt-4 grid gap-6 lg:grid-cols-2">
-              {/* Dubai */}
+        {/* Pickup and drop-off areas */}
+        <section aria-labelledby="coverage-heading" className="w-full px-5 pb-8 sm:px-8 lg:px-12 2xl:px-16">
+          <div className="overflow-hidden rounded-3xl border border-white/10 bg-slate-900/60 shadow-xl shadow-black/10">
+            <div className="flex flex-col gap-2 border-b border-white/[0.08] px-5 py-5 sm:flex-row sm:items-end sm:justify-between sm:px-7">
               <div>
-                <p className="flex items-center gap-1.5 text-xs font-bold text-slate-300">
-                  <span className="text-red-400">📍</span> Dubai Areas
-                </p>
-                <div className="mt-2.5 flex flex-wrap gap-1.5">
-                  {DUBAI_POINTS.map((pt) => (
-                    <span
-                      key={pt}
-                      className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] text-slate-300 backdrop-blur transition hover:border-white/20 hover:text-white"
-                    >
-                      {pt}
-                    </span>
-                  ))}
-                </div>
+                <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-sky-300">Our coverage network</p>
+                <h3 id="coverage-heading" className="mt-1.5 text-lg font-bold tracking-tight text-white sm:text-xl">
+                  Popular Pickup &amp; Drop-off Points
+                </h3>
+                <p className="mt-1 text-sm text-slate-400">Choose an area in either city to plan your car transport.</p>
               </div>
+              <span className="inline-flex w-fit items-center rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-slate-300">
+                {DUBAI_POINTS.length + ABU_DHABI_POINTS.length} listed areas
+              </span>
+            </div>
 
-              {/* Abu Dhabi */}
-              <div>
-                <p className="flex items-center gap-1.5 text-xs font-bold text-slate-300">
-                  <span className="text-red-400">📍</span> Abu Dhabi Areas
-                </p>
-                <div className="mt-2.5 flex flex-wrap gap-1.5">
-                  {ABU_DHABI_POINTS.map((pt) => (
-                    <span
-                      key={pt}
-                      className="rounded-lg border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] text-slate-300 backdrop-blur transition hover:border-white/20 hover:text-white"
-                    >
-                      {pt}
-                    </span>
-                  ))}
-                </div>
-              </div>
+            <div className="grid gap-px bg-white/[0.07] lg:grid-cols-2">
+              <CoverageCity name="Dubai" subtitle="Pickup & drop-off areas" points={DUBAI_POINTS} accent="sky" />
+              <CoverageCity name="Abu Dhabi" subtitle="Pickup & drop-off areas" points={ABU_DHABI_POINTS} accent="violet" />
+            </div>
+            <div className="flex flex-col gap-3 bg-white/[0.025] px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-7">
+              <p className="text-xs leading-5 text-slate-400">
+                Don’t see your location? Contact us and we’ll confirm availability for your route.
+              </p>
+              <a href={quoteUrl} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-full border border-sky-300/25 bg-sky-300/10 px-4 text-xs font-semibold text-sky-100 transition hover:bg-sky-300/20">
+                Check your area <ArrowRight aria-hidden="true" className="size-3.5" />
+              </a>
             </div>
           </div>
-        </div>
+        </section>
       </div>
 
-      {/* Bottom bar */}
-      <div className="relative border-t border-white/10">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-4 py-4 text-xs text-slate-500 sm:flex-row sm:px-6">
+      {/* Full-width bottom bar */}
+      <div className="relative border-t border-white/10 bg-slate-950/80">
+        <div className="flex w-full flex-col items-center justify-between gap-3 px-5 py-4 text-xs text-slate-500 sm:flex-row sm:px-8 lg:px-12 2xl:px-16">
           <p>© {new Date().getFullYear()} {brand}. All rights reserved.</p>
           <button
             type="button"
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            className="group inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3.5 py-1.5 text-xs font-medium text-slate-300 shadow-sm transition-all duration-200 hover:border-slate-500/40 hover:bg-white/10 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-500"
+            className="group inline-flex min-h-9 items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3.5 text-xs font-medium text-slate-300 transition hover:border-white/20 hover:bg-white/10 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
           >
             Back to top
-            <ArrowUp
-              aria-hidden="true"
-              className="size-3 text-slate-400 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:text-slate-500"
-            />
+            <ArrowUp aria-hidden="true" className="size-3 text-slate-400 transition-transform group-hover:-translate-y-0.5 group-hover:text-white" />
           </button>
         </div>
       </div>
@@ -263,9 +293,51 @@ export default function SiteFooter() {
   );
 }
 
+function CoverageCity({
+  name,
+  subtitle,
+  points,
+  accent,
+}: {
+  name: string;
+  subtitle: string;
+  points: string[];
+  accent: "sky" | "violet";
+}) {
+  const accentClasses = accent === "sky"
+    ? "border-sky-300/20 bg-sky-300/10 text-sky-200"
+    : "border-violet-300/20 bg-violet-300/10 text-violet-200";
+
+  return (
+    <div className="bg-slate-950/35 p-5 sm:p-7">
+      <div className="flex items-center gap-3">
+        <div className={`grid size-10 shrink-0 place-items-center rounded-xl border ${accentClasses}`}>
+          <MapPin aria-hidden="true" className="size-5" />
+        </div>
+        <div>
+          <h4 className="font-bold text-white">{name} areas</h4>
+          <p className="mt-0.5 text-xs text-slate-500">{subtitle}</p>
+        </div>
+        <span className="ml-auto rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-1 text-xs font-semibold tabular-nums text-slate-300">
+          {points.length}
+        </span>
+      </div>
+      <ul className="mt-5 flex flex-wrap gap-2">
+        {points.map((point) => (
+          <li key={point}>
+            <span className="inline-flex min-h-8 items-center rounded-lg border border-white/[0.09] bg-white/[0.035] px-3 py-1.5 text-xs font-medium text-slate-300 transition hover:border-white/20 hover:bg-white/[0.08] hover:text-white">
+              {point}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 function FacebookIcon() {
   return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" className="size-4">
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" className="size-[18px]">
       <path d="M13.5 21v-7.5h2.6l.4-3h-3V8.6c0-.9.3-1.5 1.5-1.5h1.6V4.4c-.3 0-1.2-.1-2.3-.1-2.3 0-3.9 1.4-3.9 4v2.2H8v3h2.4V21h3.1Z" />
     </svg>
   );
@@ -273,7 +345,7 @@ function FacebookIcon() {
 
 function InstagramIcon() {
   return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="size-4">
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="size-[18px]">
       <rect x="3.5" y="3.5" width="17" height="17" rx="5" />
       <circle cx="12" cy="12" r="4" />
       <circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none" />
@@ -283,7 +355,7 @@ function InstagramIcon() {
 
 function TikTokIcon() {
   return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" className="size-4">
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" className="size-[18px]">
       <path d="M16.6 3c.3 2.2 1.6 3.6 3.9 3.8v2.9c-1.4.1-2.6-.3-3.8-1.1v5.3c0 3.4-2.4 5.6-5.4 5.6-3 0-5.3-2.3-5.3-5.2 0-3.2 2.7-5.5 6-5v3c-1.7-.4-3 .6-3 2 0 1.2.9 2.1 2.1 2.1 1.3 0 2.2-.8 2.2-2.5V3h2.3Z" />
     </svg>
   );

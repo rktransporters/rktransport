@@ -32,9 +32,9 @@ export const revalidate = 60;
    STATIC CONTENT
 ========================================================= */
 const PACKAGES = [
-  { name: "Single Passenger Seat", price: "AED 50", period: "one way", desc: "Ideal for daily commuters", popular: false, icon: Users, feats: ["Door-to-door pickup", "AC comfort", "Professional driver"] },
-  { name: "Full Private Car", price: "AED 250", period: "one way", desc: "Exclusive ride for families and VIPs", popular: true, icon: Car, feats: ["100% private vehicle", "Custom timing", "Nonstop direct route"] },
-  { name: "Monthly Commuter Pass", price: "AED 1,200", period: "per month", desc: "Best value for regular travel", popular: false, icon: Clock3, feats: ["Guaranteed seat", "Flexible slots", "Dedicated support"] },
+  { name: "Sharing Ride", price: "AED 100", period: "one way", desc: "Ideal for daily commuters", popular: false, icon: Users, feats: ["Door-to-door pickup", "AC comfort", "Professional driver"] },
+  { name: "Private Ride", price: "AED 200", period: "one way", desc: "Exclusive ride for families and VIPs", popular: true, icon: Car, feats: ["100% private vehicle", "Custom timing", "Nonstop direct route"] },
+  { name: "Custom Ride", price: "TBD", period: "one way", desc: "Contact us for a personalized travel plan tailored to your needs", popular: false, icon: Clock3, feats: ["Guaranteed seat", "Flexible slots", "Dedicated support"] },
 ];
 
 const CAR_FEATURES = [
@@ -666,7 +666,14 @@ export default async function HomePage() {
                     {DUBAI_AREAS.map((area) => (
                       <li key={area} className="rounded-full border border-slate-300 px-4 py-1.5 text-sm font-medium dark:border-slate-700">{area}</li>
                     ))}
-                    <li className="rounded-full bg-slate-950 px-4 py-1.5 text-sm font-medium text-white dark:bg-white dark:text-slate-950">+ more</li>
+                    <li>
+                      <Link 
+                        href="/routes" 
+                        className="inline-block rounded-full bg-slate-950 px-4 py-1.5 text-sm font-medium text-white transition hover:opacity-90 dark:bg-white dark:text-slate-950"
+                      >
+                        + more
+                      </Link>
+                    </li>
                   </ul>
                 </div>
                 <div className="bg-white p-6 dark:bg-slate-900 sm:p-8">
@@ -675,7 +682,14 @@ export default async function HomePage() {
                     {ABU_DHABI_AREAS.map((area) => (
                       <li key={area} className="rounded-full border border-slate-300 px-4 py-1.5 text-sm font-medium dark:border-slate-700">{area}</li>
                     ))}
-                    <li className="rounded-full bg-amber-400 px-4 py-1.5 text-sm font-medium text-slate-950">+ more</li>
+                    <li>
+                      <Link 
+                        href="/routes" 
+                        className="inline-block rounded-full bg-amber-400 px-4 py-1.5 text-sm font-medium text-slate-950 transition hover:bg-amber-300"
+                      >
+                        + more
+                      </Link>
+                    </li>
                   </ul>
                 </div>
               </div>
