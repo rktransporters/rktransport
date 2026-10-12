@@ -31,11 +31,9 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Ensure images, logos, and favicons render with crisp transparent backgrounds */
-  img,
-  svg {
+  /* Ensure images render with transparent backgrounds without breaking SVG icon colors */
+  img {
     background-color: transparent !important;
-    color: transparent;
   }
 
   button,
