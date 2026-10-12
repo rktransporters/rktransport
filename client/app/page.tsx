@@ -7,6 +7,7 @@ import {
 import ReviewForm from "./Components/review-form";
 import HeroSlideshow from "./Components/hero-slideshow";
 import ServiceShowcase, { type ShowcaseItem } from "./Components/service-showcase";
+import CarShowroom, { type CarCard } from "./Components/car-showroom";
 import SectionPager from "./Components/section-pager";
 import SimpleRichText from "./Components/simple-rich-text";
 import {
@@ -160,6 +161,17 @@ export default async function HomePage() {
     alt: service.image_alt || service.title,
     unoptimized: service.image_url ? !isImageOptimizable(service.image_url) : false,
   }));
+
+  const carCards: CarCard[] = cars.map((car: Vehicle) => ({
+  id: car.id,
+  href: `/cars/${car.id}`,
+  title: car.title,
+  description: car.description,
+  seats: car.seats,
+  chips: car.chips ?? [],
+  image: car.image_url ? apiImageUrl(car.image_url) || car.image_url : null,
+  unoptimized: car.image_url ? !isImageOptimizable(car.image_url) : false,
+}));
 
   const bannerUrl =
     copy.find((item: PageCopy) => item.key === "testimonials_banner_url")?.value ||
@@ -323,21 +335,22 @@ export default async function HomePage() {
         </section>
 
         {/* =========================================================
-            4. CARS (image-first cards; swipeable row on mobile)
+            4. CARS (showroom: big stage + selector)
         ========================================================= */}
         <section
           id="cars"
           data-snap-section
           data-label="Vehicles"
-          className="snap-section bg-white px-4 dark:bg-slate-950 sm:px-6"
+          className="snap-section relative overflow-hidden bg-white px-4 dark:bg-slate-950 sm:px-6"
         >
-          <div className="mx-auto w-full max-w-7xl">
-            <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+          <div aria-hidden="true" className="pointer-events-none absolute -left-24 bottom-0 size-96 rounded-full bg-amber-200/30 blur-3xl dark:bg-amber-400/10" />
+          <div className="relative mx-auto w-full max-w-7xl">
+            <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
               <div>
                 <p className="text-sm font-bold uppercase tracking-[.2em] text-slate-500 dark:text-slate-400">
                   {text("home.cars.eyebrow", "Our fleet")}
                 </p>
-                <h2 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
+                <h2 className="mt-2 text-balance text-3xl font-bold tracking-tight sm:text-4xl">
                   {text("home.cars.heading", "Travel in comfort and safety")}
                 </h2>
               </div>
@@ -346,67 +359,12 @@ export default async function HomePage() {
                 <ArrowUpRight aria-hidden="true" className="size-4" />
               </Link>
             </div>
-
-            {cars.length > 0 ? (
-              <div className="-mx-4 mt-10 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-4 [scrollbar-width:none] sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-6 sm:overflow-visible sm:px-0 lg:grid-cols-3 [&::-webkit-scrollbar]:hidden">
-                {cars.map((car: Vehicle, index: number) => (
-                  <Link
-                    key={car.id}
-                    href="/cars"
-                    className="group relative flex w-[80%] shrink-0 snap-center flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-slate-900/15 dark:border-slate-800 dark:bg-slate-900 sm:w-auto"
-                  >
-                    <div className="relative h-56 overflow-hidden bg-slate-200 dark:bg-slate-800">
-                      {car.image_url ? (
-                        <Image
-                          src={apiImageUrl(car.image_url) || car.image_url}
-                          alt={car.title}
-                          fill
-                          unoptimized={!isImageOptimizable(car.image_url)}
-                          sizes="(max-width: 640px) 80vw, (max-width: 1024px) 50vw, 33vw"
-                          className="object-cover transition-transform duration-700 group-hover:scale-110"
-                        />
-                      ) : (
-                        <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-slate-800 to-slate-950 text-white">
-                          <Car aria-hidden="true" className="size-16 opacity-30" />
-                        </div>
-                      )}
-                      <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
-                      <span className="absolute left-4 top-4 grid size-10 place-items-center rounded-full bg-white/90 text-xs font-bold text-slate-900 backdrop-blur">
-                        {String(index + 1).padStart(2, "0")}
-                      </span>
-                      <span className="absolute right-4 top-4 inline-flex items-center gap-1.5 rounded-full bg-white/90 px-3 py-1.5 text-xs font-bold text-slate-900 backdrop-blur">
-                        <Users aria-hidden="true" className="size-3.5" />
-                        {car.seats}
-                      </span>
-                      <h3 className="absolute inset-x-5 bottom-4 text-2xl font-bold tracking-tight text-white">{car.title}</h3>
-                    </div>
-                    <div className="flex flex-1 flex-col p-6">
-                      <p className="line-clamp-2 flex-1 leading-7 text-slate-600 dark:text-slate-300">{car.description}</p>
-                      <ul className="mt-4 flex flex-wrap gap-2">
-                        {(car.chips ?? []).map((chip) => (
-                          <li key={chip} className="rounded-full border border-slate-300 bg-stone-50 px-3 py-1 text-xs font-semibold text-slate-700 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200">
-                            {chip}
-                          </li>
-                        ))}
-                      </ul>
-                      <span className="mt-5 inline-flex items-center gap-1 text-sm font-bold transition-all group-hover:gap-2">
-                        Explore <ArrowUpRight aria-hidden="true" className="size-4" />
-                      </span>
-                    </div>
-                    <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-1 origin-left scale-x-0 bg-amber-400 transition-transform duration-500 group-hover:scale-x-100" />
-                  </Link>
-                ))}
-              </div>
-            ) : (
-              <p className="mt-10 rounded-2xl bg-stone-100 p-6 text-slate-700 dark:bg-slate-900 dark:text-slate-200">
-                {text("empty.cars", "Our fleet information is currently unavailable.")}
-              </p>
-            )}
+            <CarShowroom items={carCards} empty={text("empty.cars", "Our fleet information is currently unavailable.")} />
           </div>
         </section>
 
         {/* =========================================================
-            5. CAR FEATURES (fixed image background, bento tiles)
+            5. CAR FEATURES (fixed image background, ruled columns)
         ========================================================= */}
         <section
           id="cars-special"
@@ -427,44 +385,43 @@ export default async function HomePage() {
             </div>
           )}
           <div aria-hidden="true" className="absolute inset-0 -z-10 bg-slate-950/85" />
-          <div aria-hidden="true" className="absolute -left-32 top-1/4 -z-10 size-96 rounded-full bg-amber-400/10 blur-3xl" />
-          <div className="mx-auto grid w-full max-w-7xl items-center gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
-            <div>
-              <p className="text-sm font-bold uppercase tracking-[.2em] text-white/60">
+          <div className="mx-auto w-full max-w-7xl">
+            <div className="mx-auto max-w-3xl text-center">
+              <p className="text-sm font-bold uppercase tracking-[.2em] text-amber-400">
                 {text("home.carfeatures.eyebrow", "Unmatched quality")}
               </p>
-              <h2 className="mt-2 text-balance text-3xl font-bold tracking-tight sm:text-5xl">
+              <h2 className="mt-3 text-balance text-3xl font-bold tracking-tight sm:text-5xl">
                 {text("home.carfeatures.heading", "What makes our cars special for travel")}
               </h2>
-              <p className="mt-5 max-w-md leading-7 text-white/70">
+              <p className="mx-auto mt-5 max-w-xl leading-7 text-white/70">
                 {text("home.carfeatures.subheading", "Every vehicle in our fleet is meticulously maintained for long-distance city-to-city trips.")}
               </p>
-              <Link href="/cars" className="group mt-8 inline-flex min-h-12 items-center gap-2 rounded-full bg-white px-6 font-semibold text-slate-950 transition hover:bg-slate-200">
-                See the fleet
-                <ArrowUpRight aria-hidden="true" className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-              </Link>
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="mt-14 grid border-y border-white/15 sm:grid-cols-2 lg:grid-cols-4 lg:divide-x lg:divide-white/15">
               {CAR_FEATURES.map((feat, index) => {
                 const Icon = feat.icon;
                 return (
-                  <div
-                    key={feat.title}
-                    className={`group relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur transition duration-300 hover:border-white/30 hover:bg-white/10 sm:p-7 ${index % 2 === 1 ? "sm:translate-y-6" : ""}`}
-                  >
-                    <div aria-hidden="true" className="absolute -right-10 -top-10 size-40 rounded-full bg-amber-400/20 opacity-0 blur-2xl transition-opacity duration-500 group-hover:opacity-100" />
-                    <span aria-hidden="true" className="absolute right-5 top-4 text-4xl font-black tabular-nums text-white/10">
+                  <div key={feat.title} className="group relative overflow-hidden p-7 transition duration-300 hover:bg-white/5 sm:p-8">
+                    <span aria-hidden="true" className="absolute inset-x-0 top-0 h-1 origin-left scale-x-0 bg-amber-400 transition-transform duration-500 group-hover:scale-x-100" />
+                    <span aria-hidden="true" className="block text-6xl font-black tabular-nums text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.3)]">
                       {String(index + 1).padStart(2, "0")}
                     </span>
-                    <span className="relative grid size-14 place-items-center rounded-2xl bg-amber-400 text-slate-950 transition duration-300 group-hover:-rotate-6 group-hover:scale-110">
-                      <Icon aria-hidden="true" className="size-7" />
+                    <span className="mt-6 grid size-12 place-items-center rounded-full border border-white/25 transition duration-300 group-hover:border-amber-400 group-hover:bg-amber-400 group-hover:text-slate-950">
+                      <Icon aria-hidden="true" className="size-6" />
                     </span>
-                    <h3 className="relative mt-5 text-xl font-bold">{feat.title}</h3>
-                    <p className="relative mt-2 text-sm leading-6 text-white/70">{feat.desc}</p>
+                    <h3 className="mt-5 text-xl font-bold">{feat.title}</h3>
+                    <p className="mt-2 text-sm leading-6 text-white/70">{feat.desc}</p>
                   </div>
                 );
               })}
+            </div>
+
+            <div className="mt-10 text-center">
+              <Link href="/cars" className="group inline-flex min-h-12 items-center gap-2 rounded-full bg-white px-6 font-semibold text-slate-950 transition hover:bg-amber-400">
+                See the fleet
+                <ArrowUpRight aria-hidden="true" className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+              </Link>
             </div>
           </div>
         </section>
