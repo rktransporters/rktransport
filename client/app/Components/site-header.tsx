@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -6,13 +7,11 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { Menu, X, ArrowUpRight } from "lucide-react";
-import { useTheme } from "next-themes";
 import { apiRequest, type SiteSettings } from "../../lib/transport-api";
 import ThemeToggle from "./theme-toggle";
 
 export default function SiteHeader() {
   const pathname = usePathname();
-  const { resolvedTheme } = useTheme();
 
   const { data: settings } = useQuery({
     queryKey: ["site-settings"],
@@ -60,6 +59,10 @@ export default function SiteHeader() {
     };
   }, [menuOpen]);
 
+  // Use exactly one logo throughout the entire website.
+  const logo = settings?.logo_url;
+  const brandName = settings?.brand_name || "RK Transport";
+
   const hours = settings
     ? settings.available_24_7
       ? settings.hours_label
@@ -67,31 +70,15 @@ export default function SiteHeader() {
     : "Available 24/7";
 
   const cta = settings?.header_cta_label || "Get a quote";
-  const href = settings?.header_cta_href || "/review";
+  const requestedHref = settings?.header_cta_href || "/review";
 
   const safeCtaHref =
-    href.startsWith("/") &&
-    !href.startsWith("//") &&
-    href !== "/quote" &&
-    href !== "/track"
-      ? href
+    requestedHref.startsWith("/") &&
+    !requestedHref.startsWith("//") &&
+    requestedHref !== "/quote" &&
+    requestedHref !== "/track"
+      ? requestedHref
       : "/review";
-
-  /*
-   * Logo selection:
-   * - Transparent homepage header: use the dark-background logo.
-   * - Dark theme: use the dark-background logo.
-   * - Light theme: use the regular logo.
-   * - Fall back to the other logo if one is not configured.
-   */
-  const useDarkBackgroundLogo =
-    transparent || resolvedTheme === "dark";
-
-  const logo = useDarkBackgroundLogo
-    ? settings?.logo_dark_url || settings?.logo_url
-    : settings?.logo_url || settings?.logo_dark_url;
-
-  const brandName = settings?.brand_name || "RK Transport";
 
   const isActive = (path: string) =>
     path === "/"
@@ -110,19 +97,17 @@ export default function SiteHeader() {
         }`}
       >
         <div className="flex h-16 w-full items-center justify-between gap-3 px-4 sm:px-8">
-          {/* Brand */}
+          {/* Single site logo and brand name */}
           <Link
             href="/"
             aria-label={`${brandName} home`}
             aria-current={pathname === "/" ? "page" : undefined}
-            className={`flex min-w-0 shrink-0 items-center gap-3 font-bold tracking-tight ${
-              transparent
-                ? "text-white"
-                : "text-slate-900 dark:text-white"
+            className={`flex min-w-0 shrink-0 items-center gap-2 sm:gap-3 ${
+              transparent ? "text-white" : "text-slate-900 dark:text-white"
             }`}
           >
             {logo ? (
-              <span className="relative flex h-11 w-[76px] shrink-0 items-center justify-center overflow-hidden bg-transparent sm:w-[88px]">
+              <span className="flex h-11 w-[76px] shrink-0 items-center justify-center overflow-hidden bg-transparent sm:w-[88px]">
                 <Image
                   src={logo}
                   alt={`${brandName} logo`}
@@ -130,24 +115,20 @@ export default function SiteHeader() {
                   height={88}
                   unoptimized
                   priority
-                  className="block h-full w-full object-contain object-center"
                   sizes="88px"
+                  className="block h-full w-full bg-transparent object-contain object-center"
                 />
               </span>
             ) : (
               <span
                 aria-hidden="true"
-                className={`grid size-10 shrink-0 place-items-center rounded-lg border text-sm font-extrabold ${
-                  transparent
-                    ? "border-white/60 text-white"
-                    : "border-slate-300 text-slate-900 dark:border-slate-700 dark:text-white"
-                }`}
+                className="grid size-10 shrink-0 place-items-center rounded-lg border border-current text-sm font-extrabold"
               >
                 RK
               </span>
             )}
 
-            <span className="truncate text-sm sm:text-base">
+            <span className="truncate text-sm font-bold tracking-tight sm:text-base">
               {brandName}
             </span>
           </Link>
@@ -155,7 +136,7 @@ export default function SiteHeader() {
           {/* Desktop navigation */}
           <nav
             aria-label="Main navigation"
-            className="hidden items-center gap-1 lg:flex xl:gap-2"
+            className="hidden items-center gap-1 md:flex lg:gap-2"
           >
             {links.map(([label, path]) => {
               const active = isActive(path);
@@ -165,9 +146,9 @@ export default function SiteHeader() {
                   key={path}
                   href={path}
                   aria-current={active ? "page" : undefined}
-                  className={`rounded-full px-3 py-2 text-sm font-medium transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
+                  className={`rounded-full px-3 py-2 text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 ${
                     transparent
-                      ? "text-white hover:bg-white/15 hover:text-white focus-visible:outline-white"
+                      ? "text-white hover:bg-white/15 focus-visible:outline-white"
                       : "text-slate-700 hover:bg-slate-200/70 hover:text-slate-900 focus-visible:outline-slate-500 dark:text-slate-200 dark:hover:bg-slate-800 dark:hover:text-white"
                   } ${
                     active
@@ -208,7 +189,7 @@ export default function SiteHeader() {
             </Link>
           </div>
 
-          {/* Mobile status */}
+          {/* Mobile availability */}
           {hours && (
             <span
               className={`ml-auto whitespace-nowrap text-[10px] font-semibold min-[480px]:text-xs md:hidden ${
@@ -221,7 +202,7 @@ export default function SiteHeader() {
             </span>
           )}
 
-          {/* Mobile menu button */}
+          {/* Mobile menu toggle */}
           <button
             type="button"
             className={`inline-grid size-10 shrink-0 place-items-center rounded-lg border transition-colors md:hidden ${
@@ -229,14 +210,10 @@ export default function SiteHeader() {
                 ? "border-white/50 text-white hover:bg-white/10"
                 : "border-slate-300 text-slate-900 hover:bg-slate-100 dark:border-slate-700 dark:text-white dark:hover:bg-slate-800"
             }`}
-            aria-label={
-              menuOpen ? "Close navigation menu" : "Open navigation menu"
-            }
+            aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
             aria-expanded={menuOpen}
             aria-controls="mobile-navigation"
-            onClick={() =>
-              setMenuPath(menuOpen ? null : pathname)
-            }
+            onClick={() => setMenuPath(menuOpen ? null : pathname)}
           >
             {menuOpen ? (
               <X aria-hidden="true" size={21} />
@@ -262,7 +239,7 @@ export default function SiteHeader() {
         <nav
           id="mobile-navigation"
           aria-label="Mobile navigation"
-          className="fixed inset-x-0 top-16 z-40 max-h-[calc(100dvh-4rem)] overflow-y-auto border-b border-slate-200 bg-stone-50/95 px-5 py-6 text-slate-900 shadow-2xl backdrop-blur-xl md:hidden dark:border-slate-800 dark:bg-slate-950/95 dark:text-white"
+          className="fixed inset-x-0 top-16 z-40 max-h-[calc(100dvh-4rem)] overflow-y-auto border-b border-slate-200 bg-stone-50/95 px-6 py-6 text-slate-900 shadow-2xl backdrop-blur-xl md:hidden dark:border-slate-800 dark:bg-slate-950/95 dark:text-white"
         >
           <div className="flex flex-col gap-2">
             {links.map(([label, path]) => {
@@ -281,10 +258,7 @@ export default function SiteHeader() {
                   }`}
                 >
                   <span>{label}</span>
-                  <ArrowUpRight
-                    aria-hidden="true"
-                    className="size-4 opacity-50"
-                  />
+                  <ArrowUpRight aria-hidden="true" className="size-4 opacity-50" />
                 </Link>
               );
             })}
