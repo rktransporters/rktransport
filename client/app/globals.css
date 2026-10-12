@@ -31,11 +31,6 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
-  /* Ensure images render with transparent backgrounds without breaking SVG icon colors */
-  img {
-    background-color: transparent !important;
-  }
-
   button,
   input,
   select,
@@ -75,7 +70,7 @@
 
   .dark input:-webkit-autofill,
   .dark select:-webkit-autofill,
-  .dark textarea:-webkit-autofill {
+  textarea:-webkit-autofill {
     -webkit-text-fill-color: #f1f5f9;
     box-shadow: 0 0 0 1000px #0f172a inset;
   }
