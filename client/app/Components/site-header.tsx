@@ -70,7 +70,14 @@ export default function SiteHeader() {
           {/* Logo on far left */}
           <Link href="/" aria-current={pathname === "/" ? "page" : undefined} className={`flex min-h-11 items-center gap-3 font-bold tracking-tight ${transparent ? "text-white" : "text-slate-900 dark:text-white"}`}>
             {logo ? (
-              <Image src={logo} alt="" width={144} height={48} unoptimized className="h-9 w-auto object-contain" />
+              <Image 
+                src={logo} 
+                alt="" 
+                width={144} 
+                height={48} 
+                unoptimized 
+                className="h-9 w-auto object-contain mix-blend-screen" 
+              />
             ) : (
               <span aria-hidden="true" className="grid size-9 place-items-center rounded-xl bg-slate-900 text-sm text-white">RK</span>
             )}
