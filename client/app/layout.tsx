@@ -17,10 +17,20 @@ export async function generateMetadata(): Promise<Metadata> {
     }),
     getSiteSettings(),
   ]);
+
   return {
     ...metadata,
     applicationName: settings?.brand_name || "RK Transport",
-    icons: settings?.favicon_url ? { icon: settings.favicon_url } : undefined,
+    icons: settings?.favicon_url
+      ? { icon: settings.favicon_url }
+      : {
+          icon: [
+            { url: "/favicon/favicon.ico" },
+            { url: "/favicon/favicon.png", type: "image/png" },
+          ],
+          shortcut: "/favicon/favicon.ico",
+          apple: "/favicon/apple-touch-icon.png",
+        },
   };
 }
 
