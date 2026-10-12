@@ -53,6 +53,8 @@ const ABU_DHABI_POINTS = [
 const quickLinks = [
   { label: "Home", href: "/" },
   { label: "Services", href: "/services" },
+  { label: "Cars", href: "/cars" },
+  { label: "Routes", href: "/routes" },
   { label: "About us", href: "/about" },
   { label: "Reviews", href: "/reviews" },
 ];
@@ -86,14 +88,14 @@ export default function SiteFooter() {
     <footer
       data-snap-section
       data-label="Footer"
-      className="relative flex min-h-[100dvh] flex-col justify-between overflow-hidden bg-slate-950 text-slate-300"
+      className="relative overflow-hidden bg-slate-950 text-slate-300"
     >
       <div
         aria-hidden="true"
         className="pointer-events-none absolute -top-40 left-1/2 h-80 w-[60rem] -translate-x-1/2 rounded-full bg-sky-400/[0.07] blur-3xl"
       />
 
-      <div className="relative flex flex-1 flex-col justify-center py-8 sm:py-10">
+      <div className="relative py-8 sm:py-10">
         {/* Full-width CTA */}
         <div className="w-full px-5 pt-8 sm:px-8 sm:pt-10 lg:px-12 2xl:px-16">
           <div className="flex flex-col items-start justify-between gap-5 rounded-3xl border border-white/10 bg-gradient-to-br from-white/[0.09] to-white/[0.025] p-6 shadow-2xl shadow-black/10 backdrop-blur sm:p-8 lg:flex-row lg:items-center">
@@ -133,7 +135,7 @@ export default function SiteFooter() {
         </div>
 
         {/* Main footer columns use the available viewport width */}
-        <div className="grid w-full grid-cols-1 gap-9 px-5 py-9 sm:grid-cols-2 sm:px-8 sm:py-11 lg:grid-cols-[1.5fr_0.75fr_1.2fr_1fr] lg:gap-10 lg:px-12 2xl:px-16">
+        <div className="grid w-full grid-cols-1 gap-8 px-5 py-8 sm:grid-cols-2 sm:px-8 lg:grid-cols-[1.35fr_0.8fr_1fr_1fr] lg:gap-10 lg:px-12 2xl:px-16">
           <div>
             <Link href="/" className="inline-flex text-xl font-bold tracking-tight text-white transition hover:text-sky-300">
               {brand}
@@ -243,33 +245,32 @@ export default function SiteFooter() {
           </div>
         </div>
 
-        {/* Pickup and drop-off areas */}
-        <section aria-labelledby="coverage-heading" className="w-full px-5 pb-8 sm:px-8 lg:px-12 2xl:px-16">
-          <div className="overflow-hidden rounded-3xl border border-white/10 bg-slate-900/60 shadow-xl shadow-black/10">
-            <div className="flex flex-col gap-2 border-b border-white/[0.08] px-5 py-5 sm:flex-row sm:items-end sm:justify-between sm:px-7">
-              <div>
-                <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-sky-300">Our coverage network</p>
-                <h3 id="coverage-heading" className="mt-1.5 text-lg font-bold tracking-tight text-white sm:text-xl">
-                  Popular Pickup &amp; Drop-off Points
-                </h3>
-                <p className="mt-1 text-sm text-slate-400">Choose an area in either city to plan your car transport.</p>
+        {/* Compact coverage directory */}
+        <section aria-labelledby="footer-coverage-heading" className="w-full px-5 pb-7 sm:px-8 lg:px-12 2xl:px-16">
+          <div className="border-t border-white/[0.08] pt-6">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:gap-10">
+              <div className="shrink-0 lg:w-48">
+                <h3 id="footer-coverage-heading" className="text-sm font-semibold text-white">Popular areas</h3>
+                <p className="mt-1 text-xs leading-5 text-slate-500">Dubai and Abu Dhabi coverage</p>
               </div>
-              <span className="inline-flex w-fit items-center rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-slate-300">
-                {DUBAI_POINTS.length + ABU_DHABI_POINTS.length} listed areas
-              </span>
-            </div>
-
-            <div className="grid gap-px bg-white/[0.07] lg:grid-cols-2">
-              <CoverageCity name="Dubai" subtitle="Pickup & drop-off areas" points={DUBAI_POINTS} accent="sky" />
-              <CoverageCity name="Abu Dhabi" subtitle="Pickup & drop-off areas" points={ABU_DHABI_POINTS} accent="violet" />
-            </div>
-            <div className="flex flex-col gap-3 bg-white/[0.025] px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-7">
-              <p className="text-xs leading-5 text-slate-400">
-                Don’t see your location? Contact us and we’ll confirm availability for your route.
-              </p>
-              <a href={quoteUrl} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-full border border-sky-300/25 bg-sky-300/10 px-4 text-xs font-semibold text-sky-100 transition hover:bg-sky-300/20">
-                Check your area <ArrowRight aria-hidden="true" className="size-3.5" />
-              </a>
+              <div className="grid min-w-0 flex-1 gap-5 sm:grid-cols-2 sm:gap-8">
+                <div>
+                  <p className="mb-2 text-xs font-semibold text-slate-300">Dubai <span className="ml-1 font-normal text-slate-500">{DUBAI_POINTS.length} areas</span></p>
+                  <ul className="flex flex-wrap gap-x-3 gap-y-2">
+                    {DUBAI_POINTS.map((point) => (
+                      <li key={point} className="text-xs text-slate-500">{point}</li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <p className="mb-2 text-xs font-semibold text-slate-300">Abu Dhabi <span className="ml-1 font-normal text-slate-500">{ABU_DHABI_POINTS.length} areas</span></p>
+                  <ul className="flex flex-wrap gap-x-3 gap-y-2">
+                    {ABU_DHABI_POINTS.map((point) => (
+                      <li key={point} className="text-xs text-slate-500">{point}</li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
             </div>
           </div>
         </section>
