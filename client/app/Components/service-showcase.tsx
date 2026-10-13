@@ -38,9 +38,15 @@ export default function ServiceShowcase({ items, empty }: { items: ShowcaseItem[
             href={`/services/${item.slug}`}
             aria-label={item.title}
             aria-current={open ? "true" : undefined}
-            onMouseEnter={() => setActive(i)}
-            onFocus={() => setActive(i)}
-            // First tap on a closed panel opens it (phones); tapping the open one follows the link.
+            // Hover only for a real mouse (touch taps also fire fake hover events).
+            onPointerEnter={(event) => {
+              if (event.pointerType === "mouse") setActive(i);
+            }}
+            // Keyboard focus only (a tap also focuses the link).
+            onFocus={(event) => {
+              if (event.currentTarget.matches(":focus-visible")) setActive(i);
+            }}
+            // First tap on a closed panel opens it; tapping the open one follows the link.
             onClick={(event) => {
               if (!open) {
                 event.preventDefault();
@@ -51,7 +57,6 @@ export default function ServiceShowcase({ items, empty }: { items: ShowcaseItem[
               open ? "flex-[6]" : "flex-1"
             }`}
           >
-            {/* Photo */}
             {item.image ? (
               <Image
                 src={item.image}
@@ -65,7 +70,6 @@ export default function ServiceShowcase({ items, empty }: { items: ShowcaseItem[
               <div aria-hidden="true" className="absolute inset-0 -z-20 bg-gradient-to-br from-slate-700 to-slate-950" />
             )}
 
-            {/* Overlays: lighter when open, darker when collapsed */}
             <div
               aria-hidden="true"
               className={`absolute inset-0 -z-10 bg-gradient-to-t from-black/85 via-black/20 to-black/10 transition-opacity duration-700 ${open ? "opacity-100" : "opacity-0"}`}
@@ -75,7 +79,6 @@ export default function ServiceShowcase({ items, empty }: { items: ShowcaseItem[
               className={`absolute inset-0 -z-10 bg-slate-950/55 transition-opacity duration-700 ${open ? "opacity-0" : "opacity-100"}`}
             />
 
-            {/* Number */}
             <span
               className={`absolute left-4 top-4 grid size-10 place-items-center rounded-full text-xs font-bold backdrop-blur transition-colors duration-500 ${
                 open ? "bg-amber-400 text-slate-950" : "bg-white/15 text-white"
@@ -84,7 +87,6 @@ export default function ServiceShowcase({ items, empty }: { items: ShowcaseItem[
               {String(i + 1).padStart(2, "0")}
             </span>
 
-            {/* Collapsed label */}
             <span
               aria-hidden="true"
               className={`absolute bottom-4 left-5 right-5 truncate text-base font-semibold transition-opacity duration-500 md:left-1/2 md:right-auto md:top-20 md:bottom-auto md:-translate-x-1/2 md:text-lg md:[writing-mode:vertical-rl] md:rotate-180 ${
@@ -94,7 +96,6 @@ export default function ServiceShowcase({ items, empty }: { items: ShowcaseItem[
               {item.title}
             </span>
 
-            {/* Open label */}
             <div
               className={`absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 p-5 transition-all duration-700 sm:p-7 ${
                 open ? "translate-y-0 opacity-100 delay-200" : "pointer-events-none translate-y-4 opacity-0"
