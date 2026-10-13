@@ -79,11 +79,21 @@ export default function ImageUpload({
     try {
       const additions: UploadedImage[] = [];
       for (let index = 0; index < accepted.length; index++) {
-        setProgress(`Preparing image ${index + 1} of ${accepted.length}…`);
-        const file = await compressImage(accepted[index]);
-        setProgress(`Uploading image ${index + 1} of ${accepted.length}…`);
+        const currentFile = accepted[index];
+        const skipCompression = folder === "brand" || currentFile.type === "image/png" || currentFile.type === "image/webp";
+
+        let fileToUpload: File;
+        if (skipCompression) {
+          setProgress(`Uploading image ${index + 1} of ${accepted.length}…`);
+          fileToUpload = currentFile;
+        } else {
+          setProgress(`Preparing image ${index + 1} of ${accepted.length}…`);
+          fileToUpload = await compressImage(currentFile);
+          setProgress(`Uploading image ${index + 1} of ${accepted.length}…`);
+        }
+
         const form = new FormData();
-        form.set("file", file);
+        form.set("file", fileToUpload);
         if (uploadEndpoint === "/admin/media") form.set("folder", folder);
         const result = await apiRequest<{ url: string }>(uploadEndpoint, { method: "POST", body: form });
         additions.push({ url: result.url, alt: "" });

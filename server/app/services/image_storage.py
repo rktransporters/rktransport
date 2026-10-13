@@ -1,4 +1,4 @@
-"""Validate, optimize, and upload images to Cloudinary without local disk writes."""
+"""Validate, optimize, and upload images to Vercel Blob or Cloudinary without local disk writes."""
 import asyncio
 import hashlib
 import io
@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 class StorageNotConfigured(RuntimeError):
-    """Cloudinary credentials are missing or malformed."""
+    """Storage credentials are missing or malformed."""
 
 
 def _validate(file: UploadFile) -> None:
@@ -31,7 +31,7 @@ def _validate(file: UploadFile) -> None:
         raise HTTPException(400, "File must be an image")
 
 
-def _clean_credential(value: str | None) -> str:
+def _clean_token(value: str | None) -> str:
     """Remove stray whitespace or quotes pasted around an environment value."""
     return (value or "").strip().strip("'\"").strip()
 
@@ -71,39 +71,77 @@ async def upload_image(file: UploadFile, folder: str = "general") -> Tuple[str, 
         limit_mb = settings.MAX_FILE_SIZE / 1_000_000
         raise HTTPException(400, f"Image is too large. Please choose an image under {limit_mb:.0f} MB.")
 
-    try:
-        contents, content_type, ext = await asyncio.to_thread(_optimize, raw)
-    except Exception as exc:
-        logger.exception("Uploaded image could not be processed")
-        raise HTTPException(
-            400, "Image could not be processed. Please choose a JPG, PNG, or WebP image."
-        ) from exc
+    name = (file.filename or "").lower()
+    original_ext = name.rsplit(".", 1)[-1] if "." in name else ""
+    keep_original = folder == "brand" and original_ext in {"png", "webp"}
+
+    if keep_original:
+        # Logos: never re-encode, so transparency is preserved exactly.
+        contents = raw
+        ext = original_ext
+        content_type = "image/png" if ext == "png" else "image/webp"
+    else:
+        try:
+            contents, content_type, ext = await asyncio.to_thread(_optimize, raw)
+        except Exception as exc:
+            logger.exception("Uploaded image could not be processed")
+            raise HTTPException(
+                400, "Image could not be processed. Please choose a JPG, PNG, or WebP image."
+            ) from exc
 
     filename = f"{folder}/{int(time.time())}-{hashlib.sha1(contents[:64]).hexdigest()[:10]}.{ext}"
-    cloud_name = _clean_credential(settings.CLOUDINARY_CLOUD_NAME)
-    api_key = _clean_credential(settings.CLOUDINARY_API_KEY)
-    api_secret = _clean_credential(settings.CLOUDINARY_API_SECRET)
+
+    blob_token = _clean_token(getattr(settings, "BLOB_READ_WRITE_TOKEN", None))
+    cloudinary_ready = all(
+        (
+            _clean_token(getattr(settings, "CLOUDINARY_CLOUD_NAME", None)),
+            _clean_token(getattr(settings, "CLOUDINARY_API_KEY", None)),
+            _clean_token(getattr(settings, "CLOUDINARY_API_SECRET", None)),
+        )
+    )
 
     try:
-        if not all((cloud_name, api_key, api_secret)):
-            raise StorageNotConfigured("Cloudinary credentials are missing")
-        url = await _cloudinary(
-            filename.rsplit(".", 1)[0],
-            contents,
-            content_type,
-            ext,
-            cloud_name,
-            api_key,
-            api_secret,
-        )
+        if blob_token:
+            url = await _vercel_blob(filename, contents, content_type, blob_token)
+        elif cloudinary_ready:
+            cloud_name = _clean_token(settings.CLOUDINARY_CLOUD_NAME)
+            api_key = _clean_token(settings.CLOUDINARY_API_KEY)
+            api_secret = _clean_token(settings.CLOUDINARY_API_SECRET)
+            url = await _cloudinary(
+                filename.rsplit(".", 1)[0],
+                contents,
+                content_type,
+                ext,
+                cloud_name,
+                api_key,
+                api_secret,
+            )
+        else:
+            raise StorageNotConfigured("No BLOB_READ_WRITE_TOKEN or Cloudinary credentials set")
     except StorageNotConfigured as exc:
         logger.error("Image storage misconfigured: %s", exc)
         raise HTTPException(500, "Image storage is not configured") from exc
     except Exception as exc:
-        logger.exception("Cloudinary image upload failed")
+        logger.exception("Image upload provider failed")
         raise HTTPException(502, "Image storage rejected the upload. Please try again.") from exc
 
     return url, len(contents), content_type
+
+
+async def _vercel_blob(filename: str, contents: bytes, content_type: str, token: str) -> str:
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "x-content-type": content_type,
+    }
+    url = f"https://blob.vercel-storage.com/{filename}"
+    async with httpx.AsyncClient(timeout=30) as client:
+        res = await client.put(url, content=contents, headers=headers)
+    if res.status_code >= 400:
+        raise RuntimeError(f"Vercel Blob upload returned HTTP {res.status_code}: {res.text[:300]}")
+    blob_url = res.json().get("url")
+    if not isinstance(blob_url, str) or not blob_url.startswith("https://"):
+        raise RuntimeError("Vercel Blob response did not include a valid URL")
+    return blob_url
 
 
 async def _cloudinary(
