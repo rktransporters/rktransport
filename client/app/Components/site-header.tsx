@@ -27,7 +27,7 @@ export default function SiteHeader() {
     ["Services", "/services"],
     ["Vehicles", "/cars"],
     ["Location", "/routes"],
-    ["About us", "/about"],
+    ["About Us", "/about"],
     ["Review", "/review"],
   ];
 

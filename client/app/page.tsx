@@ -431,7 +431,95 @@ export default async function HomePage() {
         </section>
 
         {/* =========================================================
-            6. ABOUT US
+            6. ROUTES (planner with every location)
+        ========================================================= */}
+        <section
+          id="routes"
+          data-snap-section
+          data-label="Routes"
+          className="snap-section bg-stone-100 px-4 dark:bg-slate-900/70 sm:px-6"
+        >
+          <div className="mx-auto w-full max-w-7xl">
+            <div className="mb-8 text-center">
+              <p className="text-sm font-bold uppercase tracking-[.2em] text-slate-500 dark:text-slate-400">
+                {text("home.routes.eyebrow", "Plan your trip")}
+              </p>
+              <h2 className="mt-2 text-balance text-3xl font-bold tracking-tight sm:text-4xl">
+                {text("home.routes.heading", "Where are we picking you up?")}
+              </h2>
+            </div>
+            <RoutePlanner
+              dubai={dubaiAreas}
+              abuDhabi={abuDhabiAreas}
+              whatsappDigits={settings?.whatsapp?.replace(/\D/g, "") || "971561379697"}
+              phone={settings?.phone_primary || "+971561379697"}
+            />
+          </div>
+        </section>
+
+        {/* =========================================================
+            7. WHY CHOOSE US (fixed image background, numbered list)
+        ========================================================= */}
+        <section
+          id="why-choose-us"
+          data-snap-section
+          data-label="Why choose us"
+          className="snap-section relative isolate overflow-hidden bg-slate-950 px-4 text-white sm:px-6 [clip-path:inset(0)]"
+        >
+          {typeof whyBannerUrl === "string" && whyBannerUrl && (
+            <div aria-hidden="true" className="fixed inset-0 -z-20">
+              <Image
+                src={apiImageUrl(whyBannerUrl) || whyBannerUrl}
+                alt=""
+                fill
+                unoptimized={!isImageOptimizable(whyBannerUrl)}
+                sizes="100vw"
+                className="object-cover object-center"
+              />
+            </div>
+          )}
+          <div aria-hidden="true" className="absolute inset-0 -z-10 bg-slate-950/85" />
+          <div className="mx-auto grid w-full max-w-7xl gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
+            <div className="lg:sticky lg:top-28 lg:self-start">
+              <p className="text-sm font-bold uppercase tracking-[.2em] text-white/60">
+                {text("home.why.eyebrow", "The RK advantage")}
+              </p>
+              <h2 className="mt-2 text-balance text-3xl font-bold tracking-tight text-white sm:text-5xl">
+                {text("home.why.heading", "Why choose us for your journey")}
+              </h2>
+              <p className="mt-5 max-w-md leading-7 text-slate-300">
+                {text("home.why.subheading", "We make traveling between Dubai and Abu Dhabi effortless and dependable.")}
+              </p>
+              <Link href="/contact" className="group mt-8 inline-flex min-h-12 items-center gap-2 rounded-full bg-amber-400 px-6 font-semibold text-slate-950 transition hover:bg-amber-300">
+                Book your ride
+                <ArrowUpRight aria-hidden="true" className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+              </Link>
+            </div>
+
+            <ul className="divide-y divide-white/10 border-y border-white/10">
+              {WHY_US.map((item, index) => {
+                const Icon = item.icon;
+                return (
+                  <li key={item.title} className="group flex items-start gap-5 py-7 sm:gap-8 sm:py-8">
+                    <span className="w-14 shrink-0 text-5xl font-black tabular-nums text-white/20 transition-colors duration-300 group-hover:text-amber-400 sm:w-20 sm:text-6xl">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    <div className="flex-1 transition-transform duration-300 group-hover:translate-x-2">
+                      <h3 className="text-xl font-bold tracking-tight text-white sm:text-2xl">{item.title}</h3>
+                      <p className="mt-2 max-w-lg leading-7 text-slate-300">{item.desc}</p>
+                    </div>
+                    <span className="hidden size-12 shrink-0 place-items-center rounded-full border border-white/20 transition duration-300 group-hover:bg-white group-hover:text-slate-950 sm:grid">
+                      <Icon aria-hidden="true" className="size-5" />
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </section>
+
+        {/* =========================================================
+            8. ABOUT US
         ========================================================= */}
         {about && (
           <section
@@ -510,93 +598,6 @@ export default async function HomePage() {
           </section>
         )}
 
-        {/* =========================================================
-            7. WHY CHOOSE US (fixed image background, numbered list)
-        ========================================================= */}
-        <section
-          id="why-choose-us"
-          data-snap-section
-          data-label="Why choose us"
-          className="snap-section relative isolate overflow-hidden bg-slate-950 px-4 text-white sm:px-6 [clip-path:inset(0)]"
-        >
-          {typeof whyBannerUrl === "string" && whyBannerUrl && (
-            <div aria-hidden="true" className="fixed inset-0 -z-20">
-              <Image
-                src={apiImageUrl(whyBannerUrl) || whyBannerUrl}
-                alt=""
-                fill
-                unoptimized={!isImageOptimizable(whyBannerUrl)}
-                sizes="100vw"
-                className="object-cover object-center"
-              />
-            </div>
-          )}
-          <div aria-hidden="true" className="absolute inset-0 -z-10 bg-slate-950/85" />
-          <div className="mx-auto grid w-full max-w-7xl gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
-            <div className="lg:sticky lg:top-28 lg:self-start">
-              <p className="text-sm font-bold uppercase tracking-[.2em] text-white/60">
-                {text("home.why.eyebrow", "The RK advantage")}
-              </p>
-              <h2 className="mt-2 text-balance text-3xl font-bold tracking-tight text-white sm:text-5xl">
-                {text("home.why.heading", "Why choose us for your journey")}
-              </h2>
-              <p className="mt-5 max-w-md leading-7 text-slate-300">
-                {text("home.why.subheading", "We make traveling between Dubai and Abu Dhabi effortless and dependable.")}
-              </p>
-              <Link href="/contact" className="group mt-8 inline-flex min-h-12 items-center gap-2 rounded-full bg-amber-400 px-6 font-semibold text-slate-950 transition hover:bg-amber-300">
-                Book your ride
-                <ArrowUpRight aria-hidden="true" className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-              </Link>
-            </div>
-
-            <ul className="divide-y divide-white/10 border-y border-white/10">
-              {WHY_US.map((item, index) => {
-                const Icon = item.icon;
-                return (
-                  <li key={item.title} className="group flex items-start gap-5 py-7 sm:gap-8 sm:py-8">
-                    <span className="w-14 shrink-0 text-5xl font-black tabular-nums text-white/20 transition-colors duration-300 group-hover:text-amber-400 sm:w-20 sm:text-6xl">
-                      {String(index + 1).padStart(2, "0")}
-                    </span>
-                    <div className="flex-1 transition-transform duration-300 group-hover:translate-x-2">
-                      <h3 className="text-xl font-bold tracking-tight text-white sm:text-2xl">{item.title}</h3>
-                      <p className="mt-2 max-w-lg leading-7 text-slate-300">{item.desc}</p>
-                    </div>
-                    <span className="hidden size-12 shrink-0 place-items-center rounded-full border border-white/20 transition duration-300 group-hover:bg-white group-hover:text-slate-950 sm:grid">
-                      <Icon aria-hidden="true" className="size-5" />
-                    </span>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        </section>
-
-        {/* =========================================================
-            8. ROUTES (planner with every location)
-        ========================================================= */}
-        <section
-          id="routes"
-          data-snap-section
-          data-label="Routes"
-          className="snap-section bg-stone-100 px-4 dark:bg-slate-900/70 sm:px-6"
-        >
-          <div className="mx-auto w-full max-w-7xl">
-            <div className="mb-8 text-center">
-              <p className="text-sm font-bold uppercase tracking-[.2em] text-slate-500 dark:text-slate-400">
-                {text("home.routes.eyebrow", "Plan your trip")}
-              </p>
-              <h2 className="mt-2 text-balance text-3xl font-bold tracking-tight sm:text-4xl">
-                {text("home.routes.heading", "Where are we picking you up?")}
-              </h2>
-            </div>
-            <RoutePlanner
-              dubai={dubaiAreas}
-              abuDhabi={abuDhabiAreas}
-              whatsappDigits={settings?.whatsapp?.replace(/\D/g, "") || "971561379697"}
-              phone={settings?.phone_primary || "+971561379697"}
-            />
-          </div>
-        </section>
 
         {/* =========================================================
             9. TESTIMONIALS (fixed image scroll)
