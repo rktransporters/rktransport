@@ -8,6 +8,7 @@ import ReviewForm from "./Components/review-form";
 import HeroSlideshow from "./Components/hero-slideshow";
 import ServiceShowcase, { type ShowcaseItem } from "./Components/service-showcase";
 import CarShowroom, { type CarCard } from "./Components/car-showroom";
+import RoutePlanner from "./Components/route-planner";
 import SectionPager from "./Components/section-pager";
 import SimpleRichText from "./Components/simple-rich-text";
 import {
@@ -25,6 +26,7 @@ import {
   type Testimonial,
   type Vehicle,
 } from "../lib/transport-api";
+import { ABU_DHABI_FALLBACK, DUBAI_FALLBACK, areasFor } from "../lib/areas";
 import { faqJsonLd } from "../lib/seo";
 
 export const revalidate = 60;
@@ -51,9 +53,6 @@ const WHY_US = [
   { title: "Door-to-Door Service", desc: "We pick you up directly from your location and drop you right at your destination.", icon: MapPin },
 ];
 
-const DUBAI_AREAS: string[] = ["JLT", "Dubai Marina", "Deira", "Bur Dubai", "Downtown"];
-const ABU_DHABI_AREAS: string[] = ["Khalifa City", "Mussafah", "Yas Island", "Al Reem Island"];
-
 const DRIVERS = [
   { name: "Verified & Licensed", desc: "All our drivers hold official UAE driving licenses with clean driving records." },
   { name: "Punctual & Courteous", desc: "Committed to timely pickups and respectful, helpful customer service." },
@@ -70,6 +69,7 @@ async function getContent() {
     publicApi.about(),
     publicApi.testimonials(),
     publicApi.cars(),
+    publicApi.locations(),
   ]);
   return {
     settings: results[0].status === "fulfilled" ? results[0].value : null,
@@ -80,6 +80,7 @@ async function getContent() {
     about: results[5].status === "fulfilled" ? results[5].value[0] ?? null : null,
     testimonials: results[6].status === "fulfilled" ? results[6].value : [],
     cars: results[7].status === "fulfilled" ? results[7].value : [],
+    locations: results[8].status === "fulfilled" ? results[8].value : [],
   };
 }
 
@@ -115,7 +116,7 @@ function TestimonialCard({ testimonial }: { testimonial: Testimonial }) {
 }
 
 export default async function HomePage() {
-  const { settings, banners, services, copy, faqs, about, testimonials, cars } =
+  const { settings, banners, services, copy, faqs, about, testimonials, cars, locations } =
     await getContent();
   const text = (key: string, fallback: string) =>
     copy.find((item: PageCopy) => item.key === key)?.value || fallback;
@@ -163,15 +164,18 @@ export default async function HomePage() {
   }));
 
   const carCards: CarCard[] = cars.map((car: Vehicle) => ({
-  id: car.id,
-  href: `/cars/${car.id}`,
-  title: car.title,
-  description: car.description,
-  seats: car.seats,
-  chips: car.chips ?? [],
-  image: car.image_url ? apiImageUrl(car.image_url) || car.image_url : null,
-  unoptimized: car.image_url ? !isImageOptimizable(car.image_url) : false,
-}));
+    id: car.id,
+    href: `/cars/${car.id}`,
+    title: car.title,
+    description: car.description,
+    seats: car.seats,
+    chips: car.chips ?? [],
+    image: car.image_url ? apiImageUrl(car.image_url) || car.image_url : null,
+    unoptimized: car.image_url ? !isImageOptimizable(car.image_url) : false,
+  }));
+
+  const dubaiAreas = areasFor(locations, "dubai", DUBAI_FALLBACK);
+  const abuDhabiAreas = areasFor(locations, "abu dhabi", ABU_DHABI_FALLBACK);
 
   const bannerUrl =
     copy.find((item: PageCopy) => item.key === "testimonials_banner_url")?.value ||
@@ -205,42 +209,42 @@ export default async function HomePage() {
           <HeroSlideshow slides={slides} phone={settings?.phone_primary} whatsapp={settings?.whatsapp} />
         </div>
 
-{/* =========================================================
-    2. SERVICES (expanding image panels)
-========================================================= */}
-<section
-  id="services"
-  data-snap-section
-  data-label="Services"
-  className="snap-section relative overflow-hidden bg-stone-100 px-4 dark:bg-slate-900/60 sm:px-6"
->
-  <div className="relative mx-auto w-full max-w-7xl">
-    <div className="mb-8 flex flex-col justify-between gap-4 sm:mb-10 sm:flex-row sm:items-end">
-      <div>
-        <p className="text-sm font-bold uppercase tracking-[.2em] text-slate-500 dark:text-slate-400">
-          {text("home.services.eyebrow", "How we help")}
-        </p>
-        <h2 className="mt-2 text-balance text-3xl font-bold tracking-tight sm:text-4xl">
-          {text("home.services.heading", "Car transport, when you need it")}
-        </h2>
-      </div>
-      <Link
-        href="/services"
-        className="inline-flex min-h-11 items-center gap-2 font-semibold underline-offset-4 hover:underline"
-      >
-        {text("home.services.link", "Explore services")}
-        <ArrowUpRight aria-hidden="true" className="size-4" />
-      </Link>
-    </div>
-    <ServiceShowcase
-      items={showcaseItems}
-      empty={text("empty.services", "Service information is currently unavailable.")}
-    />
-    <p className="mt-4 text-center text-xs text-slate-500 dark:text-slate-400 md:hidden">
-      Tap a service to open it, tap again to view
-    </p>
-  </div>
-</section>
+        {/* =========================================================
+            2. SERVICES (expanding image panels)
+        ========================================================= */}
+        <section
+          id="services"
+          data-snap-section
+          data-label="Services"
+          className="snap-section relative overflow-hidden bg-stone-100 px-4 dark:bg-slate-900/60 sm:px-6"
+        >
+          <div className="relative mx-auto w-full max-w-7xl">
+            <div className="mb-8 flex flex-col justify-between gap-4 sm:mb-10 sm:flex-row sm:items-end">
+              <div>
+                <p className="text-sm font-bold uppercase tracking-[.2em] text-slate-500 dark:text-slate-400">
+                  {text("home.services.eyebrow", "How we help")}
+                </p>
+                <h2 className="mt-2 text-balance text-3xl font-bold tracking-tight sm:text-4xl">
+                  {text("home.services.heading", "Car transport, when you need it")}
+                </h2>
+              </div>
+              <Link
+                href="/services"
+                className="inline-flex min-h-11 items-center gap-2 font-semibold underline-offset-4 hover:underline"
+              >
+                {text("home.services.link", "Explore services")}
+                <ArrowUpRight aria-hidden="true" className="size-4" />
+              </Link>
+            </div>
+            <ServiceShowcase
+              items={showcaseItems}
+              empty={text("empty.services", "Service information is currently unavailable.")}
+            />
+            <p className="mt-4 text-center text-xs text-slate-500 dark:text-slate-400 md:hidden">
+              Tap a service to open it, tap again to view
+            </p>
+          </div>
+        </section>
 
         {/* =========================================================
             3. PACKAGES (fixed image background)
@@ -568,7 +572,7 @@ export default async function HomePage() {
         </section>
 
         {/* =========================================================
-            8. ROUTES (route visual with a driving car + area cards)
+            8. ROUTES (planner with every location)
         ========================================================= */}
         <section
           id="routes"
@@ -577,80 +581,20 @@ export default async function HomePage() {
           className="snap-section bg-stone-100 px-4 dark:bg-slate-900/70 sm:px-6"
         >
           <div className="mx-auto w-full max-w-7xl">
-            <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-              <div>
-                <p className="text-sm font-bold uppercase tracking-[.2em] text-slate-500 dark:text-slate-400">
-                  {text("home.routes.eyebrow", "Coverage areas")}
-                </p>
-                <h2 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
-                  {text("home.routes.heading", "Routes we cover")}
-                </h2>
-              </div>
-              <Link href="/routes" className="inline-flex min-h-11 items-center gap-2 font-semibold underline-offset-4 hover:underline">
-                View all pickup and drop points
-                <ArrowUpRight aria-hidden="true" className="size-4" />
-              </Link>
+            <div className="mb-8 text-center">
+              <p className="text-sm font-bold uppercase tracking-[.2em] text-slate-500 dark:text-slate-400">
+                {text("home.routes.eyebrow", "Plan your trip")}
+              </p>
+              <h2 className="mt-2 text-balance text-3xl font-bold tracking-tight sm:text-4xl">
+                {text("home.routes.heading", "Where are we picking you up?")}
+              </h2>
             </div>
-
-            <div className="mt-8 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
-              <div className="border-b border-slate-200 px-6 py-8 dark:border-slate-800 sm:px-12 sm:py-10">
-                <div className="flex items-center gap-4 sm:gap-8">
-                  <div className="text-center">
-                    <span className="mx-auto grid size-14 place-items-center rounded-full bg-slate-950 text-white dark:bg-white dark:text-slate-950">
-                      <MapPin aria-hidden="true" className="size-6" />
-                    </span>
-                    <p className="mt-2 font-bold">Dubai</p>
-                  </div>
-                  <div className="relative h-0 flex-1 border-t-2 border-dashed border-slate-300 dark:border-slate-600">
-                    <Car aria-hidden="true" className="route-car absolute -top-4 size-8 text-amber-500" />
-                  </div>
-                  <div className="text-center">
-                    <span className="mx-auto grid size-14 place-items-center rounded-full bg-amber-400 text-slate-950">
-                      <MapPin aria-hidden="true" className="size-6" />
-                    </span>
-                    <p className="mt-2 font-bold">Abu Dhabi</p>
-                  </div>
-                </div>
-                <p className="mt-5 text-center text-sm text-slate-500 dark:text-slate-400">
-                  {text("home.routes.caption", "Daily corridors in both directions, 24/7")}
-                </p>
-              </div>
-
-              <div className="grid gap-px bg-slate-200 dark:bg-slate-800 md:grid-cols-2">
-                <div className="bg-white p-6 dark:bg-slate-900 sm:p-8">
-                  <p className="text-xs font-bold uppercase tracking-widest text-amber-500">Dubai pickups</p>
-                  <ul className="mt-4 flex flex-wrap gap-2">
-                    {DUBAI_AREAS.map((area) => (
-                      <li key={area} className="rounded-full border border-slate-300 px-4 py-1.5 text-sm font-medium dark:border-slate-700">{area}</li>
-                    ))}
-                    <li>
-                      <Link 
-                        href="/routes" 
-                        className="inline-block rounded-full bg-slate-950 px-4 py-1.5 text-sm font-medium text-white transition hover:opacity-90 dark:bg-white dark:text-slate-950"
-                      >
-                        + more
-                      </Link>
-                    </li>
-                  </ul>
-                </div>
-                <div className="bg-white p-6 dark:bg-slate-900 sm:p-8">
-                  <p className="text-xs font-bold uppercase tracking-widest text-amber-500">Abu Dhabi drops</p>
-                  <ul className="mt-4 flex flex-wrap gap-2">
-                    {ABU_DHABI_AREAS.map((area) => (
-                      <li key={area} className="rounded-full border border-slate-300 px-4 py-1.5 text-sm font-medium dark:border-slate-700">{area}</li>
-                    ))}
-                    <li>
-                      <Link 
-                        href="/routes" 
-                        className="inline-block rounded-full bg-amber-400 px-4 py-1.5 text-sm font-medium text-slate-950 transition hover:bg-amber-300"
-                      >
-                        + more
-                      </Link>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
+            <RoutePlanner
+              dubai={dubaiAreas}
+              abuDhabi={abuDhabiAreas}
+              whatsappDigits={settings?.whatsapp?.replace(/\D/g, "") || "971561379697"}
+              phone={settings?.phone_primary || "+971561379697"}
+            />
           </div>
         </section>
 
@@ -974,16 +918,6 @@ export default async function HomePage() {
             padding-bottom: 3.5rem !important;
           }
         }
-      `}</style>
-
-      {/* ROUTE ANIMATION */}
-      <style>{`
-        @keyframes route-drive {
-          from { left: 0; }
-          to { left: calc(100% - 32px); }
-        }
-        .route-car { animation: route-drive 5s ease-in-out infinite alternate; }
-        @media (prefers-reduced-motion: reduce) { .route-car { animation: none; left: 50%; } }
       `}</style>
 
       {/* TESTIMONIAL STYLES */}
