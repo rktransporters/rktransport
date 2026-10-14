@@ -1,8 +1,8 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, ArrowUpRight, Check, Clock, MessageCircle, Phone } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Check, Clock, MessageCircle, Phone, Route } from "lucide-react";
 import { BreadcrumbStructuredData, StructuredData } from "../Components/structured-data";
-import StillBackground from "../Components/still-background";
+import PageHero from "../Components/page-hero";
 import { apiImageUrl, isImageOptimizable, publicApi, type Faq, type Service } from "../../lib/transport-api";
 import { faqJsonLd, generatePageMetadata } from "../../lib/seo";
 
@@ -46,37 +46,32 @@ export default async function ServicesPage() {
 
       <main className="bg-stone-50 dark:bg-slate-950">
         {/* Hero Section with Still Background Effect */}
-        <section className="relative isolate overflow-hidden bg-slate-950 text-white [clip-path:inset(0)]">
-          <StillBackground src={bannerUrl} />
-          
-          <div className="mx-auto w-full max-w-7xl px-4 pb-20 pt-32 sm:px-6 sm:pb-24 lg:min-h-[600px] lg:flex lg:flex-col lg:justify-end">
-            <p className="text-sm font-bold uppercase tracking-[.2em] text-amber-400">Services</p>
-            <h1 className="mt-3 text-balance text-4xl font-bold leading-[1.05] tracking-tight sm:text-6xl">
-              {text("services.heading", "Car transport, done right")}
-            </h1>
-            <p className="mt-4 max-w-2xl text-lg leading-8 text-white/85 sm:text-xl">
-              {text("services.subheading", settings?.tagline || "Safe, reliable car transport between Dubai and Abu Dhabi.")}
-            </p>
-            {hours && (
-              <p className="mt-4 inline-flex min-h-9 items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 text-sm font-semibold backdrop-blur">
-                <Clock aria-hidden="true" className="size-4" />
-                {hours}
-              </p>
-            )}
-            <div className="mt-8 flex flex-wrap items-center gap-4">
-              <Link href="/quote" className="group inline-flex min-h-12 items-center gap-2 rounded-full bg-white px-6 font-semibold text-slate-950 transition hover:bg-slate-200">
-                Get a quote
-                <ArrowRight aria-hidden="true" className="size-4 transition-transform group-hover:translate-x-1" />
-              </Link>
-              {whatsappDigits && (
-                <a href={`https://wa.me/${whatsappDigits}`} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 items-center gap-2 rounded-full border border-white/30 bg-white/10 px-6 font-semibold backdrop-blur-md transition hover:bg-white/20">
-                  <MessageCircle aria-hidden="true" className="size-5" />
-                  WhatsApp
-                </a>
-              )}
-            </div>
-          </div>
-        </section>
+        <PageHero
+          crumb="Services"
+          title={text("services.heading", "Car transport, done right")}
+          subtitle={text("services.subheading", settings?.tagline || "Safe, reliable car transport between Dubai and Abu Dhabi.")}
+          imageUrl={bannerUrl}
+          highlights={[
+            { icon: <Clock aria-hidden="true" className="size-5" />, label: "Availability", value: hours || "Call us anytime" },
+            { icon: <Route aria-hidden="true" className="size-5" />, label: "Route", value: settings?.core_route_label || "Dubai ⇄ Abu Dhabi" },
+            { icon: <Phone aria-hidden="true" className="size-5" />, label: "Call us", value: settings?.phone_primary || "" },
+          ]}
+        >
+          <a
+            href={`https://wa.me/${whatsappDigits || "971561379697"}?text=${encodeURIComponent("Hello RK Transport, I would like a quote for car transport.")}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group inline-flex min-h-12 items-center gap-2 rounded-full bg-white px-6 font-semibold text-slate-950 transition hover:bg-amber-400"
+          >
+            <MessageCircle aria-hidden="true" className="size-5" />
+            Get a quote
+            <ArrowRight aria-hidden="true" className="size-4 transition-transform group-hover:translate-x-1" />
+          </a>
+          <Link href="/cars" className="inline-flex min-h-12 items-center gap-2 rounded-full border border-white/30 bg-white/10 px-6 font-semibold backdrop-blur-md transition hover:bg-white/20">
+            View vehicles
+            <ArrowUpRight aria-hidden="true" className="size-4" />
+          </Link>
+        </PageHero>
 
         {/* Main Content Container */}
         <div className="relative z-10 bg-stone-50 text-slate-900 rounded-t-[2.5rem] shadow-[0_-25px_50px_rgba(0,0,0,0.3)] dark:bg-slate-950 dark:text-white">

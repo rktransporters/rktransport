@@ -1,7 +1,7 @@
-import { ArrowUpRight, Clock3, MapPin, MessageCircle, ShieldCheck } from "lucide-react";
+import { ArrowUpRight, Clock3, MapPin, MessageCircle, Phone, Route, ShieldCheck } from "lucide-react";
 import { BreadcrumbStructuredData } from "../Components/structured-data";
 import RoutePlanner from "../Components/route-planner";
-import StillBackground from "../Components/still-background";
+import PageHero from "../Components/page-hero";
 import { generatePageMetadata } from "../../lib/seo";
 import { apiImageUrl, publicApi, type Location, type PageCopy } from "../../lib/transport-api";
 
@@ -70,30 +70,27 @@ export default async function RoutesPage() {
 
       <main className="bg-stone-50 text-slate-900 dark:bg-slate-950 dark:text-white">
         {/* Hero banner intentionally kept unchanged */}
-        <section className="relative isolate overflow-hidden bg-slate-950 text-white [clip-path:inset(0)]">
-          <StillBackground src={bannerUrl} />
-
-          <div className="mx-auto w-full max-w-7xl px-4 pb-20 pt-32 sm:px-6 sm:pb-24 lg:min-h-[600px] lg:flex lg:flex-col lg:justify-end">
-            <p className="text-sm font-bold uppercase tracking-[.2em] text-amber-400">Routes & Coverage</p>
-            <h1 className="mt-3 text-balance text-4xl font-bold leading-[1.05] tracking-tight sm:text-6xl">
-              Intercity Routes & Coverage Areas
-            </h1>
-            <p className="mt-4 max-w-2xl text-lg leading-8 text-white/85 sm:text-xl">
-              {`We provide reliable, door-to-door car transport and daily car lift services across the core corridor between ${routeLabel}.`}
-            </p>
-            <div className="mt-8 flex flex-wrap items-center gap-4">
-              <a
-                href={`https://wa.me/${whatsappDigits}?text=${encodeURIComponent("Hello RK Transport, I would like to ask about your routes.")}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex min-h-12 items-center gap-2 rounded-full bg-white px-6 font-semibold text-slate-950 transition hover:bg-slate-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
-              >
-                <MessageCircle aria-hidden="true" className="size-5" />
-                Ask about a route
-              </a>
-            </div>
-          </div>
-        </section>
+        <PageHero
+          crumb="Location"
+          title="Routes & coverage areas"
+          subtitle={`Reliable door-to-door car transport across the core corridor between ${routeLabel}.`}
+          imageUrl={bannerUrl}
+          highlights={[
+            { icon: <MapPin aria-hidden="true" className="size-5" />, label: "Dubai pickups", value: `${dubai.length} areas` },
+            { icon: <Route aria-hidden="true" className="size-5" />, label: "Abu Dhabi drop-offs", value: `${abuDhabi.length} areas` },
+            { icon: <Phone aria-hidden="true" className="size-5" />, label: "Call us", value: phone },
+          ]}
+        >
+          <a
+            href={`https://wa.me/${whatsappDigits}?text=${encodeURIComponent("Hello RK Transport, I would like to ask about your routes.")}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex min-h-12 items-center gap-2 rounded-full bg-white px-6 font-semibold text-slate-950 transition hover:bg-amber-400"
+          >
+            <MessageCircle aria-hidden="true" className="size-5" />
+            Ask about a route
+          </a>
+        </PageHero>
 
         <div className="relative z-10 -mt-1 rounded-t-[2.5rem] bg-white shadow-[0_-25px_50px_rgba(0,0,0,0.18)] dark:bg-slate-950">
           <div className="mx-auto w-full max-w-7xl px-4 py-14 sm:px-6 sm:py-20">
