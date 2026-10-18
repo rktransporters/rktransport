@@ -1,0 +1,4 @@
+API_BASE_URL=http://127.0.0.1:8000
+SECRET_KEY=replace-with-the-backend-secret
+COOKIE_NAME=access_token
+REVALIDATE_SECRET=replace-with-the-backend-revalidation-secret

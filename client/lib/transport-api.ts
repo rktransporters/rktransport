@@ -177,9 +177,11 @@ export async function apiRequest<T>(
     credentials: "include",
   } as RequestInit);
   const contentType = response.headers.get("content-type") || "";
-  const body = contentType.includes("application/json") ? await response.json() : null;
+  const body: unknown = contentType.includes("application/json") ? await response.json() : null;
   if (!response.ok) {
-    const detail = body && typeof body.detail === "string" ? body.detail : response.statusText;
+    const detail = body && typeof body === "object" && "detail" in body && typeof body.detail === "string"
+      ? body.detail
+      : response.statusText;
     throw new ApiError(detail || `Request failed (${response.status})`, response.status);
   }
   return body as T;

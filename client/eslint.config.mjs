@@ -19,5 +19,13 @@ export default defineConfig(
       "react/jsx-uses-react": "off",
     },
   },
-  globalIgnores([".next/**", "out/**", "build/**", "next-env.d.ts"]),
+  globalIgnores([
+    ".next/**",
+    ".open-next/**",
+    ".wrangler/**",
+    "out/**",
+    "build/**",
+    "next-env.d.ts",
+    "worker-configuration.d.ts",
+  ]),
 );
