@@ -6,8 +6,6 @@ import PageHero from "../Components/page-hero";
 import { generatePageMetadata } from "../../lib/seo";
 import { apiImageUrl, isImageOptimizable, publicApi, type PageCopy, type Vehicle } from "../../lib/transport-api";
 
-export const revalidate = 60;
-
 const WHATSAPP_NUMBER = "971561379697";
 
 export function generateMetadata() {

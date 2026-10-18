@@ -3,8 +3,6 @@ import { BreadcrumbStructuredData } from "../Components/structured-data";
 import { publicApi } from "../../lib/transport-api";
 import { generatePageMetadata } from "../../lib/seo";
 
-export const revalidate = 60;
-
 const WHATSAPP_NUMBER = "971561379697";
 const PHONE_NUMBER = "+971561379697";
 

@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { canonicalUrl } from "../lib/seo";
 import { publicApi } from "../lib/transport-api";
 
-export const revalidate = 3600;
+export const dynamic = "force-static";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticPaths = [

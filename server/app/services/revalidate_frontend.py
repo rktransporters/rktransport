@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 
 async def revalidate_paths(paths: list[str] | None = None) -> dict:
-    """Trigger Next.js on-demand revalidation."""
+    """Trigger a static Cloudflare Pages rebuild after public content changes."""
     payload = {"secret": settings.REVALIDATE_SECRET, "paths": paths or ["/"]}
     url = f"{settings.FRONTEND_URL.rstrip('/')}/api/revalidate"
     try:

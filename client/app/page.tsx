@@ -29,8 +29,6 @@ import {
 import { ABU_DHABI_FALLBACK, DUBAI_FALLBACK, areasFor } from "../lib/areas";
 import { faqJsonLd } from "../lib/seo";
 
-export const revalidate = 60;
-
 /* =========================================================
    STATIC CONTENT
 ========================================================= */

@@ -7,8 +7,6 @@ import StillBackground from "../../Components/still-background";
 import { generatePageMetadata } from "../../../lib/seo";
 import { apiImageUrl, isImageOptimizable, publicApi, type PageCopy, type Vehicle } from "../../../lib/transport-api";
 
-export const revalidate = 60;
-
 const WHATSAPP_NUMBER = "971561379697";
 const PHONE_NUMBER = "+971561379697";
 
@@ -76,6 +74,12 @@ async function getDetail(slug: string): Promise<Detail | null> {
 }
 
 type PageProps = { params: Promise<{ slug: string }> };
+
+export async function generateStaticParams() {
+  const cars = await publicApi.cars();
+  const slugs = new Set([...Object.keys(STATIC), ...cars.map((car) => String(car.id))]);
+  return Array.from(slugs, (slug) => ({ slug }));
+}
 
 export async function generateMetadata({ params }: PageProps) {
   const { slug } = await params;

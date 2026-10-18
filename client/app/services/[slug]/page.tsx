@@ -8,10 +8,13 @@ import StillBackground from "../../Components/still-background";
 import SimpleRichText from "../../Components/simple-rich-text";
 import { canonicalUrl, generatePageMetadata } from "../../../lib/seo";
 
-export const revalidate = 60;
-
 async function findService(slug: string): Promise<Service> {
-  return apiRequest<Service>(`/services/slug/${encodeURIComponent(slug)}`, { next: { revalidate: 60 } });
+  return apiRequest<Service>(`/services/slug/${encodeURIComponent(slug)}`);
+}
+
+export async function generateStaticParams() {
+  const services = await publicApi.services();
+  return services.map(({ slug }) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {

@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import type { PagesContext } from "../../types";
 
 function decodeBase64Url(value: string): Uint8Array {
   const normalized = value.replace(/-/g, "+").replace(/_/g, "/");
@@ -6,16 +6,28 @@ function decodeBase64Url(value: string): Uint8Array {
   return Uint8Array.from(binary, (character) => character.charCodeAt(0));
 }
 
-async function hasValidAdminSession(request: NextRequest): Promise<boolean> {
-  const token = request.cookies.get(process.env.COOKIE_NAME || "access_token")?.value;
-  const secret = process.env.SECRET_KEY;
+function readCookie(request: Request, name: string): string | undefined {
+  const prefix = `${name}=`;
+  return request.headers.get("cookie")
+    ?.split(";")
+    .map((cookie) => cookie.trim())
+    .find((cookie) => cookie.startsWith(prefix))
+    ?.slice(prefix.length);
+}
+
+async function hasValidAdminSession(request: Request, env: PagesContext["env"]): Promise<boolean> {
+  const token = readCookie(request, env.COOKIE_NAME || "access_token");
+  const secret = env.SECRET_KEY;
   if (!token || !secret) return false;
   const parts = token.split(".");
   if (parts.length !== 3) return false;
+
   try {
     const header = JSON.parse(new TextDecoder().decode(decodeBase64Url(parts[0])));
     const claims = JSON.parse(new TextDecoder().decode(decodeBase64Url(parts[1])));
-    if (header.alg !== "HS256" || typeof claims.sub !== "string" || Number(claims.exp) <= Date.now() / 1000) return false;
+    if (header.alg !== "HS256" || typeof claims.sub !== "string" || Number(claims.exp) <= Date.now() / 1000) {
+      return false;
+    }
     const key = await crypto.subtle.importKey(
       "raw",
       new TextEncoder().encode(secret),
@@ -37,15 +49,12 @@ async function hasValidAdminSession(request: NextRequest): Promise<boolean> {
   }
 }
 
-export async function proxy(request: NextRequest) {
-  if (!await hasValidAdminSession(request)) {
-    const login = new URL("/admin", request.url);
-    login.searchParams.set("next", request.nextUrl.pathname);
-    return NextResponse.redirect(login);
+export async function onRequest(context: PagesContext): Promise<Response> {
+  if (await hasValidAdminSession(context.request, context.env)) {
+    return context.next();
   }
-  return NextResponse.next();
-}
 
-export const config = {
-  matcher: ["/admin/dashboard/:path*"],
-};
+  const login = new URL("/admin", context.request.url);
+  login.searchParams.set("next", new URL(context.request.url).pathname);
+  return Response.redirect(login, 307);
+}

@@ -149,8 +149,6 @@ export type HeroBanner = {
 
 const API_PREFIX = "/api/v1";
 
-type ApiRequestOptions = RequestInit & { next?: { revalidate?: number } };
-
 export class ApiError extends Error {
   constructor(message: string, readonly status: number) {
     super(message);
@@ -160,22 +158,20 @@ export class ApiError extends Error {
 
 export async function apiRequest<T>(
   path: string,
-  options: ApiRequestOptions = {},
+  options: RequestInit = {},
 ): Promise<T> {
   const headers = new Headers(options.headers);
   if (options.body && !(options.body instanceof FormData)) {
     headers.set("Content-Type", "application/json");
   }
-  const { next, ...requestOptions } = options;
   const backendUrl = typeof window === "undefined"
     ? (process.env.API_BASE_URL || "http://localhost:8000").replace(/\/$/, "")
     : "";
   const response = await fetch(`${backendUrl}${API_PREFIX}${path}`, {
-    ...requestOptions,
-    ...(next ? { next } : {}),
+    ...options,
     headers,
     credentials: "include",
-  } as RequestInit);
+  });
   const contentType = response.headers.get("content-type") || "";
   const body: unknown = contentType.includes("application/json") ? await response.json() : null;
   if (!response.ok) {
@@ -188,19 +184,19 @@ export async function apiRequest<T>(
 }
 
 export const publicApi = {
-  settings: () => apiRequest<SiteSettings>("/settings", { next: { revalidate: 60 } }),
-  services: () => apiRequest<Service[]>("/services", { next: { revalidate: 60 } }),
-  locations: () => apiRequest<Location[]>("/locations", { next: { revalidate: 60 } }),
-  routes: () => apiRequest<Route[]>("/routes", { next: { revalidate: 60 } }),
-  vehicles: () => apiRequest<VehicleType[]>("/vehicle-types", { next: { revalidate: 60 } }),
-  cars: () => apiRequest<Vehicle[]>("/cars", { next: { revalidate: 60 } }),
-  carMakes: () => apiRequest<CarMakeOption[]>("/car-makes", { next: { revalidate: 60 } }),
-  storagePlans: () => apiRequest<StoragePlan[]>("/storage-plans", { next: { revalidate: 60 } }),
-  heroBanners: () => apiRequest<HeroBanner[]>("/hero-banners", { next: { revalidate: 60 } }),
-  pageCopy: () => apiRequest<PageCopy[]>("/page-copy", { next: { revalidate: 60 } }),
-  faqs: () => apiRequest<Faq[]>("/faqs", { next: { revalidate: 60 } }),
-  testimonials: () => apiRequest<Testimonial[]>("/testimonials", { next: { revalidate: 60 } }),
-  about: () => apiRequest<About[]>("/about", { next: { revalidate: 60 } }),
+  settings: () => apiRequest<SiteSettings>("/settings"),
+  services: () => apiRequest<Service[]>("/services"),
+  locations: () => apiRequest<Location[]>("/locations"),
+  routes: () => apiRequest<Route[]>("/routes"),
+  vehicles: () => apiRequest<VehicleType[]>("/vehicle-types"),
+  cars: () => apiRequest<Vehicle[]>("/cars"),
+  carMakes: () => apiRequest<CarMakeOption[]>("/car-makes"),
+  storagePlans: () => apiRequest<StoragePlan[]>("/storage-plans"),
+  heroBanners: () => apiRequest<HeroBanner[]>("/hero-banners"),
+  pageCopy: () => apiRequest<PageCopy[]>("/page-copy"),
+  faqs: () => apiRequest<Faq[]>("/faqs"),
+  testimonials: () => apiRequest<Testimonial[]>("/testimonials"),
+  about: () => apiRequest<About[]>("/about"),
   createInquiry: (input: Record<string, unknown>) =>
     apiRequest<Inquiry>("/inquiries", { method: "POST", body: JSON.stringify(input) }),
 };

@@ -14,7 +14,14 @@ Next.js App Router frontend for the RK Transport UAE vehicle transport, lift/rec
 
 3. Start the backend separately using the instructions in `../server/README.md`.
 
-Open `http://localhost:3000`. The frontend uses the same-origin `/api/v1` proxy for browser API calls so the backend's httpOnly authentication cookie is not exposed to JavaScript. Server-rendered content fetches use the private `API_BASE_URL`.
+For a full local Pages preview, first build the static site with the backend reachable at `API_BASE_URL`, then run the Pages emulator:
+
+   ```powershell
+   npm run pages:build
+   npm run pages:preview
+   ```
+
+The preview uses the Pages Functions under `functions/` for same-origin API requests and admin authentication. Copy `.dev.vars.example` to `.dev.vars` and set the local backend URL and matching JWT secret for those Functions. `npm run dev` is also available for rapid Next.js UI work, but it does not run the Pages Functions.
 
 ## Checks
 
@@ -26,40 +33,42 @@ npm run build
 
 ## Deploy to Cloudflare
 
-This app uses Next.js server rendering, API routes, authentication middleware, and on-demand revalidation. Deploy it as a **Cloudflare Worker** with the OpenNext adapter; a static Cloudflare Pages upload/export does not support these features.
+This frontend is exported as a static site and deployed to **Cloudflare Pages**. Pages Functions provide the same-origin backend API proxy, admin dashboard access check, and a deploy-hook endpoint for rebuilding the static site after content changes. The backend and its database remain separate; **R2 and a Worker deployment are not required**.
 
-1. In Cloudflare, create the R2 bucket `rk-transport-frontend-opennext-cache` and enable Cloudflare Images transformations on the zone used by the site. The Worker configuration uses R2 for Next.js incremental caching and Durable Objects for revalidation.
-2. From `client/`, install dependencies and authenticate Wrangler:
+### Cloudflare Pages project settings
 
-   ```powershell
-   npm install
-   npx wrangler login
-   ```
+Connect the GitHub repository to a Cloudflare Pages project and configure:
 
-3. Configure the Worker secrets. `API_BASE_URL` is the deployed FastAPI origin without `/api/v1`; the other two secrets must match the backend:
+- **Root directory:** `client`
+- **Build command:** `npm run pages:build`
+- **Build output directory:** `out`
+- **Framework preset:** `None` (do not select the Next.js Worker/OpenNext preset)
+- **Node.js version:** `22`
 
-   ```powershell
-   npx wrangler secret put API_BASE_URL
-   npx wrangler secret put SECRET_KEY
-   npx wrangler secret put REVALIDATE_SECRET
-   ```
+Set these environment variables in the Pages project:
 
-   Set `API_BASE_URL` as a **build-time** variable too, using the same backend origin, so content can be fetched while Next.js prerenders pages. Set `NEXT_PUBLIC_SITE_URL` to the public Cloudflare site URL as a build-time variable so generated canonical URLs use the production domain. Add any optional analytics or verification build variables there as well. For local CLI builds, put the build-time values in `.env.local`; for Workers Builds, configure them in the build environment. `COOKIE_NAME` is already set to `access_token` in `wrangler.jsonc`.
+| Variable | Used by | Value |
+| --- | --- | --- |
+| `API_BASE_URL` | Build and Functions | Deployed FastAPI origin, without `/api/v1` |
+| `NEXT_PUBLIC_SITE_URL` | Build | Public Pages site URL, such as `https://www.example.com` |
+| `SECRET_KEY` | Functions | Same JWT signing secret as the backend |
+| `COOKIE_NAME` | Functions | Same backend cookie name; usually `access_token` |
+| `REVALIDATE_SECRET` | Functions | Same value as the backend's `REVALIDATE_SECRET` |
+| `PAGES_DEPLOY_HOOK_URL` | Functions | HTTPS deploy-hook URL created in Pages project settings |
 
-4. Build and preview in the Cloudflare Workers runtime, then deploy:
+Set `API_BASE_URL` in both the Pages build environment and the Functions runtime variables; it must be the same backend origin in both places. `NEXT_PUBLIC_SITE_URL` is a build variable. Set the remaining entries as Functions runtime variables/secrets, and mark the three secret values as secrets in Cloudflare.
 
-   ```powershell
-   npm run cf:preview
-   npm run cf:deploy
-   ```
+Keep secrets (`SECRET_KEY`, `REVALIDATE_SECRET`, and `PAGES_DEPLOY_HOOK_URL`) out of source control. Set the backend's `FRONTEND_URL` to the Pages site URL and include that URL in the backend's `ALLOWED_ORIGINS`.
 
-   The first deploy applies the Durable Object migrations from `wrangler.jsonc`. In Cloudflare Workers Builds, set the project root to `client/`, the build command to `npm run cf:build`, and the deploy command to `npx opennextjs-cloudflare deploy`.
+### Publish and refresh content
 
-5. Update the backend's `ALLOWED_ORIGINS` and `FRONTEND_URL` to the Cloudflare site URL. Keep its `REVALIDATE_SECRET` equal to the frontend Worker secret. Cloudflare's Worker variables and secrets are separate from local `.env.local`; use `.dev.vars` for local Worker preview values (copy `.dev.vars.example` and replace the placeholders).
+Push changes to the connected Git branch, or run `npm run pages:build` locally with a reachable backend and the build variables above. The build fetches public content from the backend and generates the service and vehicle detail pages from the records available at build time. Keep at least one service active; Next.js static export needs a generated path for the service detail route.
 
-Cloudflare's Next.js image optimization uses the Cloudflare Images binding and may incur separate image-transformation charges. Image content can continue to use Cloudinary URLs.
+Admin edits continue to save directly to the backend. After a public content edit, the backend calls `/api/revalidate`; the Pages Function validates `REVALIDATE_SECRET` and triggers the configured Pages deploy hook. Cloudflare then rebuilds and publishes the static site. This is a **full site rebuild**, not instant on-demand page revalidation, so content changes appear when that deployment finishes. The deploy hook URL must be configured or the endpoint returns an error instead of claiming the content was refreshed.
 
-The backend remains a separate FastAPI deployment. Do not configure Cloudflare Pages to publish `.next` or `.open-next` as a static directory.
+The static export disables Next.js image optimization. Use public image URLs (for example, Cloudinary URLs) for uploaded content. Static-site pages do not read backend data at request time; interactive forms and admin screens use the same-origin `/api/v1` Pages Function to reach the backend.
+
+The backend remains a separate FastAPI deployment. Do not publish `.next` as the Pages output directory; the correct output is `out`.
 
 ## Vercel deployment
 

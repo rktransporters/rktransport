@@ -5,8 +5,6 @@ import PageHero from "../Components/page-hero";
 import { generatePageMetadata } from "../../lib/seo";
 import { apiImageUrl, publicApi, type Location, type PageCopy } from "../../lib/transport-api";
 
-export const revalidate = 60;
-
 const WHATSAPP_NUMBER = "971561379697";
 const PHONE_NUMBER = "+971561379697";
 

@@ -6,8 +6,6 @@ import PageHero from "../Components/page-hero";
 import { apiImageUrl, isImageOptimizable, publicApi, type Faq, type Service } from "../../lib/transport-api";
 import { faqJsonLd, generatePageMetadata } from "../../lib/seo";
 
-export const revalidate = 60;
-
 export function generateMetadata() {
   return generatePageMetadata("/services", {
     title: "Car Transport Services Dubai to Abu Dhabi | RK Transport",

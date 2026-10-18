@@ -11,8 +11,6 @@ import {
 import { apiImageUrl, isImageOptimizable, publicApi } from "../../lib/transport-api";
 import { generatePageMetadata } from "../../lib/seo";
 
-export const revalidate = 60;
-
 const reasonIcons: Record<string, LucideIcon> = {
   Truck, Shield: ShieldCheck, Clock: Clock3, Location: MapPin, Care: Heart, Award,
   Trusted: CircleCheck, Support: Headset, Performance: Gauge, "Top rated": Star, Repair: Wrench, Car: CarFront,
