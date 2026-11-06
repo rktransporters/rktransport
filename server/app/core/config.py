@@ -28,7 +28,10 @@ class Settings(BaseSettings):
     COOKIE_SAMESITE: str = "lax"  # lax | strict | none
     COOKIE_DOMAIN: str | None = None
 
-    # Image uploads are stored in Cloudinary.
+    # Image uploads: local | cloudinary | vercel_blob.
+    IMAGE_STORAGE_PROVIDER: str = "cloudinary"
+    UPLOAD_DIR: str = "uploads"
+    PUBLIC_FILES_BASE_URL: str | None = None
     CLOUDINARY_CLOUD_NAME: str | None = None
     CLOUDINARY_API_KEY: str | None = None
     CLOUDINARY_API_SECRET: str | None = None

@@ -1,5 +1,8 @@
+from pathlib import Path
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from app.api.v1 import api_v1
 from app.core.config import settings
@@ -7,6 +10,10 @@ from app.middleware.security_headers import SecurityHeadersMiddleware
 
 
 app = FastAPI(title=settings.APP_NAME, version="2.0.0")
+
+upload_dir = Path(settings.UPLOAD_DIR).expanduser().resolve()
+upload_dir.mkdir(parents=True, exist_ok=True)
+app.mount("/uploads", StaticFiles(directory=upload_dir), name="uploads")
 
 app.add_middleware(SecurityHeadersMiddleware)
 app.add_middleware(

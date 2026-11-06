@@ -203,7 +203,11 @@ export const publicApi = {
 export function apiImageUrl(url: string | null | undefined): string | undefined {
   if (!url) return undefined;
   if (/^(https?:|data:)/i.test(url)) return url;
-  return `${url.startsWith("/") ? url : `/${url}`}`;
+  const relativePath = url.startsWith("/") ? url : `/${url}`;
+  const configuredBackendUrl = process.env.NEXT_PUBLIC_API_BASE_URL || process.env.API_BASE_URL;
+  return configuredBackendUrl
+    ? `${configuredBackendUrl.replace(/\/$/, "")}${relativePath}`
+    : relativePath;
 }
 
 export function isImageOptimizable(url: string | null | undefined): boolean {

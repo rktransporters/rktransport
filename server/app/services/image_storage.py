@@ -1,10 +1,11 @@
-"""Validate, optimize, and upload images to Vercel Blob or Cloudinary without local disk writes."""
+"""Validate, optimize, and store images locally, on Vercel Blob, or on Cloudinary."""
 import asyncio
 import hashlib
 import io
 import logging
 import re
 import time
+from pathlib import Path
 from typing import Tuple
 
 import httpx
@@ -101,9 +102,19 @@ async def upload_image(file: UploadFile, folder: str = "general") -> Tuple[str, 
     )
 
     try:
-        if blob_token:
+        provider = _clean_token(getattr(settings, "IMAGE_STORAGE_PROVIDER", "cloudinary")).lower()
+        if provider == "local":
+            upload_dir = Path(settings.UPLOAD_DIR).expanduser().resolve()
+            destination = upload_dir / Path(filename)
+            await asyncio.to_thread(destination.parent.mkdir, parents=True, exist_ok=True)
+            await asyncio.to_thread(destination.write_bytes, contents)
+            base_url = _clean_token(getattr(settings, "PUBLIC_FILES_BASE_URL", None))
+            if not base_url:
+                raise StorageNotConfigured("PUBLIC_FILES_BASE_URL is required for local storage")
+            url = f"{base_url.rstrip('/')}/{filename}"
+        elif provider == "vercel_blob" and blob_token:
             url = await _vercel_blob(filename, contents, content_type, blob_token)
-        elif cloudinary_ready:
+        elif provider == "cloudinary" and cloudinary_ready:
             cloud_name = _clean_token(settings.CLOUDINARY_CLOUD_NAME)
             api_key = _clean_token(settings.CLOUDINARY_API_KEY)
             api_secret = _clean_token(settings.CLOUDINARY_API_SECRET)
@@ -117,7 +128,7 @@ async def upload_image(file: UploadFile, folder: str = "general") -> Tuple[str, 
                 api_secret,
             )
         else:
-            raise StorageNotConfigured("No BLOB_READ_WRITE_TOKEN or Cloudinary credentials set")
+            raise StorageNotConfigured(f"Image storage provider '{provider}' is not configured")
     except StorageNotConfigured as exc:
         logger.error("Image storage misconfigured: %s", exc)
         raise HTTPException(500, "Image storage is not configured") from exc

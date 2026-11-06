@@ -1,6 +1,0 @@
-NEXT_PUBLIC_API_BASE_URL=https://api.rk-transport.com
-API_BASE_URL=https://api.rk-transport.com
-SECRET_KEY=replace-with-the-backend-secret
-COOKIE_NAME=access_token
-REVALIDATE_SECRET=replace-with-the-backend-revalidation-secret
-PAGES_DEPLOY_HOOK_URL=
