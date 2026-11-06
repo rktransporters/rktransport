@@ -164,9 +164,8 @@ export async function apiRequest<T>(
   if (options.body && !(options.body instanceof FormData)) {
     headers.set("Content-Type", "application/json");
   }
-  const backendUrl = typeof window === "undefined"
-    ? (process.env.API_BASE_URL || "http://localhost:8000").replace(/\/$/, "")
-    : "";
+  const configuredBackendUrl = process.env.NEXT_PUBLIC_API_BASE_URL || process.env.API_BASE_URL;
+  const backendUrl = (configuredBackendUrl || "http://localhost:8000").replace(/\/$/, "");
   const response = await fetch(`${backendUrl}${API_PREFIX}${path}`, {
     ...options,
     headers,

@@ -76,7 +76,12 @@ async function getDetail(slug: string): Promise<Detail | null> {
 type PageProps = { params: Promise<{ slug: string }> };
 
 export async function generateStaticParams() {
-  const cars = await publicApi.cars();
+  let cars: Vehicle[] = [];
+  try {
+    cars = await publicApi.cars();
+  } catch {
+    // Static fallback routes can still be generated without a reachable API.
+  }
   const slugs = new Set([...Object.keys(STATIC), ...cars.map((car) => String(car.id))]);
   return Array.from(slugs, (slug) => ({ slug }));
 }

@@ -13,8 +13,12 @@ async function findService(slug: string): Promise<Service> {
 }
 
 export async function generateStaticParams() {
-  const services = await publicApi.services();
-  return services.map(({ slug }) => ({ slug }));
+  try {
+    const services = await publicApi.services();
+    return services.map(({ slug }) => ({ slug }));
+  } catch {
+    return [{ slug: "car-transport" }, { slug: "lift-recovery" }, { slug: "car-storage" }];
+  }
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
@@ -32,7 +36,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
         description: "Explore car transport services from RK Transport between Dubai and Abu Dhabi.",
       }, `seo.service.${slug}`);
     }
-    throw reason;
+    return generatePageMetadata(`/services/${slug}`, {
+      title: "RK Transport Service",
+      description: "Explore vehicle transport services from RK Transport in the UAE.",
+    }, `seo.service.${slug}`);
   }
 }
 
@@ -43,7 +50,7 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
     service = await findService(slug);
   } catch (reason) {
     if (reason instanceof ApiError && reason.status === 404) notFound();
-    throw reason;
+    notFound();
   }
   if (!service) {
     notFound();
