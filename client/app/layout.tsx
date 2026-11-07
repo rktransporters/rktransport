@@ -25,11 +25,8 @@ export async function generateMetadata(): Promise<Metadata> {
       ? { icon: settings.favicon_url }
       : {
           icon: [
-            { url: "/favicon/favicon.ico" },
-            { url: "/favicon/favicon.png", type: "image/png" },
+            { url: "/favicon.svg", type: "image/svg+xml" },
           ],
-          shortcut: "/favicon/favicon.ico",
-          apple: "/favicon/apple-touch-icon.png",
         },
   };
 }
