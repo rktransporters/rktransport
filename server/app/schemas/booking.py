@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import datetime
 from decimal import Decimal
 import re
 
@@ -42,7 +42,7 @@ class BookingVehicle(BaseModel):
 
 
 class BookingCreate(BaseModel):
-    type: str = Field(pattern="^(transport|recovery|storage)$")
+    type: str = Field(pattern="^transport$")
     customer_name: str = Field(min_length=2, max_length=160)
     customer_phone: str = Field(max_length=32)
     customer_email: EmailStr | None = None
@@ -57,9 +57,6 @@ class BookingCreate(BaseModel):
     plate_number: str | None = Field(default=None, max_length=32)
     vehicles: list["BookingVehicle"] = Field(default_factory=list, max_length=5)
     scheduled_at: datetime | None = None
-    storage_plan_id: int | None = Field(default=None, gt=0)
-    storage_start_date: date | None = None
-    storage_end_date: date | None = None
     notes: str | None = Field(default=None, max_length=5000)
     source: str = Field(default="web", pattern="^web$")
 
@@ -70,19 +67,10 @@ class BookingCreate(BaseModel):
 
     @model_validator(mode="after")
     def validate_service_details(self):
-        if self.type == "recovery" and self.vehicles and any(vehicle.runs is None for vehicle in self.vehicles):
-            raise ValueError("Tell us whether each car starts and drives for recovery bookings")
         if self.type == "transport" and (
             self.pickup_location_id is None or self.dropoff_location_id is None
         ):
             raise ValueError("Pickup and drop-off locations are required for transport bookings")
-        if self.type == "recovery" and not self.pickup_address:
-            raise ValueError("Recovery location is required")
-        if self.type == "storage":
-            if self.storage_plan_id is None or self.storage_start_date is None:
-                raise ValueError("Storage plan and start date are required")
-            if self.storage_end_date and self.storage_end_date < self.storage_start_date:
-                raise ValueError("Storage end date must be on or after the start date")
         return self
 
 
@@ -112,9 +100,6 @@ class BookingResponse(ORMModel):
     plate_number: str | None
     vehicles: list[BookingVehicle] | None
     scheduled_at: datetime | None
-    storage_plan_id: int | None
-    storage_start_date: date | None
-    storage_end_date: date | None
     quoted_amount_aed: Decimal | None
     notes: str | None
     admin_notes: str | None = None

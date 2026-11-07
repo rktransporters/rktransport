@@ -17,7 +17,7 @@ export async function generateStaticParams() {
     const services = await publicApi.services();
     return services.map(({ slug }) => ({ slug }));
   } catch {
-    return [{ slug: "car-transport" }, { slug: "lift-recovery" }, { slug: "car-storage" }];
+    return [{ slug: "car-transport" }];
   }
 }
 

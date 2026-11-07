@@ -5,7 +5,6 @@ from app.models.service import Service
 from app.models.location import Location
 from app.models.route import Route
 from app.models.vehicle_type import VehicleType
-from app.models.storage_plan import StoragePlan
 from app.models.booking import Booking
 from app.models.inquiry import Inquiry
 from app.models.about import About
@@ -26,7 +25,6 @@ __all__ = [
     "Location",
     "Route",
     "VehicleType",
-    "StoragePlan",
     "Booking",
     "Inquiry",
     "About",

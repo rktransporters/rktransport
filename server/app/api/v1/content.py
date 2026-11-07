@@ -11,7 +11,6 @@ from app.models.location import Location
 from app.models.page_copy import PageCopy
 from app.models.route import Route
 from app.models.service import Service
-from app.models.storage_plan import StoragePlan
 from app.models.testimonial import Testimonial
 from app.models.user import User
 from app.models.vehicle import Vehicle
@@ -30,8 +29,6 @@ from app.schemas.content import (
     RouteResponse,
     ServiceIn,
     ServiceResponse,
-    StoragePlanIn,
-    StoragePlanResponse,
     TestimonialIn,
     TestimonialResponse,
     VehicleIn,
@@ -89,17 +86,6 @@ cars_router = crud_router(
     tag="Cars",
     slug_from="title",
     order_by=Vehicle.display_order,
-)
-
-storage_router = crud_router(
-    model=StoragePlan,
-    schema_in=StoragePlanIn,
-    schema_out=StoragePlanResponse,
-    prefix="/storage-plans",
-    tag="Storage Plans",
-    slug_from="title",
-    order_by=StoragePlan.sort_order,
-    admin_enabled=False,
 )
 
 faq_router = crud_router(

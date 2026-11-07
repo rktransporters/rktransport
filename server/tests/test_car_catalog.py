@@ -55,7 +55,6 @@ class CarCatalogTests(unittest.TestCase):
             restricted_booking_option_admin_paths = [
                 "/api/v1/admin/routes",
                 "/api/v1/admin/vehicle-types",
-                "/api/v1/admin/storage-plans",
             ]
             booking_option_admin_responses = [
                 client.get(path) for path in restricted_booking_option_admin_paths

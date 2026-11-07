@@ -7,7 +7,6 @@ export type SiteSettings = {
   logo_dark_alt: string | null;
   favicon_url: string | null;
   phone_primary: string | null;
-  phone_recovery: string | null;
   whatsapp: string | null;
   email: string | null;
   address_line: string | null;
@@ -74,17 +73,6 @@ export type Vehicle = {
 };
 export type CarModelOption = { id: number; make_id: number; name: string; default_vehicle_type_id: number | null; is_active: boolean };
 export type CarMakeOption = { id: number; name: string; is_active: boolean; sort_order: number; models: CarModelOption[] };
-export type StoragePlan = {
-  id: number;
-  title: string;
-  description: string | null;
-  billing_period: string;
-  price_aed: string | number;
-  features: string[] | null;
-  covered: boolean;
-  image_url: string | null;
-  image_alt: string | null;
-};
 export type NotificationLog = {
   id: number;
   event_type: string;
@@ -190,7 +178,6 @@ export const publicApi = {
   vehicles: () => apiRequest<VehicleType[]>("/vehicle-types"),
   cars: () => apiRequest<Vehicle[]>("/cars"),
   carMakes: () => apiRequest<CarMakeOption[]>("/car-makes"),
-  storagePlans: () => apiRequest<StoragePlan[]>("/storage-plans"),
   heroBanners: () => apiRequest<HeroBanner[]>("/hero-banners"),
   pageCopy: () => apiRequest<PageCopy[]>("/page-copy"),
   faqs: () => apiRequest<Faq[]>("/faqs"),

@@ -12,8 +12,8 @@ const geist = Geist({ subsets: ["latin"], display: "swap", variable: "--font-gei
 export async function generateMetadata(): Promise<Metadata> {
   const [metadata, settings] = await Promise.all([
     generatePageMetadata("/", {
-      title: "Car Transport UAE | Recovery & Vehicle Storage | RK Transport",
-      description: "Professional car transport, vehicle recovery, roadside assistance and car storage across Dubai, Abu Dhabi and the UAE. Available 24/7.",
+      title: "Car Transport UAE | RK Transport",
+      description: "Professional car transport across Dubai, Abu Dhabi and the UAE. Available 24/7.",
     }),
     getSiteSettings(),
   ]);

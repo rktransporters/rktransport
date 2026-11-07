@@ -22,7 +22,6 @@ class SiteSettings(Base, TimestampMixin):
     favicon_url: Mapped[str | None] = mapped_column(Text, nullable=True)
 
     phone_primary: Mapped[str | None] = mapped_column(String(32), nullable=True)
-    phone_recovery: Mapped[str | None] = mapped_column(String(32), nullable=True)
     whatsapp: Mapped[str | None] = mapped_column(String(32), nullable=True)
     email: Mapped[str | None] = mapped_column(String(255), nullable=True)
     address_line: Mapped[str | None] = mapped_column(String(255), nullable=True)

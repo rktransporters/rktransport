@@ -127,26 +127,6 @@ class VehicleResponse(VehicleIn, ORMModel):
     updated_at: datetime | None = None
 
 
-class StoragePlanIn(BaseModel):
-    title: str = Field(min_length=1, max_length=200)
-    description: str | None = Field(default=None, max_length=5000)
-    billing_period: str = Field(default="month", max_length=16)
-    price_aed: Decimal = Field(default=Decimal("0"), ge=0, max_digits=12, decimal_places=2)
-    features: list[str] | None = Field(default=None, max_length=50)
-    covered: bool = True
-    image_url: str | None = Field(default=None, max_length=2048)
-    image_alt: str | None = Field(default=None, max_length=255)
-    sort_order: int = Field(default=0, ge=0)
-    is_active: bool = True
-
-
-class StoragePlanResponse(StoragePlanIn, ORMModel):
-    id: int
-    slug: str
-    created_at: datetime | None = None
-    updated_at: datetime | None = None
-
-
 class AboutIn(BaseModel):
     title: str = Field(min_length=1, max_length=200)
     subtitle: str | None = Field(default=None, max_length=255)

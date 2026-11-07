@@ -37,7 +37,7 @@ class SeedDefaultsTests(unittest.TestCase):
                 self.assertEqual(first_counts[SiteSettings], 1)
                 self.assertEqual(first_counts[Location], 2)
                 self.assertEqual(first_counts[Route], 2)
-                self.assertEqual(first_counts[Service], 3)
+                self.assertEqual(first_counts[Service], 1)
                 self.assertGreater(first_counts[PageCopy], 0)
                 self.assertGreater(first_counts[Faq], 0)
                 self.assertEqual(first_counts[HeroBanner], 1)

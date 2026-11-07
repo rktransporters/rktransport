@@ -17,7 +17,7 @@ FastAPI backend for the RK Transport website, bookings, content management, and 
 
 The API is available at `http://localhost:8000`; OpenAPI docs are at `/docs`. The public API prefix is `/api/v1`. Schema changes are applied with Alembic, and `scripts/seed_database.py` seeds defaults explicitly. The application does not run schema creation or seeding during startup, avoiding database DDL and seed work on Vercel cold starts.
 
-Run the seed command from the `server/` directory after migrations. It creates the configured admin user and default site settings, locations and routes, services, vehicle types, fleet cars, storage plans, hero slide, FAQs, and page copy (including the homepage section banner keys and booking steps). It is safe to run again; existing default records are not duplicated. Fleet vehicle and location records support page-banner image URLs; the admin image uploader stores uploads through the configured Cloudinary account.
+Run the seed command from the `server/` directory after migrations. It creates the configured admin user and default site settings, locations and routes, services, vehicle types, fleet cars, hero slide, FAQs, and page copy (including the homepage section banner keys and booking steps). It is safe to run again; existing default records are not duplicated. Fleet vehicle and location records support page-banner image URLs; the admin image uploader stores uploads through the configured Cloudinary account.
 
 The normal seed command deliberately does not overwrite an existing admin password. To explicitly reset a deployed admin account to the credentials in the current environment, run `python scripts/reset_admin_password.py`.
 

@@ -20,13 +20,10 @@ export default function AbuDhabiToDubaiPage() {
     faqs={[
       { question: "Can I arrange transport from Abu Dhabi to Dubai?", answer: "Yes. Contact RK Transport with your vehicle details, pickup and delivery areas, and preferred date. Our team will discuss the available arrangement with you." },
       { question: "Can you collect from a home or workplace?", answer: "Share the pickup location and any access restrictions when you contact us. We will review the collection details with you." },
-      { question: "What if my car has a mechanical issue?", answer: "Describe the issue and whether the car can roll, steer, and brake. This helps our team assess loading requirements and discuss a suitable transport or recovery option." },
     ]}
     links={[
       { href: "/dubai-to-abu-dhabi-car-transport", label: "Dubai to Abu Dhabi car transport" },
       { href: "/services", label: "All vehicle services" },
-      { href: "/car-lift-recovery", label: "Car lift and recovery" },
-      { href: "/storage", label: "Car storage" },
     ]}
   />;
 }

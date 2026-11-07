@@ -42,12 +42,6 @@ class BookingVehicleValidationTests(unittest.TestCase):
         with self.assertRaises(ValidationError):
             BookingCreate.model_validate(data)
 
-    def test_recovery_requires_runs_answer(self):
-        data = self.payload(type="recovery", pickup_address="Dubai Marina")
-        data["vehicles"] = [vehicle() | {"runs": None}]
-        with self.assertRaisesRegex(ValidationError, "starts and drives"):
-            BookingCreate.model_validate(data)
-
     def test_rejects_more_than_five_vehicles(self):
         data = self.payload()
         data["vehicles"] = [vehicle(index) for index in range(1, 7)]

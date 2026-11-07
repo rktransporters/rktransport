@@ -23,10 +23,9 @@ export default async function SeoLandingPage({
   const result = await Promise.allSettled([publicApi.pageCopy()]);
   const copy = result[0].status === "fulfilled" ? result[0].value : [];
   if (result[0].status === "rejected") console.error("Unable to load editable landing-page text:", result[0].reason);
-  const key = path === "/dubai-to-abu-dhabi-car-transport" ? "landing.dubai-to-abu-dhabi"
-    : path === "/abu-dhabi-to-dubai-car-transport" ? "landing.abu-dhabi-to-dubai"
-      : path === "/car-lift-recovery" ? "landing.car-lift-recovery"
-        : "landing.storage";
+  const key = path === "/dubai-to-abu-dhabi-car-transport"
+    ? "landing.dubai-to-abu-dhabi"
+    : "landing.abu-dhabi-to-dubai";
   const text = (field: "h1" | "intro" | "body", fallback: string) => copy.find((item) => item.key === `${key}.${field}`)?.value || fallback;
   const visibleSections = sections.map((section, index) => index === 0 ? { ...section, text: text("body", section.text) } : section);
   return <>

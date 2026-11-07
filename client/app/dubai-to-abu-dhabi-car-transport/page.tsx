@@ -25,8 +25,6 @@ export default function DubaiToAbuDhabiPage() {
     links={[
       { href: "/abu-dhabi-to-dubai-car-transport", label: "Abu Dhabi to Dubai car transport" },
       { href: "/services", label: "All vehicle services" },
-      { href: "/car-lift-recovery", label: "Car lift and recovery" },
-      { href: "/storage", label: "Car storage" },
     ]}
   />;
 }

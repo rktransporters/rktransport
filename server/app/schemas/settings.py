@@ -14,7 +14,6 @@ class SiteSettingsUpdate(BaseModel):
     logo_dark_alt: str | None = Field(default=None, max_length=255)
     favicon_url: str | None = Field(default=None, max_length=2048)
     phone_primary: str | None = Field(default=None, max_length=32)
-    phone_recovery: str | None = Field(default=None, max_length=32)
     whatsapp: str | None = Field(default=None, max_length=32)
     email: str | None = Field(default=None, max_length=255)
     address_line: str | None = Field(default=None, max_length=255)
@@ -43,7 +42,7 @@ class SiteSettingsUpdate(BaseModel):
     notification_admin_phone: str | None = Field(default=None, max_length=32)
 
     def model_post_init(self, __context):
-        for field in ("phone_primary", "phone_recovery", "whatsapp", "notification_admin_phone"):
+        for field in ("phone_primary", "whatsapp", "notification_admin_phone"):
             val = getattr(self, field)
             if val:
                 setattr(self, field, require_uae_phone(val))
@@ -58,7 +57,6 @@ class SiteSettingsResponse(ORMModel):
     logo_dark_alt: str | None
     favicon_url: str | None
     phone_primary: str | None
-    phone_recovery: str | None
     whatsapp: str | None
     email: str | None
     address_line: str | None

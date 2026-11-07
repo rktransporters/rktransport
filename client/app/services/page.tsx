@@ -8,8 +8,8 @@ import { faqJsonLd, generatePageMetadata } from "../../lib/seo";
 
 export function generateMetadata() {
   return generatePageMetadata("/services", {
-    title: "Car Transport & Recovery Services UAE | RK Transport",
-    description: "Book car transport, vehicle recovery, roadside assistance and towing across Dubai, Abu Dhabi and the UAE. Available 24/7.",
+    title: "Car Transport Services UAE | RK Transport",
+    description: "Book car transport across Dubai, Abu Dhabi and the UAE. Available 24/7.",
   });
 }
 

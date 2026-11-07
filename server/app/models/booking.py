@@ -1,5 +1,5 @@
-from datetime import date, datetime
-from sqlalchemy import Date, DateTime, ForeignKey, Integer, Numeric, String, Text
+from datetime import datetime
+from sqlalchemy import DateTime, ForeignKey, Integer, Numeric, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
@@ -12,7 +12,7 @@ class Booking(Base, TimestampMixin):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     ref: Mapped[str] = mapped_column(String(32), unique=True, index=True)
-    type: Mapped[str] = mapped_column(String(24), index=True)  # transport | recovery | storage
+    type: Mapped[str] = mapped_column(String(24), index=True)  # transport
     status: Mapped[str] = mapped_column(String(24), default="new", index=True)
 
     customer_name: Mapped[str] = mapped_column(String(160))
@@ -32,9 +32,6 @@ class Booking(Base, TimestampMixin):
     vehicles: Mapped[list[dict] | None] = mapped_column(JSONType, nullable=True)
 
     scheduled_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
-    storage_plan_id: Mapped[int | None] = mapped_column(ForeignKey("storage_plans.id"), nullable=True)
-    storage_start_date: Mapped[date | None] = mapped_column(Date, nullable=True)
-    storage_end_date: Mapped[date | None] = mapped_column(Date, nullable=True)
 
     quoted_amount_aed: Mapped[float | None] = mapped_column(Numeric(12, 2), nullable=True)
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
@@ -44,4 +41,3 @@ class Booking(Base, TimestampMixin):
     pickup_location = relationship("Location", foreign_keys=[pickup_location_id])
     dropoff_location = relationship("Location", foreign_keys=[dropoff_location_id])
     vehicle_type = relationship("VehicleType", back_populates="bookings")
-    storage_plan = relationship("StoragePlan", back_populates="bookings")

@@ -1,6 +1,6 @@
 # RK Transport frontend
 
-Next.js App Router frontend for the RK Transport UAE vehicle transport, lift/recovery, and storage business.
+Next.js App Router frontend for the RK Transport UAE vehicle transport business.
 
 ## Local development
 

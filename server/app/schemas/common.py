@@ -18,7 +18,7 @@ def require_uae_phone(value: str) -> str:
 
 
 class PhoneMixin(BaseModel):
-    @field_validator("phone", "customer_phone", "phone_primary", "phone_recovery", "whatsapp", mode="before", check_fields=False)
+    @field_validator("phone", "customer_phone", "phone_primary", "whatsapp", mode="before", check_fields=False)
     @classmethod
     def _phone(cls, v: Any) -> Any:
         if v in (None, ""):
