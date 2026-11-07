@@ -23,6 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
     applicationName: settings?.brand_name || "RK Transport",
     icons: {
       icon: [
+        { url: "/favicon.ico", sizes: "any" },
         { url: "/favicon.png", type: "image/png", sizes: "512x512" },
         { url: "/favicon.svg", type: "image/svg+xml" },
       ],
