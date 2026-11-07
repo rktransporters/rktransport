@@ -163,7 +163,7 @@ export default async function HomePage() {
 
   const carCards: CarCard[] = cars.map((car: Vehicle) => ({
     id: car.id,
-    href: `/cars/${car.id}`,
+    href: `/cars/${(car as { slug?: string }).slug || car.id}`,
     title: car.title,
     description: car.description,
     seats: car.seats,
