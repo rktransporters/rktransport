@@ -115,7 +115,7 @@ export function businessJsonLd(settings: SiteSettings | null) {
     "@type": "AutomotiveBusiness",
     name: brand,
     url: canonicalUrl("/"),
-    logo: `${siteUrl}/android-chrome-512x512.png`,
+    logo: `${siteUrl}/favicon-v2.png`,
     ...(settings?.tagline ? { description: settings.tagline } : {}),
     slogan: "Professional car transport, recovery and vehicle storage across the UAE",
     knowsAbout: [

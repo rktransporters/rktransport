@@ -23,14 +23,11 @@ export async function generateMetadata(): Promise<Metadata> {
     applicationName: settings?.brand_name || "RK Transport",
     icons: {
       icon: [
-        { url: "/favicon.ico?v=3", sizes: "16x16 32x32" },
-        { url: "/favicon-16x16.png?v=3", type: "image/png", sizes: "16x16" },
-        { url: "/favicon-32x32.png?v=3", type: "image/png", sizes: "32x32" },
-        { url: "/android-chrome-512x512.png?v=3", type: "image/png", sizes: "512x512" },
-        { url: "/favicon.png?v=3", type: "image/png", sizes: "512x512" },
+        { url: "/favicon-v2.ico?v=4", sizes: "16x16 32x32" },
+        { url: "/favicon-v2.png?v=4", type: "image/png", sizes: "512x512" },
       ],
-      shortcut: "/favicon.ico?v=3",
-      apple: [{ url: "/apple-touch-icon.png?v=3", sizes: "180x180", type: "image/png" }],
+      shortcut: "/favicon-v2.ico?v=4",
+      apple: [{ url: "/apple-touch-icon.png?v=4", sizes: "180x180", type: "image/png" }],
     },
   };
 }
