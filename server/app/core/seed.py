@@ -403,6 +403,24 @@ def seed_defaults(db: Session) -> None:
 
     default_faqs = [
         Faq(
+            question="How much does it cost to transport a car from Dubai to Abu Dhabi?",
+            answer="The price depends on vehicle type, condition, pickup and delivery locations, timing, and whether enclosed transport or recovery is required. Contact RK Transport for a fixed quote before the journey.",
+            page_key="home",
+            sort_order=1,
+        ),
+        Faq(
+            question="Do you provide 24/7 car recovery and roadside assistance in the UAE?",
+            answer="Yes. RK Transport provides 24/7 vehicle recovery, towing and roadside assistance in Dubai, Abu Dhabi and surrounding UAE areas when dispatch availability permits.",
+            page_key="home",
+            sort_order=2,
+        ),
+        Faq(
+            question="What should I do if my car breaks down on Sheikh Zayed Road?",
+            answer="Move to a safe location if possible, switch on hazard lights, use warning triangles where safe, remain behind barriers, and call RK Transport with your exact location and vehicle details for recovery.",
+            page_key="home",
+            sort_order=3,
+        ),
+        Faq(
             question="Do you operate both directions between Dubai and Abu Dhabi?",
             answer="Yes. Dubai → Abu Dhabi and Abu Dhabi → Dubai, 24/7. See the dedicated route pages for each direction.",
             page_key="home",
