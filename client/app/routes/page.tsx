@@ -21,8 +21,8 @@ const ABU_DHABI_FALLBACK = [
 
 export function generateMetadata() {
   return generatePageMetadata("/routes", {
-    title: "Dubai to Abu Dhabi Routes & Pickup Points | RK Transport",
-    description: "Choose your pickup and drop-off area between Dubai and Abu Dhabi and request your route on WhatsApp.",
+    title: "Car Transport Routes UAE | Dubai, Abu Dhabi & Emirates",
+    description: "Door-to-door vehicle transport across Dubai and Abu Dhabi with pickup and delivery areas throughout the UAE.",
   });
 }
 

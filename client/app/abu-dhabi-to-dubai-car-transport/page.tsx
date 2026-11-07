@@ -3,8 +3,8 @@ import { generatePageMetadata } from "../../lib/seo";
 
 export function generateMetadata() {
   return generatePageMetadata("/abu-dhabi-to-dubai-car-transport", {
-    title: "Abu Dhabi to Dubai Car Transport | RK Transport",
-    description: "Arrange car transport from Abu Dhabi to Dubai with RK Transport. Contact our team with your vehicle, pickup, and delivery details.",
+    title: "Abu Dhabi to Dubai Car Transport Cost & Booking | RK",
+    description: "Get a quote for safe, door-to-door car transport from Abu Dhabi to Dubai. Same-day and 24/7 vehicle transfer available.",
   }, "seo.abu-dhabi-to-dubai");
 }
 

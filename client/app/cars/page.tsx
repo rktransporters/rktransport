@@ -10,8 +10,8 @@ const WHATSAPP_NUMBER = "971561379697";
 
 export function generateMetadata() {
   return generatePageMetadata("/cars", {
-    title: "Our Fleet & Transport Vehicles | RK Transport Dubai to Abu Dhabi",
-    description: "Explore our fleet of sedans, family SUVs, and executive vans for comfortable travel between Dubai and Abu Dhabi.",
+    title: "Car Transport Fleet UAE | Sedan, SUV & Van | RK Transport",
+    description: "Choose professional vehicle transport for sedans, SUVs, luxury cars and vans across Dubai, Abu Dhabi and the UAE.",
   });
 }
 
