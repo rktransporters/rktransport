@@ -103,7 +103,7 @@ export function businessJsonLd(settings: SiteSettings | null) {
     "@type": "AutomotiveBusiness",
     name: brand,
     url: canonicalUrl("/"),
-    logo: settings?.favicon_url || settings?.logo_url || `${siteUrl}/android-chrome-512x512.png`,
+    logo: `${siteUrl}/android-chrome-512x512.png`,
     ...(settings?.tagline ? { description: settings.tagline } : {}),
     ...(settings?.phone_primary ? { telephone: settings.phone_primary } : {}),
     ...(address ? { address } : {}),

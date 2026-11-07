@@ -27,6 +27,7 @@ export async function generateMetadata(): Promise<Metadata> {
         { url: "/favicon-16x16.png?v=3", type: "image/png", sizes: "16x16" },
         { url: "/favicon-32x32.png?v=3", type: "image/png", sizes: "32x32" },
         { url: "/android-chrome-512x512.png?v=3", type: "image/png", sizes: "512x512" },
+        { url: "/favicon.png?v=3", type: "image/png", sizes: "512x512" },
       ],
       shortcut: "/favicon.ico?v=3",
       apple: [{ url: "/apple-touch-icon.png?v=3", sizes: "180x180", type: "image/png" }],
