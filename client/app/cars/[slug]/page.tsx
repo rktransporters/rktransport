@@ -53,7 +53,9 @@ const STATIC: Record<string, Detail> = {
 async function getDetail(slug: string): Promise<Detail | null> {
   try {
     const cars: Vehicle[] = await publicApi.cars();
-    const car = cars.find((item) => String(item.id) === slug);
+    const car = cars.find(
+      (item) => (item as Vehicle & { slug?: string }).slug === slug || String(item.id) === slug,
+    );
     if (car) {
       return {
         title: car.title,
