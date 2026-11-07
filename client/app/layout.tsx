@@ -6,7 +6,6 @@ import { Providers } from "./providers";
 import ConditionalLayout from "./Components/ConditionalLayout";
 import { StructuredData } from "./Components/structured-data";
 import { businessJsonLd, generatePageMetadata, getSiteSettings } from "../lib/seo";
-import { apiImageUrl } from "../lib/transport-api";
 
 const geist = Geist({ subsets: ["latin"], display: "swap", variable: "--font-geist" });
 
@@ -23,8 +22,12 @@ export async function generateMetadata(): Promise<Metadata> {
     ...metadata,
     applicationName: settings?.brand_name || "RK Transport",
     icons: {
-      icon: apiImageUrl(settings?.favicon_url || settings?.logo_url) || "/favicon.svg",
-      shortcut: apiImageUrl(settings?.favicon_url || settings?.logo_url) || "/favicon.svg",
+      icon: [
+        { url: "/favicon.png", type: "image/png", sizes: "512x512" },
+        { url: "/favicon.svg", type: "image/svg+xml" },
+      ],
+      shortcut: "/favicon.png",
+      apple: "/favicon.png",
     },
   };
 }
