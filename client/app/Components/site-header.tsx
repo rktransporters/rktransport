@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { Menu, X, ArrowUpRight } from "lucide-react";
-import { useTheme } from "next-themes";
 import { apiRequest, type SiteSettings } from "../../lib/transport-api";
 import ThemeToggle from "./theme-toggle";
 
@@ -16,7 +15,6 @@ export default function SiteHeader() {
     queryKey: ["site-settings"],
     queryFn: () => apiRequest<SiteSettings>("/settings"),
   });
-  const { resolvedTheme } = useTheme();
   const [menuPath, setMenuPath] = useState<string | null>(null);
   const menuOpen = menuPath === pathname;
   const [scrolled, setScrolled] = useState(false);
@@ -57,9 +55,7 @@ export default function SiteHeader() {
   const cta = settings?.header_cta_label || "Get a quote";
   const href = settings?.header_cta_href || "/review";
   const safeCtaHref = href.startsWith("/") && !href.startsWith("//") && href !== "/quote" && href !== "/track" ? href : "/review";
-  const logo = transparent || resolvedTheme === "dark"
-    ? settings?.logo_dark_url || settings?.logo_url
-    : settings?.logo_url;
+  const logo = "/android-chrome-192x192.png?v=5";
   
   const isActive = (path: string) => path === "/" ? pathname === "/" : pathname === path || pathname.startsWith(`${path}/`);
 
