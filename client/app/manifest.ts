@@ -12,9 +12,8 @@ export default function manifest(): MetadataRoute.Manifest {
     background_color: "#fafaf9",
     theme_color: "#102d25",
     icons: [
-      { src: "/favicon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
+      { src: "/android-chrome-192x192.png", sizes: "192x192", type: "image/png", purpose: "any" },
       { src: "/android-chrome-512x512.png", sizes: "512x512", type: "image/png", purpose: "any" },
-      { src: "/favicon-v2.png", sizes: "512x512", type: "image/png", purpose: "any" },
     ],
   };
 }
