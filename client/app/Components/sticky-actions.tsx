@@ -2,6 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { apiRequest, type SiteSettings } from "../../lib/transport-api";
+import { createWhatsappUrl } from "../../lib/whatsapp";
 
 // DEFAULT FALLBACK NUMBER (Replace with your actual UAE phone/WhatsApp number)
 const FALLBACK_PHONE = "+971561379697";
@@ -19,8 +20,7 @@ function cleanWhatsappNumber(phone?: string | null): string {
     num = `971${num.slice(1)}`;
   }
 
-  // Use api.whatsapp.com for best mobile deep-linking support
-  return `https://api.whatsapp.com/send?phone=${num}`;
+  return createWhatsappUrl(num, "Hello RK Transport, I would like to get in touch.");
 }
 
 export default function StickyActions() {

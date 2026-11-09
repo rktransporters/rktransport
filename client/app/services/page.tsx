@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, ArrowUpRight, Check, Clock, MessageCircle, Phone, Route } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Check } from "lucide-react";
 import { BreadcrumbStructuredData, StructuredData } from "../Components/structured-data";
 import PageHero from "../Components/page-hero";
 import { apiImageUrl, isImageOptimizable, publicApi, type Faq, type Service } from "../../lib/transport-api";
@@ -28,13 +28,12 @@ export default async function ServicesPage() {
 
   const [featured, ...others] = services;
   const hours = settings?.available_24_7 ? settings.hours_label : "";
-  const whatsappDigits = settings?.whatsapp?.replace(/\D/g, "");
 
   const rawBannerUrl =
     copy.find((item: { key: string }) => item.key === "services_banner_url")?.value ||
     ((featured as Record<string, unknown>)?.banner_image_url as string | undefined) ||
     ((services.find((s: unknown) => (s as Record<string, unknown>)?.banner_image_url) as Record<string, unknown>)?.banner_image_url as string | undefined);
-  
+
   const bannerUrl = rawBannerUrl ? apiImageUrl(rawBannerUrl) || rawBannerUrl : undefined;
 
   return (
@@ -43,33 +42,17 @@ export default async function ServicesPage() {
       {faqs.length > 0 && <StructuredData data={faqJsonLd(faqs.map(({ question, answer }) => ({ question, answer })))} />}
 
       <main className="bg-stone-50 dark:bg-slate-950">
-        {/* Hero Section with Still Background Effect */}
         <PageHero
           crumb="Services"
           title={text("services.heading", "Car transport, done right")}
           subtitle={text("services.subheading", settings?.tagline || "Safe, reliable car transport between Dubai and Abu Dhabi.")}
           imageUrl={bannerUrl}
           highlights={[
-            { icon: <Clock aria-hidden="true" className="size-5" />, label: "Availability", value: hours || "Call us anytime" },
-            { icon: <Route aria-hidden="true" className="size-5" />, label: "Route", value: settings?.core_route_label || "Dubai ⇄ Abu Dhabi" },
-            { icon: <Phone aria-hidden="true" className="size-5" />, label: "Call us", value: settings?.phone_primary || "" },
+            { label: "Availability", value: hours || "Call us anytime" },
+            { label: "Route", value: settings?.core_route_label || "Dubai ⇄ Abu Dhabi" },
+            { label: "Call us", value: settings?.phone_primary || "", href: settings?.phone_primary ? `tel:${settings.phone_primary}` : undefined },
           ]}
-        >
-          <a
-            href={`https://wa.me/${whatsappDigits || "971561379697"}?text=${encodeURIComponent("Hello RK Transport, I would like a quote for car transport.")}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group inline-flex min-h-12 items-center gap-2 rounded-full bg-white px-6 font-semibold text-slate-950 transition hover:bg-amber-400"
-          >
-            <MessageCircle aria-hidden="true" className="size-5" />
-            Get a quote
-            <ArrowRight aria-hidden="true" className="size-4 transition-transform group-hover:translate-x-1" />
-          </a>
-          <Link href="/cars" className="inline-flex min-h-12 items-center gap-2 rounded-full border border-white/30 bg-white/10 px-6 font-semibold backdrop-blur-md transition hover:bg-white/20">
-            View vehicles
-            <ArrowUpRight aria-hidden="true" className="size-4" />
-          </Link>
-        </PageHero>
+        />
 
         {/* Main Content Container */}
         <div className="relative z-10 bg-stone-50 text-slate-900 rounded-t-[2.5rem] shadow-[0_-25px_50px_rgba(0,0,0,0.3)] dark:bg-slate-950 dark:text-white">

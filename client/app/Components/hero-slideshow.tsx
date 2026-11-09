@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowRight, ChevronDown, ChevronLeft, ChevronRight, MessageCircle, Phone } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { apiImageUrl, isImageOptimizable, type HeroBanner } from "../../lib/transport-api";
+import { createWhatsappUrl } from "../../lib/whatsapp";
 
 const SLIDE_MS = 6000;
 
@@ -24,7 +25,10 @@ export default function HeroSlideshow({
   const slide = slides[active];
   const count = slides.length;
 
-  const whatsappHref = `https://wa.me/${(whatsapp || "971561379697").replace(/\D/g, "")}`;
+  const whatsappHref = createWhatsappUrl(
+    (whatsapp || "971561379697").replace(/\D/g, ""),
+    "Hello RK Transport, I would like to learn more about your car transport services.",
+  );
   const phoneHref = `tel:${phone || "+971561379697"}`;
 
   const next = useCallback(() => setActive((index) => (index + 1) % count), [count]);
@@ -85,7 +89,6 @@ export default function HeroSlideshow({
         return (
           <picture
             key={banner.id}
-            aria-hidden="true"
             className={`fixed inset-0 -z-30 transition-opacity duration-1000 ${isActive ? "opacity-100" : "opacity-0"}`}
           >
             {banner.portrait_image_url && portraitSrc && <source media="(max-width: 1023px)" srcSet={portraitSrc} />}

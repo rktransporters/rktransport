@@ -28,6 +28,7 @@ import {
 } from "../lib/transport-api";
 import { ABU_DHABI_FALLBACK, DUBAI_FALLBACK, areasFor } from "../lib/areas";
 import { faqJsonLd } from "../lib/seo";
+import { createWhatsappUrl } from "../lib/whatsapp";
 
 /* =========================================================
    STATIC CONTENT
@@ -118,6 +119,7 @@ export default async function HomePage() {
     await getContent();
   const text = (key: string, fallback: string) =>
     copy.find((item: PageCopy) => item.key === key)?.value || fallback;
+  const whatsappDigits = settings?.whatsapp?.replace(/\D/g, "") || "971561379697";
 
   const slides: HeroBanner[] = banners.length
     ? banners
@@ -163,7 +165,7 @@ export default async function HomePage() {
 
   const carCards: CarCard[] = cars.map((car: Vehicle) => ({
     id: car.id,
-    href: `/cars/${(car as { slug?: string }).slug || car.id}`,
+    href: "/cars",
     title: car.title,
     description: car.description,
     seats: car.seats,
@@ -317,8 +319,13 @@ export default async function HomePage() {
                         </li>
                       ))}
                     </ul>
-                    <Link
-                      href="/contact"
+                    <a
+                      href={createWhatsappUrl(
+                        whatsappDigits,
+                        `Hello RK Transport, I would like to book the ${pkg.name} package for ${pkg.price} ${pkg.period}. Please contact me with details.`,
+                      )}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className={`group mt-8 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full font-semibold transition ${
                         pkg.popular
                           ? "bg-slate-950 text-white hover:bg-slate-800"
@@ -327,7 +334,7 @@ export default async function HomePage() {
                     >
                       Book package
                       <ArrowUpRight aria-hidden="true" className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-                    </Link>
+                    </a>
                   </div>
                 );
               })}
@@ -488,10 +495,10 @@ export default async function HomePage() {
               <p className="mt-5 max-w-md leading-7 text-slate-300">
                 {text("home.why.subheading", "We make traveling between Dubai and Abu Dhabi effortless and dependable.")}
               </p>
-              <Link href="/contact" className="group mt-8 inline-flex min-h-12 items-center gap-2 rounded-full bg-amber-400 px-6 font-semibold text-slate-950 transition hover:bg-amber-300">
+              <a href={createWhatsappUrl(whatsappDigits, "Hello RK Transport, I would like to book a ride. Please contact me with details.")} target="_blank" rel="noopener noreferrer" className="group mt-8 inline-flex min-h-12 items-center gap-2 rounded-full bg-amber-400 px-6 font-semibold text-slate-950 transition hover:bg-amber-300">
                 Book your ride
                 <ArrowUpRight aria-hidden="true" className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-              </Link>
+              </a>
             </div>
 
             <ul className="divide-y divide-white/10 border-y border-white/10">
@@ -679,7 +686,7 @@ export default async function HomePage() {
 
             <div className="relative z-30 mt-12 text-center">
               <Link
-                href="/contact"
+                href="#review"
                 className="group inline-flex min-h-12 items-center gap-2 rounded-full bg-white px-6 font-semibold text-slate-950 transition hover:bg-slate-200"
               >
                 Share your experience
@@ -777,7 +784,7 @@ export default async function HomePage() {
                   <p className="mt-1 text-sm text-white/70">We reply fast, day or night.</p>
                   <div className="mt-5 flex flex-wrap gap-3">
                     <a
-                      href={`https://wa.me/${settings?.whatsapp?.replace(/\D/g, "") || "971561379697"}`}
+                      href={createWhatsappUrl(whatsappDigits, "Hello RK Transport, I have a question about your services.")}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex min-h-11 items-center gap-2 rounded-full bg-white px-5 text-sm font-semibold text-slate-950 transition hover:bg-slate-200"
@@ -867,7 +874,7 @@ export default async function HomePage() {
                 )}
                 <li>
                   <a
-                    href={`https://wa.me/${settings?.whatsapp?.replace(/\D/g, "") || "971561379697"}`}
+                    href={createWhatsappUrl(whatsappDigits, "Hello RK Transport, I would like to get in touch.")}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="group flex min-h-14 items-center gap-4 rounded-2xl border border-white/10 bg-white/5 px-4 transition hover:bg-white/10"

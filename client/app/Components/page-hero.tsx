@@ -1,76 +1,111 @@
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import StillBackground from "./still-background";
 
-export type HeroHighlight = { icon: ReactNode; label: string; value: string };
+export type HeroFact = { label: string; value: string; href?: string; icon?: ReactNode };
+export type HeroHighlight = HeroFact;
 
 type Props = {
   crumb: string;
+  parent?: { label: string; href: string };
+  watermark?: string;
   title: string;
   subtitle?: string | null;
   imageUrl?: string | null;
-  highlights?: HeroHighlight[];
-  children?: ReactNode; // buttons
+  highlights?: HeroFact[];
 };
 
-export default function PageHero({ crumb, title, subtitle, imageUrl, highlights = [], children }: Props) {
+export default function PageHero({ crumb, parent, watermark, title, subtitle, imageUrl, highlights = [] }: Props) {
   const items = highlights.filter((item) => item.value);
 
+  // The last word of the title is drawn in amber.
+  const words = title.trim().split(/\s+/);
+  const last = words.length > 1 ? words.pop() : null;
+  const lead = words.join(" ");
+
   return (
-    <section className="relative isolate flex min-h-[560px] items-end overflow-hidden bg-slate-950 text-white [clip-path:inset(0)] sm:min-h-[620px] lg:min-h-[680px]">
+    <section className="relative isolate flex min-h-[620px] flex-col justify-end overflow-hidden bg-slate-950 text-white [clip-path:inset(0)] lg:min-h-[720px]">
       <style>{`
         @keyframes ph-rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes ph-line { from { transform: translateY(-120%); } to { transform: translateY(320%); } }
         .ph-rise > * { opacity: 0; animation: ph-rise .7s ease-out forwards; }
-        .ph-rise > *:nth-child(2) { animation-delay: .08s; }
-        .ph-rise > *:nth-child(3) { animation-delay: .16s; }
-        .ph-rise > *:nth-child(4) { animation-delay: .24s; }
-        @media (prefers-reduced-motion: reduce) { .ph-rise > * { animation: none !important; opacity: 1 !important; } }
+        .ph-rise > *:nth-child(2) { animation-delay: .1s; }
+        .ph-rise > *:nth-child(3) { animation-delay: .2s; }
+        .ph-line { animation: ph-line 2.2s ease-in-out infinite; }
+        @media (prefers-reduced-motion: reduce) {
+          .ph-rise > * { animation: none !important; opacity: 1 !important; }
+          .ph-line { animation: none !important; }
+        }
       `}</style>
 
       {/* Still photo (fixed to the screen, clipped to the hero) */}
-      <StillBackground src={imageUrl} dim="bg-slate-950/10" />
+      <StillBackground src={imageUrl} dim="bg-slate-950/25" />
+      <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top_right,rgba(245,158,11,0.14),transparent_50%)]" />
+      <div aria-hidden="true" className="absolute inset-0 -z-10 bg-gradient-to-t from-slate-950 via-slate-950/55 to-slate-950/10" />
+      <div aria-hidden="true" className="absolute inset-0 -z-10 hidden bg-gradient-to-r from-slate-950/80 via-slate-950/30 to-transparent lg:block" />
 
-      {/* Fallback glow, always behind everything */}
-      <div aria-hidden="true" className="absolute inset-0 -z-20 bg-[radial-gradient(ellipse_at_top_right,rgba(148,163,184,0.25),transparent_55%)]" />
-      <div aria-hidden="true" className="absolute -left-24 bottom-0 -z-10 size-96 rounded-full bg-amber-400/10 blur-3xl" />
+      {/* Giant outlined watermark */}
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute right-[-1%] top-[16%] z-0 hidden select-none whitespace-nowrap text-[22vw] font-black uppercase leading-none tracking-tighter text-transparent [-webkit-text-stroke:1.5px_rgba(255,255,255,0.14)] sm:block lg:text-[16vw]"
+      >
+        {watermark || crumb}
+      </span>
 
-      {/* Readability: dark at the bottom and behind the text, bright elsewhere */}
-      <div aria-hidden="true" className="absolute inset-0 -z-10 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-slate-950/20" />
-      <div aria-hidden="true" className="absolute inset-0 -z-10 hidden bg-gradient-to-r from-slate-950/70 via-slate-950/20 to-transparent lg:block" />
+      {/* Scroll cue (decorative) */}
+      <div aria-hidden="true" className="absolute right-6 top-1/2 z-10 hidden -translate-y-1/2 flex-col items-center gap-3 xl:flex">
+        <span className="text-[10px] font-semibold uppercase tracking-[.3em] text-white/60 [writing-mode:vertical-rl]">Scroll</span>
+        <span className="relative h-16 w-px overflow-hidden bg-white/25">
+          <span className="ph-line absolute inset-x-0 top-0 h-6 bg-amber-400" />
+        </span>
+      </div>
 
-      <div className="mx-auto w-full max-w-7xl px-4 pb-8 pt-24 sm:px-6 sm:pb-10">
-        <div className="ph-rise flex max-w-3xl flex-col items-start">
-          <nav aria-label="Breadcrumb" className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-sm backdrop-blur-md">
-            <Link href="/" className="text-white/75 transition hover:text-white">Home</Link>
-            <ChevronRight aria-hidden="true" className="size-4 text-white/50" />
-            <span className="font-semibold">{crumb}</span>
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-4 pb-8 pt-32 sm:px-6 sm:pb-10">
+        <div className="ph-rise max-w-4xl">
+          <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-2 text-xs font-semibold uppercase tracking-[.22em] text-white/65">
+            <span aria-hidden="true" className="h-px w-8 bg-amber-400" />
+            <Link href="/" className="transition hover:text-white">Home</Link>
+            <span aria-hidden="true">/</span>
+            {parent && (
+              <>
+                <Link href={parent.href} className="transition hover:text-white">{parent.label}</Link>
+                <span aria-hidden="true">/</span>
+              </>
+            )}
+            <span aria-current="page" className="text-white">{crumb}</span>
           </nav>
 
-          <h1 className="mt-6 text-balance text-4xl font-bold leading-[1.05] tracking-tight sm:text-6xl lg:text-7xl">
-            {title}
-            <span aria-hidden="true" className="mt-5 block h-1.5 w-20 rounded-full bg-amber-400" />
+          <h1 className="mt-6 text-balance text-5xl font-black leading-[0.95] tracking-tighter sm:text-7xl lg:text-8xl">
+            {lead}
+            {last && <> <span className="text-amber-400">{last}</span></>}
           </h1>
 
-          {subtitle ? (
-            <p className="mt-5 max-w-xl text-lg leading-8 text-white/85 sm:text-xl">{subtitle}</p>
-          ) : <span />}
-
-          {children ? <div className="mt-7 flex flex-wrap gap-3">{children}</div> : <span />}
+          {subtitle && (
+            <p className="mt-6 max-w-xl border-l-2 border-amber-400 pl-4 text-lg leading-8 text-white/80 sm:text-xl">{subtitle}</p>
+          )}
         </div>
 
         {items.length > 0 && (
-          <ul className="mt-10 grid divide-y divide-white/10 overflow-hidden rounded-2xl border border-white/15 bg-slate-950/45 backdrop-blur-md sm:grid-flow-col sm:auto-cols-fr sm:divide-x sm:divide-y-0">
+          <dl
+            style={{ "--n": items.length } as CSSProperties}
+            className="mt-12 grid sm:border-t sm:border-white/20 sm:[grid-template-columns:repeat(var(--n),minmax(0,1fr))]"
+          >
             {items.map((item) => (
-              <li key={item.label} className="flex items-center gap-3 p-4">
-                <span className="grid size-10 shrink-0 place-items-center rounded-full bg-amber-400 text-slate-950">{item.icon}</span>
-                <span className="min-w-0">
-                  <span className="block text-xs uppercase tracking-wider text-white/60">{item.label}</span>
-                  <span className="block truncate font-semibold">{item.value}</span>
-                </span>
-              </li>
+              <div
+                key={item.label}
+                className="border-t border-white/20 py-4 sm:border-l sm:border-t-0 sm:px-6 sm:first:border-l-0 sm:first:pl-0"
+              >
+                <dt className="text-[11px] font-semibold uppercase tracking-[.2em] text-amber-400">{item.label}</dt>
+                <dd className="mt-1 truncate text-lg font-semibold sm:text-xl">
+                  {item.href ? (
+                    <a href={item.href} className="transition hover:text-amber-400">{item.value}</a>
+                  ) : (
+                    item.value
+                  )}
+                </dd>
+              </div>
             ))}
-          </ul>
+          </dl>
         )}
       </div>
     </section>

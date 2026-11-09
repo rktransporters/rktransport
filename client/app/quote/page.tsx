@@ -1,11 +1,12 @@
 import { MessageCircle, Phone, ArrowRight } from "lucide-react";
+import { createWhatsappUrl } from "../../lib/whatsapp";
 
 const WHATSAPP_NUMBER = "971561379697";
 const PHONE_NUMBER = "+971561379697";
 const QUOTE_MESSAGE = "Hello RK Transport, I would like a quote for car transport between Dubai and Abu Dhabi. Please contact me with details.";
 
 export default function QuotePage() {
-  const quoteUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(QUOTE_MESSAGE)}`;
+  const quoteUrl = createWhatsappUrl(WHATSAPP_NUMBER, QUOTE_MESSAGE);
 
   return (
     <main className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center px-4">

@@ -2,6 +2,7 @@ import ReviewForm from "../Components/review-form";
 import { BreadcrumbStructuredData } from "../Components/structured-data";
 import { publicApi } from "../../lib/transport-api";
 import { generatePageMetadata } from "../../lib/seo";
+import { createWhatsappUrl } from "../../lib/whatsapp";
 
 const WHATSAPP_NUMBER = "971561379697";
 const PHONE_NUMBER = "+971561379697";
@@ -89,7 +90,7 @@ export default async function ReviewsPage() {
               <h3 className="font-semibold text-slate-200">WhatsApp</h3>
               <a 
                 className="mt-1 inline-flex min-h-11 items-center text-slate-300 underline-offset-4 hover:underline" 
-                href={`https://wa.me/${whatsappDigits}`}
+                href={createWhatsappUrl(whatsappDigits, "Hello RK Transport, I would like to get in touch about my trip.")}
                 target="_blank"
                 rel="noopener noreferrer"
               >

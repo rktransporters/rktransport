@@ -1,15 +1,16 @@
 import Image from "next/image";
 import Link from "next/link";
 import CountUpStat from "../Components/count-up-stat";
-import PageHero from "../Components/page-hero";
+import PageHero, { type HeroFact } from "../Components/page-hero";
 import { BreadcrumbStructuredData } from "../Components/structured-data";
 import SimpleRichText from "../Components/simple-rich-text";
 import {
-  ArrowRight, Award, CarFront, CircleCheck, Clock, Clock3, Eye, Gauge, Headset, Heart,
-  MapPin, MessageCircle, Phone, Route, ShieldCheck, Star, Target, Truck, Wrench, type LucideIcon,
+  ArrowRight, Award, CarFront, CircleCheck, Clock3, Eye, Gauge, Headset, Heart,
+  MapPin, MessageCircle, ShieldCheck, Star, Target, Truck, Wrench, type LucideIcon,
 } from "lucide-react";
 import { apiImageUrl, isImageOptimizable, publicApi } from "../../lib/transport-api";
 import { generatePageMetadata } from "../../lib/seo";
+import { createWhatsappUrl } from "../../lib/whatsapp";
 
 const reasonIcons: Record<string, LucideIcon> = {
   Truck, Shield: ShieldCheck, Clock: Clock3, Location: MapPin, Care: Heart, Award,
@@ -30,22 +31,18 @@ export default async function AboutPage() {
   const storyImage = about?.images?.find((image) => image.url);
   const hours = settings?.available_24_7 ? settings.hours_label : "";
   const whatsappDigits = settings?.whatsapp?.replace(/\D/g, "") || "971561379697";
-  const whatsappUrl = `https://wa.me/${whatsappDigits}?text=${encodeURIComponent("Hello RK Transport, I would like a quote for car transport. Please contact me with details.")}`;
+  const whatsappLink = createWhatsappUrl(whatsappDigits, "Hello RK Transport, I would like a quote for car transport. Please contact me with details.");
   const firstStat = about?.stats?.[0];
-  
+
   const rawBannerUrl = (about as Record<string, unknown>)?.banner_image_url as string | undefined;
   const bannerUrl = rawBannerUrl ? apiImageUrl(rawBannerUrl) || rawBannerUrl : undefined;
 
-  const statIcons = [Award, Star, Clock];
-  const heroHighlights = about?.stats?.length
-    ? about.stats.slice(0, 3).map((stat, index) => {
-        const Icon = statIcons[index] ?? Award;
-        return { icon: <Icon aria-hidden="true" className="size-5" />, label: stat.label || "", value: String(stat.value || "") };
-      })
+  const heroHighlights: HeroFact[] = about?.stats?.length
+    ? about.stats.slice(0, 3).map((stat) => ({ label: stat.label || "", value: String(stat.value || "") }))
     : [
-        { icon: <Clock aria-hidden="true" className="size-5" />, label: "Availability", value: hours || "Call us anytime" },
-        { icon: <Route aria-hidden="true" className="size-5" />, label: "Route", value: settings?.core_route_label || "Dubai ⇄ Abu Dhabi" },
-        { icon: <Phone aria-hidden="true" className="size-5" />, label: "Call us", value: settings?.phone_primary || "" },
+        { label: "Availability", value: hours || "Call us anytime" },
+        { label: "Route", value: settings?.core_route_label || "Dubai ⇄ Abu Dhabi" },
+        { label: "Call us", value: settings?.phone_primary || "", href: settings?.phone_primary ? `tel:${settings.phone_primary}` : undefined },
       ];
 
   return (
@@ -61,23 +58,13 @@ export default async function AboutPage() {
       `}</style>
 
       <main className="bg-white dark:bg-slate-950">
-        {/* Hero Section with Still Background Effect */}
         <PageHero
           crumb="About us"
           title={about?.title || "About RK Transport"}
           subtitle={about?.subtitle}
           imageUrl={bannerUrl}
           highlights={heroHighlights}
-        >
-          <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="group inline-flex min-h-12 items-center gap-2 rounded-full bg-white px-6 font-semibold text-slate-950 transition hover:bg-amber-400">
-            <MessageCircle aria-hidden="true" className="size-5" />
-            Get a quote
-            <ArrowRight aria-hidden="true" className="size-4 transition-transform group-hover:translate-x-1" />
-          </a>
-          <Link href="/services" className="inline-flex min-h-12 items-center rounded-full border border-white/30 bg-white/10 px-6 font-semibold backdrop-blur-md transition hover:bg-white/20">
-            Our services
-          </Link>
-        </PageHero>
+        />
 
         {/* Main Content Container */}
         <div className="relative z-10 bg-white text-slate-900 rounded-t-[2.5rem] shadow-[0_-25px_50px_rgba(0,0,0,0.3)] dark:bg-slate-950 dark:text-white">
@@ -115,7 +102,7 @@ export default async function AboutPage() {
                   <p className="text-sm font-bold uppercase tracking-[.2em] text-slate-500 dark:text-slate-400">Our story</p>
                   <SimpleRichText value={about.description} className="mt-4 text-lg leading-8 text-slate-700 dark:text-slate-200" />
                   <div className="mt-8 flex flex-wrap gap-3">
-                    <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="group inline-flex min-h-12 items-center gap-2 rounded-full bg-slate-950 px-6 font-semibold text-white transition hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-200">
+                    <a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="group inline-flex min-h-12 items-center gap-2 rounded-full bg-slate-950 px-6 font-semibold text-white transition hover:bg-slate-800 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-200">
                       <MessageCircle aria-hidden="true" className="size-5" />
                       Get a quote
                       <ArrowRight aria-hidden="true" className="size-4 transition-transform group-hover:translate-x-1" />

@@ -1,9 +1,10 @@
-import { ArrowUpRight, Clock3, MapPin, MessageCircle, Phone, Route, ShieldCheck } from "lucide-react";
+import { ArrowUpRight, Clock3, MapPin, MessageCircle, ShieldCheck } from "lucide-react";
 import { BreadcrumbStructuredData } from "../Components/structured-data";
 import RoutePlanner from "../Components/route-planner";
 import PageHero from "../Components/page-hero";
 import { generatePageMetadata } from "../../lib/seo";
 import { apiImageUrl, publicApi, type Location, type PageCopy } from "../../lib/transport-api";
+import { createWhatsappUrl } from "../../lib/whatsapp";
 
 const WHATSAPP_NUMBER = "971561379697";
 const PHONE_NUMBER = "+971561379697";
@@ -67,28 +68,17 @@ export default async function RoutesPage() {
       />
 
       <main className="bg-stone-50 text-slate-900 dark:bg-slate-950 dark:text-white">
-        {/* Hero banner intentionally kept unchanged */}
         <PageHero
           crumb="Location"
           title="Routes & coverage areas"
           subtitle={`Reliable door-to-door car transport across the core corridor between ${routeLabel}.`}
           imageUrl={bannerUrl}
           highlights={[
-            { icon: <MapPin aria-hidden="true" className="size-5" />, label: "Dubai pickups", value: `${dubai.length} areas` },
-            { icon: <Route aria-hidden="true" className="size-5" />, label: "Abu Dhabi drop-offs", value: `${abuDhabi.length} areas` },
-            { icon: <Phone aria-hidden="true" className="size-5" />, label: "Call us", value: phone },
+            { label: "Dubai pickups", value: `${dubai.length} areas` },
+            { label: "Abu Dhabi drop-offs", value: `${abuDhabi.length} areas` },
+            { label: "Call us", value: phone, href: `tel:${phone}` },
           ]}
-        >
-          <a
-            href={`https://wa.me/${whatsappDigits}?text=${encodeURIComponent("Hello RK Transport, I would like to ask about your routes.")}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex min-h-12 items-center gap-2 rounded-full bg-white px-6 font-semibold text-slate-950 transition hover:bg-amber-400"
-          >
-            <MessageCircle aria-hidden="true" className="size-5" />
-            Ask about a route
-          </a>
-        </PageHero>
+        />
 
         <div className="relative z-10 -mt-1 rounded-t-[2.5rem] bg-white shadow-[0_-25px_50px_rgba(0,0,0,0.18)] dark:bg-slate-950">
           <div className="mx-auto w-full max-w-7xl px-4 py-14 sm:px-6 sm:py-20">
@@ -137,7 +127,7 @@ export default async function RoutesPage() {
                 </p>
               </div>
               <a
-                href={`https://wa.me/${whatsappDigits}?text=${encodeURIComponent("Hello RK Transport, I have a custom pickup or drop-off location. Can you confirm availability?")}`}
+                href={createWhatsappUrl(whatsappDigits, "Hello RK Transport, I have a custom pickup or drop-off location. Can you confirm availability?")}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group inline-flex min-h-12 shrink-0 items-center gap-2 rounded-full bg-slate-950 px-6 font-bold text-white transition hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 dark:bg-white dark:text-slate-950 dark:hover:bg-slate-200"

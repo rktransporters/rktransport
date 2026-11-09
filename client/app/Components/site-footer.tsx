@@ -2,14 +2,11 @@
 
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowRight, ArrowUp, Clock, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
+import { ArrowUp, Clock, Mail, MapPin, Phone } from "lucide-react";
 import { apiRequest, type SiteSettings } from "../../lib/transport-api";
 
-const FALLBACK_WHATSAPP = "971561379697";
 const FACEBOOK_URL = "https://www.facebook.com/profile.php?id=61550895523073";
 const INSTAGRAM_URL = "https://www.instagram.com/liftuaecar";
-const QUOTE_MESSAGE =
-  "Hello RK Transport, I would like a quote for car transport between Dubai and Abu Dhabi. Please contact me with details.";
 
 const quickLinks = [
   { label: "Home", href: "/" },
@@ -28,8 +25,6 @@ export default function SiteFooter() {
 
   const brand = settings?.brand_name || "RK Transport";
   const phone = settings?.phone_primary;
-  const whatsappDigits = settings?.whatsapp?.replace(/\D/g, "") || FALLBACK_WHATSAPP;
-  const quoteUrl = `https://wa.me/${whatsappDigits}?text=${encodeURIComponent(QUOTE_MESSAGE)}`;
   const hours = settings
     ? settings.available_24_7
       ? settings.hours_label || "Available 24/7"
@@ -47,37 +42,6 @@ export default function SiteFooter() {
       <div aria-hidden="true" className="pointer-events-none absolute -top-32 left-1/2 h-64 w-[50rem] -translate-x-1/2 rounded-full bg-sky-400/[0.07] blur-3xl" />
 
       <div className="relative mx-auto w-full max-w-7xl px-5 pb-6 pt-10 sm:px-8 sm:pt-12">
-        {/* Call to action strip */}
-        <div className="flex flex-col gap-4 rounded-2xl border border-white/10 bg-white/[0.05] p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
-          <div>
-            <h2 className="text-lg font-bold tracking-tight text-white sm:text-xl">
-              Need your car moved between Dubai and Abu Dhabi?
-            </h2>
-            <p className="mt-1 text-sm text-slate-400">Get a quick quote on WhatsApp, 24/7.</p>
-          </div>
-          <div className="flex shrink-0 flex-wrap gap-2.5">
-            <a
-              href={quoteUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group inline-flex min-h-11 items-center gap-2 rounded-full bg-white px-5 text-sm font-semibold text-slate-950 transition hover:bg-sky-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
-            >
-              <MessageCircle aria-hidden="true" className="size-4" />
-              Get a quote
-              <ArrowRight aria-hidden="true" className="size-4 transition-transform group-hover:translate-x-1" />
-            </a>
-            {phone && (
-              <a
-                href={`tel:${phone}`}
-                className="inline-flex min-h-11 items-center gap-2 rounded-full border border-white/20 px-5 text-sm font-semibold text-white transition hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"
-              >
-                <Phone aria-hidden="true" className="size-4" />
-                Call
-              </a>
-            )}
-          </div>
-        </div>
-
         {/* Columns */}
         <div className="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1.2fr]">
           <div>

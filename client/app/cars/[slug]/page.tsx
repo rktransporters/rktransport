@@ -1,11 +1,11 @@
 import Image from "next/image";
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Car, Check, Luggage, MessageCircle, Phone, ShieldCheck, Users } from "lucide-react";
+import { Car, Check, Luggage, MessageCircle, Phone, ShieldCheck, Users } from "lucide-react";
 import { BreadcrumbStructuredData } from "../../Components/structured-data";
-import StillBackground from "../../Components/still-background";
+import PageHero from "../../Components/page-hero";
 import { generatePageMetadata } from "../../../lib/seo";
 import { apiImageUrl, isImageOptimizable, publicApi, type PageCopy, type Vehicle } from "../../../lib/transport-api";
+import { createWhatsappUrl } from "../../../lib/whatsapp";
 
 const WHATSAPP_NUMBER = "971561379697";
 const PHONE_NUMBER = "+971561379697";
@@ -84,7 +84,12 @@ export async function generateStaticParams() {
   } catch {
     // Static fallback routes can still be generated without a reachable API.
   }
-  const slugs = new Set([...Object.keys(STATIC), ...cars.map((car) => String(car.id))]);
+  const slugs = new Set<string>(Object.keys(STATIC));
+  for (const car of cars) {
+    const slug = (car as Vehicle & { slug?: string }).slug;
+    if (slug) slugs.add(slug);
+    slugs.add(String(car.id));
+  }
   return Array.from(slugs, (slug) => ({ slug }));
 }
 
@@ -114,10 +119,11 @@ export default async function CarDetailPage({ params }: PageProps) {
 
   const phone = settings?.phone_primary || PHONE_NUMBER;
   const whatsappDigits = settings?.whatsapp?.replace(/\D/g, "") || WHATSAPP_NUMBER;
-  const bookingUrl = `https://wa.me/${whatsappDigits}?text=${encodeURIComponent(`Hello RK Transport, I would like to book the ${vehicle.title}`)}`;
+  const bookingUrl = createWhatsappUrl(whatsappDigits, `Hello RK Transport, I would like to book the ${vehicle.title}.`);
 
   const pageBanner = copy.find((item) => item.key === "cars_banner_url")?.value;
   const heroImage = vehicle.banner || vehicle.image || (pageBanner ? apiImageUrl(pageBanner) || pageBanner : undefined);
+  const heroSubtitle = vehicle.tagline.length > 140 ? `${vehicle.tagline.slice(0, 137)}...` : vehicle.tagline;
 
   return (
     <>
@@ -128,18 +134,19 @@ export default async function CarDetailPage({ params }: PageProps) {
       ]} />
 
       <main className="bg-white dark:bg-slate-950">
-        <section className="relative isolate overflow-hidden bg-slate-950 text-white [clip-path:inset(0)]">
-          <StillBackground src={heroImage} dim="bg-slate-950/65" />
-          <div className="mx-auto w-full max-w-7xl px-4 pb-16 pt-32 sm:px-6 sm:pb-20 lg:min-h-[520px] lg:flex lg:flex-col lg:justify-end">
-            <Link href="/cars" className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-white/80 transition hover:text-white">
-              <ArrowLeft aria-hidden="true" className="size-4" />
-              Back to fleet
-            </Link>
-            <p className="mt-4 text-sm font-bold uppercase tracking-[.2em] text-amber-400">{vehicle.category}</p>
-            <h1 className="mt-3 text-balance text-4xl font-bold leading-[1.05] tracking-tight sm:text-6xl">{vehicle.title}</h1>
-            <p className="mt-4 line-clamp-3 max-w-2xl text-lg leading-8 text-white/85 sm:text-xl">{vehicle.tagline}</p>
-          </div>
-        </section>
+        <PageHero
+          parent={{ label: "Vehicles", href: "/cars" }}
+          crumb={vehicle.title}
+          watermark="Vehicles"
+          title={vehicle.title}
+          subtitle={heroSubtitle}
+          imageUrl={heroImage}
+          highlights={[
+            { label: "Capacity", value: vehicle.seats },
+            ...(vehicle.luggage ? [{ label: "Luggage", value: vehicle.luggage }] : []),
+            { label: "Call us", value: phone, href: `tel:${phone}` },
+          ]}
+        />
 
         <div className="relative z-10 rounded-t-[2.5rem] bg-white text-slate-900 shadow-[0_-25px_50px_rgba(0,0,0,0.3)] dark:bg-slate-950 dark:text-white">
           <div className="mx-auto grid max-w-7xl gap-12 px-4 py-14 sm:px-6 lg:grid-cols-[1.2fr_0.8fr] lg:items-start lg:py-20">

@@ -1,12 +1,13 @@
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowRight, Check, Clock, MessageCircle, Phone } from "lucide-react";
+import { ArrowRight, Check, MessageCircle, Phone } from "lucide-react";
 import { apiImageUrl, apiRequest, ApiError, isImageOptimizable, publicApi, type Service } from "../../../lib/transport-api";
 import { BreadcrumbStructuredData, StructuredData } from "../../Components/structured-data";
-import StillBackground from "../../Components/still-background";
+import PageHero from "../../Components/page-hero";
 import SimpleRichText from "../../Components/simple-rich-text";
 import { canonicalUrl, generatePageMetadata } from "../../../lib/seo";
+import { createWhatsappUrl } from "../../../lib/whatsapp";
 
 async function findService(slug: string): Promise<Service> {
   return apiRequest<Service>(`/services/slug/${encodeURIComponent(slug)}`);
@@ -48,8 +49,7 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
   let service: Service;
   try {
     service = await findService(slug);
-  } catch (reason) {
-    if (reason instanceof ApiError && reason.status === 404) notFound();
+  } catch {
     notFound();
   }
   if (!service) {
@@ -63,7 +63,8 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
   const hours = settings?.available_24_7 ? settings.hours_label : "";
   const whatsappDigits = settings?.whatsapp?.replace(/\D/g, "") || "971561379697";
   const requestMessage = `Hello RK Transport, I would like to request this service: ${service.title}. Please contact me with details.`;
-  const requestWhatsappUrl = `https://wa.me/${whatsappDigits}?text=${encodeURIComponent(requestMessage)}`;
+  const requestWhatsappUrl = createWhatsappUrl(whatsappDigits, requestMessage);
+  const gallery = service.gallery ?? [];
 
   const serviceSchema = {
     "@context": "https://schema.org",
@@ -92,27 +93,20 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
       <StructuredData data={serviceSchema} />
 
       <main className="bg-white dark:bg-slate-950">
-        {/* Hero Section with Still Background Effect */}
-        <section className="relative isolate overflow-hidden bg-slate-950 text-white [clip-path:inset(0)]">
-          <StillBackground src={service.image_url} />
+        <PageHero
+          parent={{ label: "Services", href: "/services" }}
+          crumb={service.title}
+          watermark="Services"
+          title={service.title}
+          subtitle={service.short_description}
+          imageUrl={service.image_url}
+          highlights={[
+            { label: "Availability", value: hours || "Call us anytime" },
+            { label: "Price", value: service.starting_price_note || "Free quote" },
+          ]}
+        />
 
-          <div className="mx-auto w-full max-w-7xl px-4 pb-12 pt-32 sm:px-6 sm:pb-16 lg:min-h-[560px] lg:flex lg:flex-col lg:justify-end">
-            <Link href="/services" className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-white/80 transition hover:text-white">
-              <ArrowLeft aria-hidden="true" className="size-4" />
-              All services
-            </Link>
-            {hours && (
-              <p className="mt-4 inline-flex min-h-9 items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 text-sm font-semibold backdrop-blur">
-                <Clock aria-hidden="true" className="size-4" />
-                {hours}
-              </p>
-            )}
-            <h1 className="mt-4 max-w-4xl text-balance text-4xl font-bold leading-[1.05] tracking-tight sm:text-6xl">{service.title}</h1>
-            {service.short_description && <p className="mt-5 max-w-2xl text-lg leading-8 text-white/80 sm:text-xl">{service.short_description}</p>}
-          </div>
-        </section>
-
-        {/* Content Container that scrolls over the sticky banner */}
+        {/* Content that scrolls over the still banner */}
         <div className="relative z-10 bg-white dark:bg-slate-950 rounded-t-[2.5rem] shadow-[0_-25px_50px_rgba(0,0,0,0.3)]">
           <section className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 lg:grid-cols-[1fr_380px] lg:py-20">
             <div>
@@ -136,11 +130,11 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
                 </div>
               ) : null}
 
-                {(service.gallery?.length ?? 0) > 0 && (
+              {gallery.length > 0 && (
                 <div className="mt-12">
                   <h2 className="text-2xl font-bold tracking-tight">Gallery</h2>
                   <div className="mt-5 grid auto-rows-[200px] gap-3 sm:grid-cols-2 sm:auto-rows-[240px]">
-                    {service.gallery.map((image, index) => (
+                    {gallery.map((image, index) => (
                       <div key={`${image.url}-${index}`} className={`group relative overflow-hidden rounded-2xl bg-slate-200 dark:bg-slate-800 ${index % 5 === 0 ? "sm:row-span-2" : ""}`}>
                         <Image
                           src={apiImageUrl(image.url) || image.url}
@@ -180,9 +174,9 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
                 </a>
 
                 <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
-                  <Link href="/quote" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-slate-300 px-4 font-semibold transition hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800">
+                  <Link href="/routes" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-slate-300 px-4 font-semibold transition hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800">
                     <ArrowRight aria-hidden="true" className="size-5" />
-                    Use form
+                    Plan route
                   </Link>
                   {settings?.phone_primary && (
                     <a href={`tel:${settings.phone_primary}`} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-slate-300 px-4 font-semibold transition hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800">

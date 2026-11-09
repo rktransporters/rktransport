@@ -2,6 +2,7 @@
 
 import { ArrowRight, ArrowUpRight, Check, MapPin, MessageCircle, Phone, Repeat } from "lucide-react";
 import { useMemo, useState } from "react";
+import { createWhatsappUrl } from "../../lib/whatsapp";
 
 type Direction = "d2a" | "a2d";
 
@@ -43,7 +44,7 @@ export default function RoutePlanner({
     const message = ready
       ? `Hello RK Transport, I need car transport from ${pickup} (${fromCity}) to ${drop} (${toCity}). Please confirm availability and price.`
       : "Hello RK Transport, I would like to ask about your routes.";
-    return `https://wa.me/${whatsappDigits}?text=${encodeURIComponent(message)}`;
+    return createWhatsappUrl(whatsappDigits, message);
   }, [ready, pickup, drop, fromCity, toCity, whatsappDigits]);
 
   return (

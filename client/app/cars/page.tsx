@@ -1,10 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight, Car, Check, Clock, Fuel, Luggage, MessageCircle, Phone, ShieldCheck, Sparkles, Users } from "lucide-react";
+import { ArrowUpRight, Car, Check, Fuel, Luggage, MessageCircle, ShieldCheck, Sparkles, Users } from "lucide-react";
 import { BreadcrumbStructuredData } from "../Components/structured-data";
 import PageHero from "../Components/page-hero";
 import { generatePageMetadata } from "../../lib/seo";
 import { apiImageUrl, isImageOptimizable, publicApi, type PageCopy, type Vehicle } from "../../lib/transport-api";
+import { createWhatsappUrl } from "../../lib/whatsapp";
 
 const WHATSAPP_NUMBER = "971561379697";
 
@@ -61,7 +62,7 @@ export default async function CarsPage() {
   const rows: Row[] = cars.length
     ? cars.map((car) => ({
         key: car.id,
-        href: `/cars/${car.id}`,
+        href: `/cars/${(car as Vehicle & { slug?: string }).slug || car.id}`,
         title: car.title,
         description: car.description,
         seats: car.seats,
@@ -76,7 +77,6 @@ export default async function CarsPage() {
       <BreadcrumbStructuredData items={[{ name: "Home", path: "/" }, { name: "Our Fleet", path: "/cars" }]} />
 
       <main className="bg-stone-50 dark:bg-slate-950">
-        {/* Hero with still background */}
         <PageHero
           crumb="Vehicles"
           title={copy.find((item) => item.key === "cars.heading")?.value || "Our transport fleet"}
@@ -86,26 +86,11 @@ export default async function CarsPage() {
           }
           imageUrl={bannerUrl}
           highlights={[
-            { icon: <Car aria-hidden="true" className="size-5" />, label: "Our fleet", value: `${rows.length} ${rows.length === 1 ? "vehicle" : "vehicles"}` },
-            { icon: <Clock aria-hidden="true" className="size-5" />, label: "Availability", value: hours || "Call us anytime" },
-            { icon: <Phone aria-hidden="true" className="size-5" />, label: "Call us", value: settings?.phone_primary || "" },
+            { label: "Our fleet", value: `${rows.length} ${rows.length === 1 ? "vehicle" : "vehicles"}` },
+            { label: "Availability", value: hours || "Call us anytime" },
+            { label: "Call us", value: settings?.phone_primary || "", href: settings?.phone_primary ? `tel:${settings.phone_primary}` : undefined },
           ]}
-        >
-          <a
-            href={`https://wa.me/${whatsappDigits}?text=${encodeURIComponent("Hello RK Transport, I would like to ask about your vehicles.")}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group inline-flex min-h-12 items-center gap-2 rounded-full bg-white px-6 font-semibold text-slate-950 transition hover:bg-amber-400"
-          >
-            <MessageCircle aria-hidden="true" className="size-5" />
-            Ask about the fleet
-            <ArrowRight aria-hidden="true" className="size-4 transition-transform group-hover:translate-x-1" />
-          </a>
-          <Link href="/routes" className="inline-flex min-h-12 items-center gap-2 rounded-full border border-white/30 bg-white/10 px-6 font-semibold backdrop-blur-md transition hover:bg-white/20">
-            View our routes
-            <ArrowUpRight aria-hidden="true" className="size-4" />
-          </Link>
-        </PageHero>
+        />
 
         {/* Content slides over the still image */}
         <div className="relative z-10 rounded-t-[2.5rem] bg-white text-slate-900 shadow-[0_-25px_50px_rgba(0,0,0,0.3)] dark:bg-slate-950 dark:text-white">
@@ -183,7 +168,7 @@ export default async function CarsPage() {
                           <ArrowUpRight aria-hidden="true" className="size-4 transition-transform group-hover/btn:-translate-y-0.5 group-hover/btn:translate-x-0.5" />
                         </Link>
                         <a
-                          href={`https://wa.me/${whatsappDigits}?text=${encodeURIComponent(`Hello RK Transport, I want to book the ${row.title}`)}`}
+                          href={createWhatsappUrl(whatsappDigits, `Hello RK Transport, I want to book the ${row.title}.`)}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="inline-flex min-h-12 items-center gap-2 rounded-full border border-slate-300 px-6 font-semibold transition hover:bg-slate-100 dark:border-slate-700 dark:hover:bg-slate-800"
