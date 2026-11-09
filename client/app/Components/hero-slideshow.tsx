@@ -113,25 +113,25 @@ export default function HeroSlideshow({
       {slide ? (
         <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col justify-center px-4 pb-16 pt-24 sm:px-6 lg:pt-28">
           <div key={`${active}-${slide.id}`} className="hero-rise max-w-3xl">
-            {slide.badge_text ? (
+            {slide.badge_text?.trim() ? (
               <p className="mb-3 inline-flex min-h-9 items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3.5 text-xs font-semibold text-white backdrop-blur-md sm:mb-4 sm:text-sm">
                 <span aria-hidden="true" className="size-2 rounded-full bg-amber-400" />
                 {slide.badge_text}
               </p>
             ) : <span />}
 
-            {slide.subtitle ? (
+            {slide.subtitle?.trim() ? (
               <p className="mb-2 text-xs font-semibold uppercase tracking-[.22em] text-white/75 sm:text-sm">{slide.subtitle}</p>
             ) : <span />}
 
-            <h1 className="text-balance text-3xl font-bold leading-[1.08] tracking-tight sm:text-5xl lg:text-6xl">{slide.title}</h1>
+            {slide.title.trim() && <h1 className="text-balance text-3xl font-bold leading-[1.08] tracking-tight sm:text-5xl lg:text-6xl">{slide.title}</h1>}
 
-            {slide.description ? (
+            {slide.description?.trim() ? (
               <p className="mt-4 max-w-xl text-base leading-7 text-white/85 sm:text-lg lg:text-xl">{slide.description}</p>
             ) : <span />}
 
             <div className="mt-6 flex flex-wrap gap-2.5 sm:mt-8 sm:gap-3">
-              {slide.button_text && slide.button_link && (
+              {slide.button_text?.trim() && slide.button_link && (
                 <Link
                   href={slide.button_link}
                   className="group inline-flex min-h-11 items-center gap-2 rounded-full bg-white px-5 text-sm font-semibold text-slate-950 shadow-lg shadow-black/20 transition hover:bg-slate-100 sm:min-h-12 sm:px-6 sm:text-base"

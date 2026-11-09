@@ -7,7 +7,7 @@ from app.schemas.common import ORMModel
 
 
 class HeroBannerIn(BaseModel):
-    title: str = Field(min_length=1, max_length=200)
+    title: str = Field(default="", max_length=200)
     subtitle: str | None = Field(default=None, max_length=255)
     description: str | None = Field(default=None, max_length=10000)
     badge_text: str | None = Field(default=None, max_length=80)
