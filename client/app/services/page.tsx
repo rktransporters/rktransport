@@ -8,8 +8,8 @@ import { faqJsonLd, generatePageMetadata } from "../../lib/seo";
 
 export function generateMetadata() {
   return generatePageMetadata("/services", {
-    title: "Car Transport Services UAE | RK Transport",
-    description: "Book car transport across Dubai, Abu Dhabi and the UAE. Available 24/7.",
+    title: "Dubai to Abu Dhabi Transport Services | RK Transport",
+    description: "Choose an affordable shared ride or private car service between Dubai and Abu Dhabi, with air-conditioned comfort and door-to-door pickup.",
   });
 }
 
@@ -44,8 +44,8 @@ export default async function ServicesPage() {
       <main className="bg-stone-50 dark:bg-slate-950">
         <PageHero
           crumb="Services"
-          title={text("services.heading", "Car transport, done right")}
-          subtitle={text("services.subheading", settings?.tagline || "Safe, reliable car transport between Dubai and Abu Dhabi.")}
+          title={text("services.heading", "Comfortable rides, made simple")}
+          subtitle={text("services.subheading", settings?.tagline || "Affordable shared and private passenger transport between Dubai and Abu Dhabi.")}
           imageUrl={bannerUrl}
           highlights={[
             { label: "Availability", value: hours || "Call us anytime" },

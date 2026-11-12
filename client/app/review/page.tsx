@@ -39,8 +39,8 @@ const ABU_DHABI_POINTS = [
 
 export function generateMetadata() {
   return generatePageMetadata("/reviews", {
-    title: "Customer Reviews | RK Transport Dubai to Abu Dhabi",
-    description: "Read customer reviews or leave feedback about your car transport experience between Dubai and Abu Dhabi with RK Transport.",
+    title: "Passenger Reviews | RK Transport Dubai to Abu Dhabi",
+    description: "Read reviews or share feedback about your shared or private ride between Dubai and Abu Dhabi with RK Transport.",
   });
 }
 

@@ -42,7 +42,7 @@ export default function RoutePlanner({
 
   const href = useMemo(() => {
     const message = ready
-      ? `Hello RK Transport, I need car transport from ${pickup} (${fromCity}) to ${drop} (${toCity}). Please confirm availability and price.`
+      ? `Hello RK Transport, I need passenger transport from ${pickup} (${fromCity}) to ${drop} (${toCity}). Please confirm availability and price.`
       : "Hello RK Transport, I would like to ask about your routes.";
     return createWhatsappUrl(whatsappDigits, message);
   }, [ready, pickup, drop, fromCity, toCity, whatsappDigits]);

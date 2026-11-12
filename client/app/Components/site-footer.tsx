@@ -49,7 +49,7 @@ export default function SiteFooter() {
               {brand}
             </Link>
             <p className="mt-2 max-w-sm text-sm leading-6 text-slate-400">
-              {settings?.footer_blurb || "Safe, reliable car transport between Dubai and Abu Dhabi."}
+              {settings?.footer_blurb || "Affordable shared and private rides between Dubai and Abu Dhabi."}
             </p>
             <ul className="mt-4 flex gap-2.5">
               {socials.map((item) => (

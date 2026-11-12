@@ -33,13 +33,13 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   } catch (reason) {
     if (reason instanceof ApiError && reason.status === 404) {
       return generatePageMetadata(`/services/${slug}`, {
-        title: "Car Transport Service | RK Transport UAE",
-        description: "Explore car transport services from RK Transport between Dubai and Abu Dhabi.",
+        title: "Passenger Transport Service | RK Transport UAE",
+        description: "Explore shared and private passenger transport services between Dubai and Abu Dhabi.",
       }, `seo.service.${slug}`);
     }
     return generatePageMetadata(`/services/${slug}`, {
       title: "RK Transport Service",
-      description: "Explore vehicle transport services from RK Transport in the UAE.",
+      description: "Explore passenger transport services from RK Transport in the UAE.",
     }, `seo.service.${slug}`);
   }
 }
@@ -76,7 +76,7 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
     url: canonicalUrl(`/services/${service.slug}`),
     areaServed: ["Dubai", "Abu Dhabi", "United Arab Emirates"],
     provider: {
-      "@type": "AutomotiveBusiness",
+      "@type": "LocalBusiness",
       name: settings?.brand_name || "RK Transport",
       url: canonicalUrl("/"),
       ...(settings?.phone_primary ? { telephone: settings.phone_primary } : {}),

@@ -27,7 +27,7 @@ export default function HeroSlideshow({
 
   const whatsappHref = createWhatsappUrl(
     (whatsapp || "971561379697").replace(/\D/g, ""),
-    "Hello RK Transport, I would like to learn more about your car transport services.",
+    "Hello RK Transport, I would like to learn more about your shared and private rides between Dubai and Abu Dhabi.",
   );
   const phoneHref = `tel:${phone || "+971561379697"}`;
 

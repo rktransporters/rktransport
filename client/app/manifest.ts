@@ -6,7 +6,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "RK Transport",
     short_name: "RK Transport",
-    description: "Car transport services across the UAE.",
+    description: "Passenger transport services between Dubai and Abu Dhabi.",
     start_url: "/",
     display: "standalone",
     background_color: "#fafaf9",

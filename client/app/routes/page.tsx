@@ -22,8 +22,8 @@ const ABU_DHABI_FALLBACK = [
 
 export function generateMetadata() {
   return generatePageMetadata("/routes", {
-    title: "Car Transport Routes UAE | Dubai, Abu Dhabi & Emirates",
-    description: "Door-to-door vehicle transport across Dubai and Abu Dhabi with pickup and delivery areas throughout the UAE.",
+    title: "Dubai to Abu Dhabi Ride Routes & Pickup Areas | RK Transport",
+    description: "Plan an affordable shared or private ride between Dubai and Abu Dhabi. Check pickup areas and request air-conditioned door-to-door transport.",
   });
 }
 
@@ -71,7 +71,7 @@ export default async function RoutesPage() {
         <PageHero
           crumb="Location"
           title="Routes & coverage areas"
-          subtitle={`Reliable door-to-door car transport across the core corridor between ${routeLabel}.`}
+          subtitle={`Comfortable passenger rides, with convenient pickup and drop-off across the ${routeLabel} route.`}
           imageUrl={bannerUrl}
           highlights={[
             { label: "Dubai pickups", value: `${dubai.length} areas` },

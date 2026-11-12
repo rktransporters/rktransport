@@ -19,8 +19,8 @@ const reasonIcons: Record<string, LucideIcon> = {
 
 export function generateMetadata() {
   return generatePageMetadata("/about", {
-    title: "About RK Transport | Dubai to Abu Dhabi Car Transport",
-    description: "Learn about RK Transport, the team behind safe and reliable car transport between Dubai and Abu Dhabi, available 24/7.",
+    title: "About RK Transport | Dubai to Abu Dhabi Passenger Rides",
+    description: "Meet RK Transport, providing shared and private passenger rides between Dubai and Abu Dhabi with air-conditioned comfort.",
   });
 }
 
@@ -31,7 +31,7 @@ export default async function AboutPage() {
   const storyImage = about?.images?.find((image) => image.url);
   const hours = settings?.available_24_7 ? settings.hours_label : "";
   const whatsappDigits = settings?.whatsapp?.replace(/\D/g, "") || "971561379697";
-  const whatsappLink = createWhatsappUrl(whatsappDigits, "Hello RK Transport, I would like a quote for car transport. Please contact me with details.");
+  const whatsappLink = createWhatsappUrl(whatsappDigits, "Hello RK Transport, I would like a quote for a ride between Dubai and Abu Dhabi. Please contact me with details.");
   const firstStat = about?.stats?.[0];
 
   const rawBannerUrl = (about as Record<string, unknown>)?.banner_image_url as string | undefined;

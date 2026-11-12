@@ -126,11 +126,11 @@ export default async function HomePage() {
     : [
         {
           id: 0,
-          title: text("home.hero.title", "Car transport Dubai ⇄ Abu Dhabi"),
+          title: text("home.hero.title", "Dubai to Abu Dhabi transport"),
           subtitle: settings?.brand_name || "RK Transport",
           description: text(
             "home.hero.description",
-            "Reliable car transport between Dubai and Abu Dhabi. Available 24/7."
+            "Affordable shared and private rides between Dubai and Abu Dhabi, with air-conditioned comfort and convenient door-to-door pickup."
           ),
           badge_text: settings
             ? settings.available_24_7
@@ -225,7 +225,7 @@ export default async function HomePage() {
                   {text("home.services.eyebrow", "How we help")}
                 </p>
                 <h2 className="mt-2 text-balance text-3xl font-bold tracking-tight sm:text-4xl">
-                  {text("home.services.heading", "Car transport, when you need it")}
+                  {text("home.services.heading", "Comfortable rides, when you need them")}
                 </h2>
               </div>
               <Link
@@ -777,7 +777,7 @@ export default async function HomePage() {
                   {text("home.faqs.heading", "Frequently asked questions")}
                 </h2>
                 <p className="mt-4 leading-7 text-slate-300">
-                  Quick answers about booking, pricing and your car&apos;s journey between Dubai and Abu Dhabi.
+                  Quick answers about booking, fares and rides between Dubai and Abu Dhabi.
                 </p>
                 <div className="mt-8 rounded-3xl border border-white/10 bg-white/5 p-6 shadow-xl backdrop-blur">
                   <p className="text-lg font-bold text-white">Still have questions?</p>

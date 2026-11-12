@@ -70,10 +70,6 @@ The static export disables Next.js image optimization. Use public image URLs (fo
 
 The backend remains a separate FastAPI deployment. Do not publish `.next` as the Pages output directory; the correct output is `out`.
 
-## Vercel deployment
-
-For an existing Vercel setup, deploy `client/` as the Vercel Next.js project. Set `API_BASE_URL` to the deployed FastAPI origin, set `SECRET_KEY` and `COOKIE_NAME` to match the backend, and set `REVALIDATE_SECRET` to the same value configured by the backend. Do not add a `/api/v1` suffix to `API_BASE_URL`.
-
 Image URLs stored in site content should point to Cloudinary. For additional image hosts, add a narrowly scoped host to `next.config.mjs`.
 
 The admin dashboard manages homepage hero slides and section backgrounds, and uploads the Cars and Routes & Coverage page hero images on fleet vehicle and location records.
